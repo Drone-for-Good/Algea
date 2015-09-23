@@ -17,28 +17,29 @@ Once the project moves into development, the press release can be used as a touc
  -->
  
 ## Heading ##
-  > Name the product in a way the reader (i.e. your target customers) will understand.
+  > Agar.io clone
 
 ## Sub-Heading ##
-  > Describe who the market for the product is and what benefit they get. One sentence only underneath the title.
+  > For anyone who likes to play Agar.io but wants more social interactions with the players
 
 ## Summary ##
-  > Give a summary of the product and the benefit. Assume the reader will not read anything else so make this paragraph good.
-
+ > {{Title}} is a game where bigger is better. Your goal is to become the biggest cell on the block and avoid being eaten and split by your enemeies or the hostile environment. Eat all the food and enemies that you can. The bigger you become, the more feared you are. Form teams, create lobbies to play with friends or new opponents, and track your stats online. 
+ 
+  
 ## Problem ##
-  > Describe the problem your product solves.
-
+  > Agar.io is a temporary game. Because one gameplay doesn't influence the next, there's no way to remember interactions with other players. Therefore, there's no way to include features like friends list, chat logs, or long-term game stats. Also, there are no ways to play private games. 
+  
 ## Solution ##
-  > Describe how your product elegantly solves the problem.
+  > Our game stores information about every gameplay and with this data, users can form friendships, track personal game stats, and compare their stats to other players. Users can also set up private games with their friends. 
 
 ## Quote from You ##
-  > A quote from a spokesperson in your company.
+  > "Bigger is better!"
 
 ## How to Get Started ##
-  > Describe how easy it is to get started.
+  > It's easy to get started. Just sign up and join in on the fun.
 
 ## Customer Quote ##
-  > Provide a quote from a hypothetical customer that describes how they experienced the benefit.
+  > "THIS GAME IS #@#$@$ AWESOME!"
 
 ## Closing and Call to Action ##
-  > Wrap it up and give pointers where the reader should go next.
+  > Start playing.
