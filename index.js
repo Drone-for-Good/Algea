@@ -11,19 +11,16 @@ app.get('/', function(request, response){
 io.path('/');
 
 io.sockets.on('connection', function(socket){
-	console.log('Congratulations! You have a user and socket IO is connecting you.');
+  console.log('Congratulations! You have a user and socket IO is connecting you.');
 
-	//Need to get users Info from Database and sent to Client
-
-	//io.sockets.on('data', function(data){ 			//on getting data from database	
+  //example of on data from user:
+	//io.sockets.on('data', function(data){ 			//on getting data from database
 		// io.emit("usersOnline", function(users){		//sending it out to client
-			
+
 		// });
 	// });
 });
 
 http.listen(3000, function(){
-	console.log('listening on *:3000');
+  console.log('listening on *:3000');
 });
-
-//acces to the modelss

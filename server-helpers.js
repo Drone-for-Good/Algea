@@ -4,11 +4,20 @@ var db = require('models.js');
 
 //example function to send all user data from database
 
-exports.sendUsers = {
-
-	db.Users.findAll().then(function(users){
-		// console.log(users);		//to see what we're getting. According to sequalize docs, we're getting an instance not an object
+exports.sendUsers = function(){
+	db.User.findAll().then(function(users){
 		io.emit('allUsers', users);
 	});
+};
+
+exports.sendFriends = function(username){
+
+  //first find id for user
+
+  //use id to search for user in Friends database
+    //give us friends User ids
+
+  //got back to User and search Friends' ids to get usernames
 
 }
+
