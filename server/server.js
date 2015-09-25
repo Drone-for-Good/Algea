@@ -1,14 +1,16 @@
-var app = require('express')();					//initiate server
+var express = require('express');
+var app = express();					//initiate server
 var http = require('http').Server(app);			//create a new instance of an express server with http
 var io = require('socket.io')(http);			//using socket IO to route the http requests
-// var db = require('models.js');
-var helpers = require('server-helpers');
+var helpers = require('../server/server-helpers.js');
 var Promise = require('bluebird');
 
-var allPlayerInfo = {};                         //global object to store current players' instantaneous data
+app.use(express.static(__dirname + '/../client'));
+
+var allPlayerInfo = {};     //global object to store current players' instantaneous data
 
 app.get('/', function(request, response){
-	response.sendFile(__dirname + '/client/index.html');	//
+  // response.sendFile("/Users/angeltam/Code/HR/INCARNADINE-PHAROAH/client/index.html");
 });
 
 //sets the path under which static files will be served
@@ -17,7 +19,7 @@ io.path('/');
 io.sockets.on('connection', function(socket){
   console.log('Congratulations! You have a new user connected.');
   //socket.id will be associated with user through login
-  socket.on('getFromServerLogin', function{
+  socket.on('getFromServerLogin', function(){
       //Add a new socket to object based on login
 
   });
@@ -92,7 +94,7 @@ io.sockets.on('connection', function(socket){
 
 //this will be an ongoing function to update players on the positions in
     //server's global obj
-setTimeOut(function(){
+setInterval(function(){
     var promise = new Promise(function(resolve, reject){
         //fetchStatusOfAllPlayersAndSendItOut!
 

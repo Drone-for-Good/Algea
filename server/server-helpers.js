@@ -1,8 +1,5 @@
-//This will be a file to route information between the database and the client
-
-var db = require('models.js');
-
-//example function to send all user data from database
+//This file routes information between the database and the client
+var db = require('../DB/models.js');
 
 exports.sendUsers = function(){
 
