@@ -1,0 +1,88 @@
+body{
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+#navDiv{
+  position: absolute;
+  background-color: #990000;
+}
+
+#gameDiv{
+  position: absolute;
+  top: 5%;
+  left: 10%;
+  width: 80%;
+  background-color: black;
+}
+
+#friendsDiv{
+  position: absolute;
+  left: 98%;
+  background-color: #990000;
+}
+
+#friendsDivTitle{
+  width: 100%;
+  height: 50px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-size: 24px;
+}
+
+#gameChatDiv{
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 400px;
+  height: 200px;
+  background-color: rgba(230,230,230, .9);
+  border-radius: 5px;
+  left: 5px;
+}
+
+#minGameChatDiv{
+  position: absolute;
+  height: 13px;
+  width: 13px;
+  background-color: red;
+  left: 96%;
+  top: 1%;
+  border-radius: 3px;
+}
+
+#gameChatDivMessages{
+  top: 15px;
+  position: relative;
+  background-color: white;
+  width: 90%;
+  height: 150px;
+  border-radius: 3px;
+  left: 4%;
+}
+
+#gameChatDivMessages ul{
+  list-style: none;
+  padding: 0;
+}
+
+#gameChatDivMessages ul li{
+  padding-top: 3px;
+  margin-left: 5px;
+  font-size: 12px;
+}
+
+.gameChatDivMessagesUser{
+  font-weight: bold;
+}
+
+#gameChatDivInput{
+  position: absolute;
+  width: 90%;
+  left: 4%;
+  font-size: 12px;
+  border: none;
+  border-radius: 3px;
+}
