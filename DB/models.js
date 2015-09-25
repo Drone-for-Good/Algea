@@ -21,10 +21,8 @@ exports.User.sync().then(function(){
 
 // Friend relationship between 2 users
 exports.Friendship = sequelize.define('Friendship', {
-  user1: {type: Sequelize.INTEGER, allowNull: false,
-    references: {model: exports.User, key:'id'}},
-  user2: {type: Sequelize.INTEGER, allowNull: false,
-    references: {model: exports.User, key:'id'}}
+  user1: {type: Sequelize.INTEGER, references: {model: exports.User, key:'id'}},
+  user2: {type: Sequelize.INTEGER, references: {model: exports.User, key:'id'}}
 });
 
 exports.Friendship.sync().then(function(){
@@ -33,9 +31,8 @@ exports.Friendship.sync().then(function(){
 
 // Skin image for a user
 exports.Skin = sequelize.define('Skin', {
-  userid: {type: Sequelize.INTEGER, allowNull: false,
-    references: {model: exports.User, key:"id"} },
-  skinImage: {type: Sequelize.STRING, allowNull: false} // path to image file
+  userid: {type: Sequelize.INTEGER, references: {model: exports.User, key:"id"} },
+  skinImage: {type: Sequelize.STRING} // path to image file
 });
 
 exports.Skin.sync().then(function(){
@@ -44,8 +41,7 @@ exports.Skin.sync().then(function(){
 
 // Stats for one game of a user
 exports.GameStats = sequelize.define('GameStats', {
-  userid: {type: Sequelize.INTEGER, allowNull: false,
-    references: {model: exports.User, key:"id"} },
+  userid: {type: Sequelize.INTEGER, references: {model: exports.User, key:"id"} },
   lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
   score: {type: Sequelize.INTEGER, defaultValue: 0},
   mass: {type: Sequelize.INTEGER, defaultValue: 0},
@@ -60,7 +56,7 @@ exports.GameStats.sync().then(function(){
 
 // Best of each stat for a user
 exports.BestStats = sequelize.define('BestStats', {
-  userid: {type: Sequelize.INTEGER, primaryKey: true, allowNull: false,
+  userid: {type: Sequelize.INTEGER, primaryKey: true,
     references: {model: exports.User, key:"id"} },
   lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
   score: {type: Sequelize.INTEGER, defaultValue: 0},
@@ -76,7 +72,7 @@ exports.BestStats.sync().then(function(){
 
 // Sum of each stat for a user
 exports.TotalStats = sequelize.define('TotalStats', {
-  userid: {type: Sequelize.INTEGER, primaryKey: true, allowNull: false,
+  userid: {type: Sequelize.INTEGER, primaryKey: true,
     references: {model: exports.User, key:"id"} },
   totalGames: {type: Sequelize.INTEGER, defaultValue: 0},
   lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
