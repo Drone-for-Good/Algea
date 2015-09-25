@@ -3,41 +3,86 @@ var Sequelize = require("sequelize");
 // Connect to the agar database with user root and "" password
 var sequelize = new Sequelize("agar", "root", "");
 
-// Define all models
 // Sequelize auto adds createAt and updatedAt timestamps for each entry
 
-// User holds user account info
+// User account info
 exports.User = sequelize.define('User', {
   id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
   username: {type: Sequelize.STRING, allowNull: false, unique: true},
-  password: {type: Sequelize.STRING, allowNull: false},
-  status: {type: Sequelize.STRING}
+  password: {type: Sequelize.STRING, allowNull: false}
+  profileImage: {type: Sequelize.STRING}   // path to image file
 });
 
-// UserStats holds historical game stats of the user
-exports.UserStats = sequelize.define('UserStats', {
-  userid: {type: Sequelize.INTEGER, primaryKey: true,
-    references: {model: User, key:id} },
-  highestScore: {type: Sequelize.INTEGER, defaultValue: 0},
-  averageScore: {type: Sequelize.INTEGER, defaultValue: 0},
-  gamesPlayed: {type: Sequelize.INTEGER, defaultValue: 0},
-  KDR: {type: Sequelize.FLOAT, defaultValue: 0},
-  kills: {type: Sequelize.INTEGER, defaultValue: 0},
-  deaths: {type: Sequelize.INTEGER, defaultValue: 0}
-});
-
-// Friendship holds friend relationship between 2 users
+// Friend relationship between 2 users
 exports.Friendship = sequelize.define('Friendship', {
   user1: {type: Sequelize.INTEGER, references: {model: User, key:id}},
   user2: {type: Sequelize.INTEGER, references: {model: User, key:id}}
 });
 
+// Skin image for a user
+exports.Skin = sequelize.define('Skin', {
+  userid: {type: Sequelize.INTEGER, references: {model: User, key:id} },
+  skinImage: {type: Sequelize.STRING} // path to image file
+});
+
+// Stats for one game of a user
+exports.GameStats = sequelize.define('GameStats', {
+  userid: {type: Sequelize.INTEGER, references: {model: User, key:id} },
+  lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
+  score: {type: Sequelize.INTEGER, defaultValue: 0},
+  mass: {type: Sequelize.INTEGER, defaultValue: 0},
+  totalKills: {type: Sequelize.INTEGER, defaultValue: 0},
+  totalFood: {type: Sequelize.INTEGER, defaultValue: 0},
+  timeInFirst: {type: Sequelize.INTEGER, defaultValue: 0}
+});
+
+// Best of each stat for a user
+exports.BestStats = sequelize.define('BestStats', {
+  userid: {type: Sequelize.INTEGER, primaryKey: true,
+    references: {model: User, key:id} },
+  lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
+  score: {type: Sequelize.INTEGER, defaultValue: 0},
+  mass: {type: Sequelize.INTEGER, defaultValue: 0},
+  totalKills: {type: Sequelize.INTEGER, defaultValue: 0},
+  totalFood: {type: Sequelize.INTEGER, defaultValue: 0},
+  timeInFirst: {type: Sequelize.INTEGER, defaultValue: 0}
+});
+
+// Sum of each stat for a user
+exports.TotalStats = sequelize.define('TotalStats', {
+  userid: {type: Sequelize.INTEGER, primaryKey: true,
+    references: {model: User, key:id} },
+  totalGames: {type: Sequelize.INTEGER, defaultValue: 0},
+  lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
+  score: {type: Sequelize.INTEGER, defaultValue: 0},
+  mass: {type: Sequelize.INTEGER, defaultValue: 0},
+  totalKills: {type: Sequelize.INTEGER, defaultValue: 0},
+  totalFood: {type: Sequelize.INTEGER, defaultValue: 0},
+  timeInFirst: {type: Sequelize.INTEGER, defaultValue: 0}
+});
+
 
 // Create all tables that aren't already in the database
-exports.User.sync().success(function(){
+exports.User.sync().then(function(){
   console.log("Successfully synced User table");
 });
 
-exports.UserStats.sync().success(function(){
-  console.log("Successfully synced UserStats table");
+exports.Friendship.sync().then(function(){
+  console.log("Successfully synced Friendship table");
+});
+
+exports.Skin.sync().then(function(){
+  console.log("Successfully synced Skin table");
+});
+
+exports.GameStats.sync().then(function(){
+  console.log("Successfully synced GameStats table");
+});
+
+exports.BestStats.sync().then(function(){
+  console.log("Successfully synced BestStats table");
+});
+
+exports.TotalStats.sync().then(function(){
+  console.log("Successfully synced TotalStats table");
 });
