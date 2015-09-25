@@ -32,7 +32,7 @@ exports.sendDeath = function(finalStats){
 
   //CHECK ALL NAMES HERE. WE ARE STILL SYNCING UP WITH ONE ANOTHER
   //this should add to the database without needing to continue with the promise.
-  db.TotalStats.findOne({where: {key:user.id}}).then(function(currentStats){
+  db.GameStats.findOne({where: {key:user.id}}).then(function(currentStats){
     currentStats.lifetime += finalStats.lifetime;
     currentStats.score += finalStats.score;
     currentStats.mass += finalStats.mass;
