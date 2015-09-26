@@ -15,31 +15,65 @@
   </script>
 </head>
 <body>
-  <div id="gameDiv">
+  <div id="gameDiv" ng-controller="gameChatDivController">
     <div id="gameChatDiv">
       <div id="minGameChatDiv"></div>
       <div id="gameChatDivMessages">
-        <ul>
-          <li><span class="gameChatDivMessagesUser">captainCuddles:</span> lol</li>
-          <li><span class="gameChatDivMessagesUser">mrSquid:</span> you only squid once</li>
+        <ul ng-repeat="message in messages">
+          <li>
+            <span class="gameChatDivMessagesUser">
+            {{ message.username }}:
+          </span>
+           {{ message.message }}
+        </li>
+          <!-- <li><span class="gameChatDivMessagesUser">mrSquid:</span> you only squid once</li>
           <li><span class="gameChatDivMessagesUser">doYouEvenEat:</span> hangry LFT</li>
           <li><span class="gameChatDivMessagesUser">lion:</span> for narnia</li>
           <li><span class="gameChatDivMessagesUser">mrSquid:</span> definitely not squidward</li>
           <li><span class="gameChatDivMessagesUser">drOctopus:</span> you will be mine</li>
           <li><span class="gameChatDivMessagesUser">alex:</span> you natty breh?</li>
+          <li><span class="gameChatDivMessagesUser">alex:</span> you natty breh?</li>
+          <li><span class="gameChatDivMessagesUser">alex:</span> you natty breh?</li>
+          <li><span class="gameChatDivMessagesUser">alex:</span> you natty breh?</li> -->
         </ul>
       </div>
-      <input id="gameChatDivInput" type="text" placeholder="Message...">
+      <input id="gameChatDivInput" type="text" placeholder="Message..." maxlength="72">
     </div>
   </div>
   <div id="navDiv"></div>
-  <div ng-controller="friendsDivController" id="friendsDiv">
-    <div ng-model="friends" id="friendsDivTitle">{{ friends.length }}</div>
+  <div id="friendsDiv" ng-controller="friendsDivController">
+    <div ng-model="friends" id="friendsDivTitle">Friends</div>
+    <ul id="friendsDivList">
+      <li ng-repeat="friend in friends" class="friendsDivListFriend" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-class="{'friendsDivListFriend_Hover': hover}">
+        <div class="friendsDivListStatus"
+        ng-class="
+        {
+          'friendsDivListStatus_Online': friend.status === 'online',
+          'friendsDivListStatus_Offline': friend.status === 'offline',
+          'friendsDivListStatus_Idle': friend.status === 'idle'
+        }">
+      </div>
+        {{ friend.username }}
+      </li>
+    </ul>
+  </div>
+  <div id="playersDiv" ng-controller="playersDivController">
+    <div ng-model="players" id="playersDivTitle">Players</div>
+    <ul id="playersDivList">
+      <li ng-repeat="player in players" class="playersDivListPlayer" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-class="{'playersDivListPlayer_Hover': hover}">
+        {{ player.username }}
+      </li>
+    </ul>
   </div>
 
   <script src="js/indexCSS.js"></script>
-  <!-- // <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script> -->
+  <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+  <!-- // <script src="/socket.io/socket.io.js"></script> -->
+  <script src="bower_components/angular-socket-io/socket.js"></script>
   <script src="js/indexApp.js"></script>
+  <script src="js/angularControllers/friendsDivController.js"></script>
+  <script src="js/angularControllers/playersDivController.js"></script>
+  <script src="js/angularControllers/gameChatDivController.js"></script>
   <scripc src="js/indexSocketIO.js"></script>
 </body>
 </html>

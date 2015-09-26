@@ -11,7 +11,7 @@ body{
 
 #gameDiv{
   position: absolute;
-  top: 5%;
+  top: 10%;
   left: 10%;
   width: 80%;
   background-color: black;
@@ -19,17 +19,110 @@ body{
 
 #friendsDiv{
   position: absolute;
-  left: 98%;
+  left: 90%;
+  width: 10%;
   background-color: #990000;
 }
 
 #friendsDivTitle{
   width: 100%;
-  height: 50px;
+  height: 35px;
   background-color: black;
   color: white;
   text-align: center;
   font-size: 24px;
+}
+
+#friendsDivList{
+  background-color: white;
+  list-style: none;
+  padding-left: 0;
+  text-align: center;
+  border-left: 6px solid green;
+  border-right: 6px solid green;
+  height: 400px;
+  overflow: scroll;
+}
+
+#friendsDivList li{
+  border-bottom: 2px solid pink;
+  padding: 10px 0;
+}
+
+.friendsDivListStatus{
+  float: left;
+  background-color: black;
+  position: relative;
+  width: 10px;
+  left: 4%;
+  height: 10px;
+  top: 6px;
+  border-radius: 50%;
+  opacity: 1;
+}
+
+.friendsDivListStatus_Online{
+  background-color: green;
+}
+
+.friendsDivListStatus_Offline{
+  background-color: navy;
+}
+
+.friendsDivListStatus_Idle{
+  background-color: gray;
+}
+
+.friendsDivListFriend_Hover{
+  background-color: #e0f5ff;
+}
+
+#playersDiv{
+  position: absolute;
+  left: 90%;
+  width: 10%;
+  background-color: #990000;
+}
+
+#playersDivTitle{
+  width: 100%;
+  height: 35px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-size: 24px;
+}
+
+#playersDivList{
+  background-color: white;
+  list-style: none;
+  padding-left: 0;
+  text-align: center;
+  border-left: 6px solid green;
+  border-right: 6px solid green;
+  height: 400px;
+  overflow: scroll;
+}
+
+#playersDivList li{
+  border-bottom: 2px solid pink;
+  padding: 10px 0;
+}
+
+.playersDivListStatus{
+  float: left;
+  background-color: black;
+  position: relative;
+  width: 10px;
+  left: 4%;
+  height: 10px;
+  top: 6px;
+  border-radius: 50%;
+  opacity: 1;
+}
+
+.playersDivListFriend_Hover{
+  background-color: #e0f5ff;
 }
 
 #gameChatDiv{
@@ -38,7 +131,7 @@ body{
   position: absolute;
   width: 400px;
   height: 200px;
-  background-color: rgba(230,230,230, .9);
+  background-color: rgba(230, 230, 230, .5);
   border-radius: 5px;
   left: 5px;
 }
@@ -56,11 +149,12 @@ body{
 #gameChatDivMessages{
   top: 15px;
   position: relative;
-  background-color: white;
+  background-color: rgba(255, 255, 255, .75);
   width: 90%;
   height: 150px;
   border-radius: 3px;
   left: 4%;
+  overflow: scroll;
 }
 
 #gameChatDivMessages ul{
@@ -85,4 +179,5 @@ body{
   font-size: 12px;
   border: none;
   border-radius: 3px;
+  background-color: rgba(255, 255, 255, .75);
 }
