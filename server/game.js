@@ -15,12 +15,12 @@ exports.sockets = {
 
 // Look up user id from exports.socket object
 exports.getUserID = function(socketID) {
-  return exports.sockets[socketID][userID];
+  return exports.sockets[socketID]["userID"];
 };
 
 // Look up user name from exports.socket object
 exports.getUserName = function(socketID) {
-  return exports.sockets[socketID][username];
+  return exports.sockets[socketID]["username"];
 };
 
 // Upon sign in, user is assigned to his own room with an ID == to his socketID
