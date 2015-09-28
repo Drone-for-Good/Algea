@@ -18,9 +18,10 @@ io.sockets.on('connection', function(socket){
   console.log('You have a new user connected.');
 
   // When user is logged in and authenticated
-  socket.on('getFromServerLogin', function(){
+  socket.on('getFromServerLogin', function(loginObj){   //I don't see this function in client file yet.
    // Add user to the sockets object in game.js
-
+   // loginObj should look like: {username: someUser, userID: someID};
+   game.sockets[socket.id] = loginObj;
    // Send to user his username, skins, friends
 
   });
@@ -83,7 +84,7 @@ io.sockets.on('connection', function(socket){
       });
   });
 
-  // Not sure what this is for
+  //The following needs to be incorporated into sendToServerPlayerState
   socket.on('getFromServerAllFriends', function(friendRequest){
     var promise = new Promise(function(resolve, reject){
 
@@ -110,6 +111,10 @@ io.sockets.on('connection', function(socket){
     // Emit to only the users in the same room
     io.to(roomID).emit('receiveFromServerChatMessage', msg);
   });
+});
+
+io.sockets.on('disconnect', function(socket){
+   delete game.sockets[socket.id];
 });
 
 //this will be an ongoing function to update players on the positions in
