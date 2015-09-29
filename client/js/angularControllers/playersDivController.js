@@ -1,4 +1,4 @@
-app.controller("playersDivController", function($scope, mySocket){
+app.controller("playersDivController", function ($scope, mySocket) {
   var GUIvars = {
     "#playersDiv": {
       expanded: false,
@@ -14,6 +14,8 @@ app.controller("playersDivController", function($scope, mySocket){
     }
   };
 
+  $scope.playerFilter = "";
+  
   $scope.players = [
     {
       username: "AngelOfDeath",
@@ -77,19 +79,19 @@ app.controller("playersDivController", function($scope, mySocket){
     }
   ];
 
-  $scope.getFromServerAllPlayers = function(){
+  $scope.getFromServerAllPlayers = function () {
     mySocket.emit("getFromServerAllFriends", null);
   };
-  mySocket.on("getFromServerAllPlayers_Response", function(data){
+  mySocket.on("getFromServerAllPlayers_Response", function (data) {
     $scope.players = data;
   });
 
-  $(".playersDivListPlayer").mouseover(function(){
+  $(".playersDivListPlayer").mouseover(function () {
     $(this).css({
       "background-color": GUIvars[".playersDivListPlayer"].hoverBGcolor 
     });
   });
-  $(".friendsDivListFriend").mouseleave(function(){
+  $(".friendsDivListFriend").mouseleave(function () {
     $(this).css({
       "background-color": GUIvars[".playersDivListPlayer"].baseBGcolor
     });
