@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function () {
 
   var GUIvars = {
     //Nav
@@ -10,16 +10,18 @@ $(document).ready(function(){
     }
   };
 
-  var initializeGUI = function(){
+  var initializeGUI = function () {
     $("#navDiv").css("height", window.innerHeight);
     $("#navDiv").css("width", GUIvars["#navDiv"].expandedSize);
     $("#friendsDiv").css("height", window.innerHeight/2);
     $("#friendsDivList").css("height",
-      "" + (80 - $("#friendsDivTitle").height()/window.innerHeight) + "%");
+      "" + (70 - 
+        ($("#friendsDivTitle").height()
+          + $("#friendsDivListFind_Input").height())/window.innerHeight) + "%");
     $("#playersDiv").css("height", window.innerHeight/2);
     $("#playersDiv").css("top", "50%");
     $("#playersDivList").css("height",
-      "" + (80 - $("#playersDivTitle").height()/window.innerHeight) + "%");
+      "" + (70 - $("#playersDivTitle").height()/window.innerHeight) + "%");
     $("#gameDiv").css("height", window.innerHeight * .9);
     $("#gameChatDiv").css("top", $("#gameDiv").height() - 205);
     $("#gameChatDivInput").css({
@@ -30,9 +32,10 @@ $(document).ready(function(){
   };
   initializeGUI();
 
-  $(window).resize(function(){
+  $(window).resize(function () {
     $("#navDiv").css("height", window.innerHeight);
-    $("#friendsDiv").css("height", window.innerHeight);
+    $("#friendsDiv").css("height", window.innerHeight/2);
+    $("#playersDiv").css("height", window.innerHeight/2);
   });
 
 });

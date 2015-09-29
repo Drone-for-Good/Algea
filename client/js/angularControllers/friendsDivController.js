@@ -1,4 +1,4 @@
-app.controller("friendsDivController", function($scope, mySocket){
+app.controller("friendsDivController", function ($scope, mySocket) {
   var GUIvars = {
     "#friendsDiv": {
       expanded: false,
@@ -14,6 +14,8 @@ app.controller("friendsDivController", function($scope, mySocket){
     }
   };
 
+  $scope.friendFilter = "";
+  
   $scope.friends = [
     {
       username: "AngelOfDeath",
@@ -89,29 +91,25 @@ app.controller("friendsDivController", function($scope, mySocket){
     }
   ];
 
-  $scope.getFromServerFriend = function(){
+  $scope.getFromServerFriend = function () {
     mySocket.emit("getFromServerFriend", null);
   };
-  mySocket.on("getFromServerFriend_Response", function(data){
+  mySocket.on("getFromServerFriend_Response", function (data) {
     $scope.friends = data;
   });
 
-  mySocket.on("receiveFromServer", function(data){
-    
-  });
-
   //jQuery animation
-  $scope.toggleFriendsDiv = function(forceClose){
-    if(!GUIvars["#friendsDiv"].resizing){
+  $scope.toggleFriendsDiv = function (forceClose) {
+    if (!GUIvars["#friendsDiv"].resizing) {
       var width;
       var left;
       var opacity;
-      if(!GUIvars["#friendsDiv"].expanded && !forceClose){
+      if (!GUIvars["#friendsDiv"].expanded && !forceClose) {
         width = GUIvars["#friendsDiv"].expandedSize;
         left = GUIvars["#friendsDiv"].expandedLeft;
         opacity = 1;
       }
-      else{
+      else {
         width = GUIvars["#friendsDiv"].collapsedSize;
         left = GUIvars["#friendsDiv"].collapsedLeft;
         opacity = 0;
@@ -122,15 +120,15 @@ app.controller("friendsDivController", function($scope, mySocket){
           left: left,
         },
         {
-          start: function(){
+          start: function () {
             GUIvars["#friendsDiv"].resizing = true;
-            if(GUIvars["#friendsDiv"].expanded){
+            if (GUIvars["#friendsDiv"].expanded) {
               $(".friendsDivListStatus").css({opacity: opacity});
             }
           },
-          done: function(){
+          done: function () {
             GUIvars["#friendsDiv"].resizing = false;
-            if(!GUIvars["#friendsDiv"].expanded){
+            if (!GUIvars["#friendsDiv"].expanded) {
               $(".friendsDivListStatus").css({opacity: 1});
             }
             GUIvars["#friendsDiv"].expanded = !GUIvars["#friendsDiv"].expanded;
@@ -141,13 +139,12 @@ app.controller("friendsDivController", function($scope, mySocket){
     }
   };
 
-  $(".friendsDivListFriend").mouseover(function(){
-    console.log("hey");
+  $(".friendsDivListFriend").mouseover(function () {
     $(this).css({
       "background-color": GUIvars[".friendsDivListFriend"].hoverBGcolor 
     });
   });
-  $(".friendsDivListFriend").mouseleave(function(){
+  $(".friendsDivListFriend").mouseleave(function () {
     $(this).css({
       "background-color": GUIvars[".friendsDivListFriend"].baseBGcolor
     });

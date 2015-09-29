@@ -1,4 +1,4 @@
-app.controller("gameChatDivController", function($scope, mySocket){
+app.controller("gameChatDivController", function ($scope, mySocket) {
   var GUIvars = {
     "#gameChatDiv": {
       expanded: true,
@@ -61,54 +61,54 @@ app.controller("gameChatDivController", function($scope, mySocket){
     }
   ];
 
-  $scope.sendToServerChatMessage = function(){
-    if(0 < $("#gameChatDivInput").val().length &&
-      $("#gameChatDivInput").val().length <= 72){
-      mySocket.emit("sendToServerMessage", {
+  $scope.sendToServerChatMessage = function () {
+    if (0 < $("#gameChatDivInput").val().length
+        && $("#gameChatDivInput").val().length <= 72) {
+      mySocket.emit("sendToServerChatMessage", {
         message: $("#gameChatDivInput").text()
       });
     }
   };
-  mySocket.on("receiveFromServerChatMessage", function(data){
+  mySocket.on("receiveFromServerChatMessage", function (data) {
     $scope.messages.push(data);
   });
 
   //jQuery animation
-  var toggleChatWindow = function(){
-    if(!GUIvars["#gameChatDiv"].resizing){
+  var toggleChatWindow = function () {
+    if (!GUIvars["#gameChatDiv"].resizing) {
       GUIvars["#gameChatDiv"].resizing = true;
-      if(GUIvars["#gameChatDiv"].expanded){
-        $("#gameChatDiv").animate({opacity: 0}, 500, function(){
+      if (GUIvars["#gameChatDiv"].expanded) {
+        $("#gameChatDiv").animate({opacity: 0}, 500, function () {
           GUIvars["#gameChatDiv"].expanded = false;
           GUIvars["#gameChatDiv"].resizing = false;
         });
       }
-      else{
-        $("#gameChatDiv").animate({opacity: 1}, 500, function(){
+      else {
+        $("#gameChatDiv").animate({opacity: 1}, 500, function () {
           GUIvars["#gameChatDiv"].expanded = true;
           GUIvars["#gameChatDiv"].resizing = false;
         });
       }
     }
   };
-  $("#minGameChatDiv").click(function(){
+  $("#minGameChatDiv").click(function () {
     toggleChatWindow();
   });
-  $("#minGameChatDiv").mouseover(function(){
+  $("#minGameChatDiv").mouseover(function () {
     $("#minGameChatDiv").css({
       "background-color": GUIvars["#minGameChatDiv"].mouseoverColor
     });
   });
-  $("#minGameChatDiv").mouseout(function(){
+  $("#minGameChatDiv").mouseout(function () {
     $("#minGameChatDiv").css({
       "background-color": GUIvars["#minGameChatDiv"].mouseoutColor
     });
   });
 
-  document.onkeydown = function(e){
+  document.onkeydown = function (e) {
     //C
-    if(e.which === 67
-      && !$("#gameChatDivInput").is(":focus")){
+    if (e.which === 67
+      && !$("#gameChatDivInput").is(":focus")) {
       toggleChatWindow();
     }
   };

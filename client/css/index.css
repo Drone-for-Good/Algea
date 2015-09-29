@@ -1,15 +1,84 @@
-body{
+body {
   margin: 0;
   padding: 0;
   width: 100%;
 }
 
-#navDiv{
+#navDiv {
   position: absolute;
   background-color: #990000;
 }
 
-#gameDiv{
+#showLoginModal {
+  margin-left: 5%;
+  margin-top: 5%;
+  width: 90%;
+}
+
+#gameRoomsDiv {
+  margin-top: 50px;
+  position: absolute;
+  left: 0%;
+  width: 100%;
+  background-color: #990000;
+}
+
+#gameRoomsDivTitle {
+  width: 100%;
+  height: 35px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-size: 24px;
+}
+
+#gameRoomsList {
+  background-color: white;
+  list-style: none;
+  padding-left: 0;
+  text-align: center;
+  border-left: 6px solid green;
+  border-right: 6px solid green;
+  height: 300px;
+  overflow: scroll;
+  font-size: 12px;
+}
+
+#gameRoomsList li {
+  border-bottom: 2px solid pink;
+  padding: 10px 0;
+}
+
+.gameRoomsDivList_Room_Available {
+  background-color: #99ff99;
+}
+
+.gameRoomsDivList_Room_Full {
+  background-color: #ff8484;
+}
+
+.gameRoomsDivList_Room_Hover {
+  background-color: #e0f5ff;
+}
+
+.gameRoomsDivList_Room_Full {
+
+}
+
+#gameRoomsDivListFind_Title {
+  margin: 0;
+  text-align: center;
+  color: white;
+}
+
+#gameRoomsDivListFind_Input {
+  width: 90%;
+  height: 26px;
+  padding-left: 5px;
+  margin-left: 5%;
+}
+
+#gameDiv {
   position: absolute;
   top: 10%;
   left: 10%;
@@ -17,14 +86,14 @@ body{
   background-color: black;
 }
 
-#friendsDiv{
+#friendsDiv {
   position: absolute;
   left: 90%;
   width: 10%;
   background-color: #990000;
 }
 
-#friendsDivTitle{
+#friendsDivTitle {
   width: 100%;
   height: 35px;
   background-color: black;
@@ -33,7 +102,7 @@ body{
   font-size: 24px;
 }
 
-#friendsDivList{
+#friendsDivList {
   background-color: white;
   list-style: none;
   padding-left: 0;
@@ -42,14 +111,15 @@ body{
   border-right: 6px solid green;
   height: 400px;
   overflow: scroll;
+  font-size: 12px;
 }
 
-#friendsDivList li{
+#friendsDivList li {
   border-bottom: 2px solid pink;
   padding: 10px 0;
 }
 
-.friendsDivListStatus{
+.friendsDivListStatus {
   float: left;
   background-color: black;
   position: relative;
@@ -61,30 +131,43 @@ body{
   opacity: 1;
 }
 
-.friendsDivListStatus_Online{
+.friendsDivListStatus_Online {
   background-color: green;
 }
 
-.friendsDivListStatus_Offline{
+.friendsDivListStatus_Offline {
   background-color: navy;
 }
 
-.friendsDivListStatus_Idle{
+.friendsDivListStatus_Idle {
   background-color: gray;
 }
 
-.friendsDivListFriend_Hover{
+.friendsDivListFriend_Hover {
   background-color: #e0f5ff;
 }
 
-#playersDiv{
+#friendsDivListFind_Title {
+  margin: 0;
+  text-align: center;
+  color: white;
+}
+
+#friendsDivListFind_Input {
+  width: 90%;
+  height: 26px;
+  padding-left: 5px;
+  margin-left: 5%;
+}
+
+#playersDiv {
   position: absolute;
   left: 90%;
   width: 10%;
   background-color: #990000;
 }
 
-#playersDivTitle{
+#playersDivTitle {
   width: 100%;
   height: 35px;
   background-color: black;
@@ -93,7 +176,7 @@ body{
   font-size: 24px;
 }
 
-#playersDivList{
+#playersDivList {
   background-color: white;
   list-style: none;
   padding-left: 0;
@@ -102,14 +185,15 @@ body{
   border-right: 6px solid green;
   height: 400px;
   overflow: scroll;
+  font-size: 12px;
 }
 
-#playersDivList li{
+#playersDivList li {
   border-bottom: 2px solid pink;
   padding: 10px 0;
 }
 
-.playersDivListStatus{
+.playersDivListStatus {
   float: left;
   background-color: black;
   position: relative;
@@ -121,11 +205,24 @@ body{
   opacity: 1;
 }
 
-.playersDivListFriend_Hover{
+.playersDivListFriend_Hover {
   background-color: #e0f5ff;
 }
 
-#gameChatDiv{
+#playersDivListFind_Title {
+  margin: 0;
+  text-align: center;
+  color: white;
+}
+
+#playersDivListFind_Input {
+  width: 90%;
+  height: 26px;
+  padding-left: 5px;
+  margin-left: 5%;
+}
+
+#gameChatDiv {
   padding: 0;
   margin: 0;
   position: absolute;
@@ -136,7 +233,7 @@ body{
   left: 5px;
 }
 
-#minGameChatDiv{
+#minGameChatDiv {
   position: absolute;
   height: 13px;
   width: 13px;
@@ -146,7 +243,7 @@ body{
   border-radius: 3px;
 }
 
-#gameChatDivMessages{
+#gameChatDivMessages {
   top: 15px;
   position: relative;
   background-color: rgba(255, 255, 255, .75);
@@ -157,22 +254,22 @@ body{
   overflow: scroll;
 }
 
-#gameChatDivMessages ul{
+#gameChatDivMessages ul {
   list-style: none;
   padding: 0;
 }
 
-#gameChatDivMessages ul li{
+#gameChatDivMessages ul li {
   padding-top: 3px;
   margin-left: 5px;
   font-size: 12px;
 }
 
-.gameChatDivMessagesUser{
+.gameChatDivMessagesUser {
   font-weight: bold;
 }
 
-#gameChatDivInput{
+#gameChatDivInput {
   position: absolute;
   width: 90%;
   left: 4%;
