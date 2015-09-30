@@ -1,35 +1,59 @@
 var express = require('express');
-var app = express();					//initiate server
-var http = require('http').Server(app);			//create a new instance of an express server with http
-var io = require('socket.io')(http);			//using socket IO to route the http requests
-var helpers = require('../server/db-helpers.js');
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+var dbHelpers = require('../server/db-helpers.js');
 var game = require('../server/game.js');
 var Promise = require('bluebird');
 
 // Serve static files
 app.use(express.static(__dirname + '/../client'));
-
 //sets the path under which static files will be served
 io.path('/');
 
-// When user first visits the website
-io.sockets.on('connection', function(socket){
+io.sockets.on('connection', function (socket) {
 
-  console.log('You have a new user connected.');
+  console.log("\n" + socket.id, "connected.\n");
+  game.sockets[socket.id] = {
+    username: null,
+    userID: null,
+    rooms: [],
+    skins: [],
+    friends: []
+  };
 
-  // When user is logged in and authenticated
-  socket.on('getFromServerLogin', function(loginObj){   //I don't see this function in client file yet.
-   // Add user to the sockets object in game.js
-   // loginObj should look like: {username: someUser, userID: someID};
-   game.sockets[socket.id] = loginObj;
-   // Send to user his username, skins, friends
+  socket.on('disconnect', function () {
+    console.log("\n" + socket.id, "disconnected.\n");
+    delete game.sockets[socket.id];
+  });
 
+  socket.on('getFromServerLogin', function (data) {
+    return new Promise(function (resolve, reject) {
+      resolve(dbHelpers.verifyUserLogin({
+        username: data.username,
+        password: data.password
+      }));
+    }).then(function (result) {
+      socket.emit('getFromServerLogin_Response', result);
+    });
+  });
+
+  socket.on('getFromServerSignup', function (data) {
+    return new Promise(function (resolve, reject) {
+      resolve(dbHelpers.verifyUserSignup({
+        username: data.username,
+        password: data.password
+      }));
+    }).then(function (result) {
+      console.log("RESULT", result);
+      socket.emit('getFromServerSignup_Response', result);
+    });
   });
 
   // When user enters a game
   socket.on('sendToServerNewPlayer', function(clientInfo){
     var promise = new Promise(function(resolve, reject){
-      return helpers.newPlayer(clientInfo);
+      return dbHelpers.newPlayer(clientInfo);
 
       //IS IT POSSIBE TO DO THE FOLLOWING?
       // helpers.newPlayer(clientInfo, function(err, response){
@@ -111,10 +135,6 @@ io.sockets.on('connection', function(socket){
     // Emit to only the users in the same room
     io.to(roomID).emit('receiveFromServerChatMessage', msg);
   });
-});
-
-io.sockets.on('disconnect', function(socket){
-   delete game.sockets[socket.id];
 });
 
 //this will be an ongoing function to update players on the positions in
