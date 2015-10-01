@@ -129,6 +129,7 @@
           class="gameRoomsDivList_Room"
           ng-mouseenter="hover = true"
           ng-mouseleave="hover = false"
+          ng-click="joinRoom(gameRoom.roomName)"
           ng-class="
             {
               'gameRoomsDivList_Room_Available':
