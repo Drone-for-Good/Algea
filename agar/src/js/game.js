@@ -39,12 +39,37 @@
         this.food.create(this.world.randomX, this.world.randomY, 'food');
       }
 
-      // Create the player
-      this.player = initializePlayer(this.game);
+      // Create the player group, which is an array
+      this.playerCells = this.add.group();
+
+      // Create the primary player cell
+      this.player = this.initializePlayer(50, 0, 0);
+      this.player.old = true;
+      this.playerCells.add(this.player);
       this.camera.follow(this.player);
 
-      this.scoreText = this.add.text(20, this.game.height - 52, 'score: 0', { fontSize: '32px', fill: '#000' });
+      this.scoreText = this.add.text(20, this.game.height - 52,
+        'score: 0', { fontSize: '32px', fill: '#000' });
       this.scoreText.fixedToCamera = true;
+
+      // Spacebar splits the player
+      var spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+      spacebar.onDown.add(function(key) {
+        this.split();
+        console.log(this.player);
+      }, this);
+
+      // For testing: down key console logs info
+      var downkey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+      downkey.onDown.add(function(key) {
+        console.log(playerCells);
+      }, this);
+
+      // For testing: left key calls getPlayerState
+      var leftkey = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+      leftkey.onDown.add(function(key) {
+        this.getPlayerState();
+      }, this);
 
       function createBackground(game) {
         var background = game.add.tileSprite(0,0, 4096*2, 2048*2, 'grid');
@@ -74,35 +99,102 @@
         walls.setAll('body.immovable' , true);
         return walls;
       }
+    },
 
-      function initializePlayer (game){
-        var radius = 50;
-        var circle = game.add.bitmapData(radius*2, radius*2).circle(radius, radius, radius, '#0000FF');
-        var player = game.add.sprite(0, 0, circle);
-        player.anchor.setTo(0.5, 0.5);
+    initializePlayer: function(radius, x, y){
+      var circle = this.game.add.bitmapData(radius*2, radius*2).circle(radius,
+        radius, radius, '#0000FF');
+      var player = this.game.add.sprite(x, y, circle);
+      player.anchor.setTo(0.5, 0.5);
 
-        game.physics.arcade.enable(player);
+      this.game.physics.arcade.enable(player);
 
-        player.body.collideWorldBounds = true;
+      player.body.collideWorldBounds = true;
 
-        //All physics bodies are rectangles when using Arcade Physics.
-        //By default, the rectangle will enclose the player circle
-        //The lines below resize the body so the circle encloses the physics body.
-        var hitboxWidth = radius*2 / 1.414;
-        player.body.setSize(hitboxWidth, hitboxWidth);
-        return player;
-      }
+      //All physics bodies are rectangles when using Arcade Physics.
+      //By default, the rectangle will enclose the player circle
+      //The lines below resize the body so the circle encloses the physics body.
+      // Turned off because not optimal for splitting
+      // var hitboxWidth = radius*2 / 1.414;
+      // player.body.setSize(hitboxWidth, hitboxWidth);
+      return player;
+    },
+
+    // Split all existing player cells
+    // TODO: merge cells back into 1 after a specified time. Do this by setting
+    // the lifespan property to the cell
+    // TODO: Bug: sometimes new cells get stuck outside of the world
+    split: function(){
+
+      this.playerCells.forEach(function(cell) {
+        // Only split if cell is not a newly split cell
+        if (cell.old) {
+          // Halve the mass of the original cell
+          cell.width = cell.width / Math.sqrt(2);
+          cell.height = cell.height / Math.sqrt(2);
+
+          // Make new cell appear 30 px from the top right corner of the group
+          var newRadius = cell.width / 2;
+          var newX = this.getPlayerCellsRight(this.playerCells) + newRadius + 30;
+          var newY = this.getPlayerCellsTop(this.playerCells) - newRadius - 30;
+          var newCell = this.initializePlayer( newRadius, newX, newY);
+          this.playerCells.add(newCell);
+        }
+      }, this);
+
+      // Set flag of all cells to "old"
+      this.playerCells.forEach(function(cell) {
+        if (!cell.old) {
+          cell.old = true;
+        }
+      });
+    },
+
+    // Get the x coordinate of the right boundary of the player cells group
+    getPlayerCellsRight: function(playerCells){
+      var right;
+      playerCells.forEach(function(cell) {
+        if(!right) {
+          right = cell.x + cell.width / 2;
+        } else {
+          if (right < cell.x + cell.width / 2) {
+            right = cell.x + cell.width / 2
+          }
+        }
+      }, this);
+      return right;
+    },
+
+    // Get the y coordinate of the top boundary of the player cells group
+    getPlayerCellsTop: function(){
+      var top;
+      this.playerCells.forEach(function(cell) {
+        if(!top) {
+          top = cell.y - cell.height / 2;
+        } else {
+          if (top > cell.y + cell.height / 2) {
+            top = cell.y + cell.height / 2;
+          }
+        }
+      }, this);
+      return top;
     },
 
     // Update function is called by the core game loop every frame
     update: function () {
+
       var player = this.player;
 
-      this.physics.arcade.collide(player, this.walls);
-      this.physics.arcade.overlap(player, this.food, this.eatFood, null, this);
+      // Update each child
+      this.playerCells.forEach(function(cell) {
+        this.physics.arcade.collide(cell, this.walls);
+        this.physics.arcade.overlap(cell, this.food, this.eatFood, null, this);
+        this.physics.arcade.collide(cell, this.playerCells);
 
-      var dist = this.physics.arcade.distanceToPointer(player);
-      this.physics.arcade.moveToPointer(player, dist);
+        // 30 is arbitrary number so that cells with larger mass move more slowly
+        var dist = this.physics.arcade.distanceToPointer(cell) * 30/cell.width;
+        this.physics.arcade.moveToPointer(cell, dist);
+      }, this);
 
       //This is for testing
       if (this.cursors.up.isDown){
@@ -111,9 +203,13 @@
       }
     },
 
+    // Show debug info
     render: function() {
       this.game.debug.cameraInfo(this.camera, 32, 32, 'black');
-      this.game.debug.spriteCoords(this.player, 32, 500, 'black');
+      this.playerCells.forEach(function(cell) {
+        var i = this.playerCells.getIndex(cell);
+        this.game.debug.spriteCoords(cell, 32, 120+100*i, 'black');
+     }, this);
     },
 
     eatFood: function(player, food) {
@@ -147,6 +243,22 @@
     win: function() {
       // We start the win state
       this.game.state.start('win');
+    },
+
+    // TODO: decide what info to send to server
+    // TODO: call this function to send info to server
+    getPlayerState: function() {
+      var playerState = {};
+      playerState.score = this.score;
+      playerState.cells = [];
+      this.playerCells.forEach(function(cell) {
+        playerState.cells.push({
+          "x" : cell.x,
+          "y" : cell.y,
+          "radius" : cell.width / 2
+        });
+      }, this);
+      return playerState;
     }
   };
 
