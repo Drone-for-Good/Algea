@@ -11,19 +11,25 @@ app.use(express.static(__dirname + '/../client'));
 //sets the path under which static files will be served
 io.path('/');
 
+var serverAttributes = {
+  chatMessageMaxSize: 72
+};
+
 io.sockets.on('connection', function (socket) {
 
   console.log("\n" + socket.id, "connected.\n");
   game.sockets[socket.id] = {
     username: null,
     userID: null,
-    rooms: [],
+    gameRoom: '',
     skins: [],
     friends: []
   };
 
+
   socket.on('disconnect', function () {
     console.log("\n" + socket.id, "disconnected.\n");
+    game.removePlayerFromGame(socket.id);
     delete game.sockets[socket.id];
   });
 
@@ -35,6 +41,12 @@ io.sockets.on('connection', function (socket) {
       }));
     }).then(function (result) {
       socket.emit('getFromServerLogin_Response', result);
+      if (result.passwordMatch) {
+        game.sockets[socket.id].username = result.username;
+        game.sockets[socket.id].userID = result.userid;
+        game.sockets[socket.id].skins = result.skins;
+        game.sockets[socket.id].friends = result.friends;
+      }
     });
   });
 
@@ -45,40 +57,43 @@ io.sockets.on('connection', function (socket) {
         password: data.password
       }));
     }).then(function (result) {
-      console.log("RESULT", result);
       socket.emit('getFromServerSignup_Response', result);
+      if (result.passwordMatch) {
+        game.sockets[socket.id].username = result.username;
+        game.sockets[socket.id].userID = result.userid;
+        game.sockets[socket.id].skins = result.skins;
+        game.sockets[socket.id].friends = result.friends;
+
+        game.addPlayerToRoom("The Room", {
+          username: result.username,
+          socketID: socket.id,
+          skin: "SOME SKIN BREH"
+        });
+      }
     });
   });
 
-  // When user enters a game
-  socket.on('sendToServerNewPlayer', function(clientInfo){
-    var promise = new Promise(function(resolve, reject){
-      return dbHelpers.newPlayer(clientInfo);
+  socket.on('sendToServerJoinGame', function (data) {
+    var joined = game.addPlayerToRoom(data.roomName,
+      { username: data.username });
+    var result = { roomJoined: joined };
+    if (joined) {
+      socket.join(roomName);
+      result.roomName = data.roomName;
+    }
+    socket.emit('receiveFromServerJoinGame', result);
+  });
 
-      //IS IT POSSIBE TO DO THE FOLLOWING?
-      // helpers.newPlayer(clientInfo, function(err, response){
-      //     if (err){
-      //         console.err('sendToServerPlayerState has an Error');
-      //     } else {
-      //         resolve(response);
-      //     }
-      // });
-    });
-
-    promise().then(function(serverResponse){      //not sure what the server response should be?
-      io.emit('receiveFromServerNewPlayer', function(){
-
-      });
-    })
-    .catch(function(err){
-        console.err('Error in sendToServerNewPlayer');
-        throw new Error(err);
+  socket.on('sendToServerLeaveGame', function (data) {
+    game.removePlayerFromGameRoom(socket.id);
+    socket.emit('receiveFromServerLeaveGame', {
+      leaveSuccess: true
     });
   });
 
   // While user is playing a game, user will emit this event at interval
-  socket.on('sendToServerPlayerState', function(playerInfo){
-      game.allPlayerInfo[socket.id] = playerInfo;
+  socket.on('sendToServerPlayerState', function (data) {
+    game.updatePlayer(data);
   });
 
   // When user dies in a game
@@ -124,16 +139,9 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
-  // When a user in a game sends a chat message to the room
-  // msg from client should be like this:
-  // { username: 'Angel', chatMsg: 'i'm winning!' }
-  socket.on('sendToServerChatMessage', function(msg) {
-    // Get the room ID of the user; socket.rooms is a built-on object in socket.io
-    // http://socket.io/docs/server-api/
-    var roomID = socket.rooms[1];
-
-    // Emit to only the users in the same room
-    io.to(roomID).emit('receiveFromServerChatMessage', msg);
+  socket.on('sendToServerChatMessage', function (data) {
+    io.to(data.roomName).emit('receiveFromServerChatMessage',
+      data.message.substring(0, serverAttributes.chatMessageMaxSize));
   });
 });
 
@@ -141,21 +149,11 @@ io.sockets.on('connection', function (socket) {
 //server's global obj
 // Need to emit for every room
 setInterval(function(){
-  var promise = new Promise(function(resolve, reject){
-    //fetchStatusOfAllPlayersAndSendItOut!
-
-    //need to handle resolve and reject
-  })
-  .then(function(allFriends){
-    io.emit('receiveFromServer', function(){
-
-    })
-  })
-  .catch(function(err){
-
-  });
+  for (var roomName in game.roomData.rooms) {
+    io.to(roomName).emit('receiveFromServerGameState',
+      game.roomData.rooms[roomName]);
+  }
 }, 100);
-
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
