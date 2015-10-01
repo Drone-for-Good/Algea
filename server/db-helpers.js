@@ -49,12 +49,16 @@ exports.updateTotalStats = function (userID, stats) {
   });
 };
 
+//Make a new user
 exports.newUser = function (clientInfo) {
+  //Find user with username
   return db.User.find({
     where: { username: clientInfo.username }
   }).then(function (user) {
     var result = { userCreated: false };
+    //If no user was found, name is available
     if (!user) {
+      //Create user
       return db.User.create(clientInfo).then(function (newUser) {
         result.userCreated = true;
         return result;
@@ -64,14 +68,18 @@ exports.newUser = function (clientInfo) {
   });
 };
 
+//Verify a user when they login
 exports.verifyUserLogin = function (data) {
   return db.User.find({
     where: { username: data.username }
   }).then(function (user) {
+    //Assume username wasn't found
     var result = { userFound: false };
+    //If username was found
     if (user) {
       result.userFound = true;
 
+      //Check if passwords match
       result.passwordMatch = false;
       if (data.password === user.password) {
         result.passwordMatch = true;
@@ -79,13 +87,17 @@ exports.verifyUserLogin = function (data) {
         return result;
       }
 
+      //Username and password match, so return all data
       result.username = user.username;
       result["userid"] = user["id"];
       result.profileImage = user.profileImage;
       result.skins = [];
       result.friends = [];
+      //Populate skins parameter on result object
       return exports.userSkins(result).then(function (skinResult) {
+        //Populate friends parameter on result object
         return exports.userFriends(result).then(function (completeResult) {
+          //Return completed user object
           return completeResult;
         });
       });
@@ -94,13 +106,19 @@ exports.verifyUserLogin = function (data) {
   });
 };
 
+//Verify a user when they signup
 exports.verifyUserSignup = function (data) {
+  //Handoff data to newUser
   return exports.newUser(data).then(function (result) {
+    //If user was created, result is the user object
     if (result.userCreated) {
+      //Verify login to log user in and get all (empty) data
+      //for new user
       return exports.verifyUserLogin({
         username: data.username,
         password: data.password
       }).then(function (loginResult) {
+        //Return logged in user
         loginResult.userCreated = true;
         return loginResult;
       });
@@ -109,6 +127,7 @@ exports.verifyUserSignup = function (data) {
   });
 };
 
+//Get all user skins
 exports.userSkins = function (data) {
   return db.Skin.findAll({
     where: { userid: data.userid }
@@ -118,6 +137,7 @@ exports.userSkins = function (data) {
   });
 };
 
+//Get all user friends
 exports.userFriends = function (data) {
   return db.Friendship.findAll({
     where: { user1: data.userid }
@@ -132,8 +152,3 @@ exports.userFriends = function (data) {
     });
   });
 };
-
-exports.loginUserInfo = function () {
-
-};
-

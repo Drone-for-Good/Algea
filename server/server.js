@@ -11,13 +11,16 @@ app.use(express.static(__dirname + '/../client'));
 //sets the path under which static files will be served
 io.path('/');
 
+//Attributes specific to the server
 var serverAttributes = {
   chatMessageMaxSize: 72
 };
 
+//On connection
 io.sockets.on('connection', function (socket) {
 
   console.log("\n" + socket.id, "connected.\n");
+  //Initialize socket information
   game.sockets[socket.id] = {
     username: null,
     userID: null,
@@ -26,13 +29,14 @@ io.sockets.on('connection', function (socket) {
     friends: []
   };
 
-
+  //On disconnect
   socket.on('disconnect', function () {
     console.log("\n" + socket.id, "disconnected.\n");
     game.removePlayerFromGame(socket.id);
     delete game.sockets[socket.id];
   });
 
+  //On login attempt
   socket.on('getFromServerLogin', function (data) {
     return new Promise(function (resolve, reject) {
       resolve(dbHelpers.verifyUserLogin({
@@ -50,6 +54,7 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
+  //On signup attempt
   socket.on('getFromServerSignup', function (data) {
     return new Promise(function (resolve, reject) {
       resolve(dbHelpers.verifyUserSignup({
@@ -73,6 +78,7 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
+  //On join game attempt
   socket.on('sendToServerJoinGame', function (data) {
     var joined = game.addPlayerToRoom(data.roomName,
       { username: data.username });
@@ -91,12 +97,12 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
-  // While user is playing a game, user will emit this event at interval
+  //On individual player update
   socket.on('sendToServerPlayerState', function (data) {
     game.updatePlayer(data);
   });
 
-  // When user dies in a game
+  //On individual player death
   socket.on('sendToServerDeath', function(finalStats){
       //I made this into a promise so I can string together writing to
       //the database and returning data to the user asynchronously
@@ -123,31 +129,15 @@ io.sockets.on('connection', function (socket) {
       });
   });
 
-  //The following needs to be incorporated into sendToServerPlayerState
-  socket.on('getFromServerAllFriends', function(friendRequest){
-    var promise = new Promise(function(resolve, reject){
-
-        helpers.sendFriends(friendRequest.userID);  //need to handle resolve and reject
-    })
-    .then(function(allFriends){
-        io.emit('getFromServerAllFriends_Response', function(){
-
-        });
-    })
-    .catch(function(err){
-
-    });
-  });
-
+  //On individual chat message
+  //NOTE: Include in setInterval later
   socket.on('sendToServerChatMessage', function (data) {
     io.to(data.roomName).emit('receiveFromServerChatMessage',
       data.message.substring(0, serverAttributes.chatMessageMaxSize));
   });
 });
 
-//this will be an ongoing function to update players on the positions in
-//server's global obj
-// Need to emit for every room
+//Emit player data for every room
 setInterval(function(){
   for (var roomName in game.roomData.rooms) {
     io.to(roomName).emit('receiveFromServerGameState',
