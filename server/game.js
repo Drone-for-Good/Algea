@@ -8,6 +8,7 @@ exports.sockets = {
   // }
 };
 
+//All possible roomnames
 exports.roomNames = [
   "The Room",
   "Hack Reactor",
@@ -15,13 +16,17 @@ exports.roomNames = [
   "San Francisco"
 ];
 
+//All room data
 exports.roomData = {
   defaultMaxPlayersPerRoom: 10,
   maxRooms: 10,
   roomCount: 0,
+  //Rooms of Key Value type roomName: (some room info)
+  //all exist in the rooms object below
   rooms: {}
 };
 
+//Add a room to roomData.rooms
 exports.addRoom = function (size) {
   if (exports.roomData.roomCount < exports.roomData.maxRooms) {
     var newRoom = {
