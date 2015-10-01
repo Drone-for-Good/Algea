@@ -11,7 +11,7 @@ app.controller("navDivController", function ($scope, mySocket) {
 
     //I dont know where were storing the current user's username.
     //Change this if necessary
-    $scope.username = signupData.username;
+    $scope.username = loginData.username;
   };
   mySocket.on("getFromServerLogin_Response", function (data) {
     //POPULATE FRIENDS
