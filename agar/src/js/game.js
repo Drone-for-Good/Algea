@@ -1,3 +1,4 @@
+// The Game State runs the game
 (function() {
   'use strict';
 
@@ -10,25 +11,27 @@
     preload: function() {
       //set up world so coordinate (0,0) is the center
       this.world.setBounds(-WORLD_WIDTH/2, -WORLD_HEIGHT/2, WORLD_WIDTH,  WORLD_HEIGHT);
-      
+
       this.camera.bounds = null;
 
+      // Set up keyboard cursor keys so they can be used
       this.cursors = this.input.keyboard.createCursorKeys();
 
       this.score = 10;
     },
+
     create: function () {
-      //This group is used for zooming out.
+      //worldGroup is a group is used for zooming out.
       //Add all objects that are part of the world, except the player, to this group.
       //E.g. Enemies, food, not score or leaderboard.
-      this.worldGroup = this.add.group(); 
+      this.worldGroup = this.add.group();
 
       var background = createBackground(this.game);
       this.worldGroup.add(background);
-  
+
       this.walls = this.add.group(this.worldGroup);
       this.walls.addMultiple( createWalls(this.game) );
-      
+
       //For testing. Server will have to handle where to place food
       this.food = this.add.group(this.worldGroup);
       this.food.enableBody = true;
@@ -36,9 +39,10 @@
         this.food.create(this.world.randomX, this.world.randomY, 'food');
       }
 
+      // Create the player
       this.player = initializePlayer(this.game);
       this.camera.follow(this.player);
-      
+
       this.scoreText = this.add.text(20, this.game.height - 52, 'score: 0', { fontSize: '32px', fill: '#000' });
       this.scoreText.fixedToCamera = true;
 
@@ -48,14 +52,14 @@
         return background;
       }
 
-      function createWalls(game) { 
+      function createWalls(game) {
         var WALL_THICKNESS = 10;
 
         var horizontalWall = game.make.bitmapData(game.world.width, WALL_THICKNESS).fill(255,0,0);
         var verticalWall = game.make.bitmapData(WALL_THICKNESS, game.world.height).fill(255,0,0);
-        
+
         var walls = game.add.group();
-        walls.enableBody = true; 
+        walls.enableBody = true;
 
         var leftX = game.world.x;
         var rightX = -game.world.x;
@@ -90,6 +94,7 @@
       }
     },
 
+    // Update function is called by the core game loop every frame
     update: function () {
       var player = this.player;
 
@@ -98,13 +103,14 @@
 
       var dist = this.physics.arcade.distanceToPointer(player);
       this.physics.arcade.moveToPointer(player, dist);
-    
+
       //This is for testing
       if (this.cursors.up.isDown){
         this.scalePlayer(player);
         this.zoomOut();
       }
     },
+
     render: function() {
       this.game.debug.cameraInfo(this.camera, 32, 32, 'black');
       this.game.debug.spriteCoords(this.player, 32, 500, 'black');

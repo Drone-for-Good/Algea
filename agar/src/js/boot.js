@@ -1,3 +1,4 @@
+// Boot State configures the stage size and scale
 (function () {
   'use strict';
 
@@ -5,6 +6,7 @@
 
   Boot.prototype = {
     preload: function () {
+      // Load the loading bar image
       this.load.image('preloader', 'assets/preloader.gif');
     },
 
@@ -25,6 +27,8 @@
         this.game.scale.pageAlignHorizontally = true;
         this.game.scale.setScreenSize(true);
       }
+
+      // Launch the Preloader State
       this.game.state.start('preloader');
     }
   };

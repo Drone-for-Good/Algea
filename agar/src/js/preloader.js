@@ -1,3 +1,4 @@
+// Preloader State loads the assets
 (function() {
   'use strict';
 
@@ -8,7 +9,9 @@
 
   Preloader.prototype = {
     preload: function () {
-      this.asset = this.add.sprite(this.game.width * 0.5 - 110, this.game.height * 0.5 - 10, 'preloader');
+      // Render the loading bar image
+      this.asset = this.add.sprite(this.game.width * 0.5 - 110,
+        this.game.height * 0.5 - 10, 'preloader');
       this.load.setPreloadSprite(this.asset);
 
       this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
@@ -29,6 +32,7 @@
 
     update: function () {
       if (!!this.ready) {
+        // Launch the Menu State
         this.game.state.start('menu');
       }
     },
