@@ -8,6 +8,10 @@ app.controller("navDivController", function ($scope, mySocket) {
       password: $("#loginPassword").val()
     };
     mySocket.emit("getFromServerLogin", loginData);
+
+    //I dont know where were storing the current user's username.
+    //Change this if necessary
+    $scope.username = signupData.username;
   };
   mySocket.on("getFromServerLogin_Response", function (data) {
     //POPULATE FRIENDS
@@ -20,9 +24,29 @@ app.controller("navDivController", function ($scope, mySocket) {
       password: $("#signupUsername").val()
     };
     mySocket.emit("getFromServerSignup", signupData);
+
+    //I dont know where were storing the current user's username.
+    //Change this if necessary
+    $scope.username = signupData.username;
   };
   mySocket.on("getFromServerSignup_Response", function ( data ) {
     //POPULATE AVAILABLE GAME ROOMS
+  });
+
+  $scope.joinRoom = function (roomName) {
+    var roomData = {
+      roomName: roomName,
+      username: $scope.username
+    };
+    mySocket.emit('sendToServerJoinGame', roomData);
+  };
+
+  mySocket.on('receiveFromServerJoinGame', function (data) {
+    if(data.roomJoined){
+      //Successfully joined room
+    } else {
+      //Unable to join room
+    }
   });
 
   $scope.gameRoomsFilter = "";
