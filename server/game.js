@@ -8,30 +8,55 @@ exports.sockets = {
   // }
 };
 
-//All possible roomnames
+exports.onlineUsers = {
+  // user1: true,
+  // user 2: true,
+  // ...
+}
+
+// All possible roomnames
 exports.roomNames = [
   "The Room",
   "Hack Reactor",
   "Freehold",
-  "San Francisco"
+  "San Francisco",
+  "Mount Codepocalypse",
+  "Tundra",
+  "Forest",
+  "Ocean"
 ];
 
-//All room data
+// All room data
 exports.roomData = {
   defaultMaxPlayersPerRoom: 10,
   maxRooms: 10,
   roomCount: 0,
-  //Rooms of Key Value type roomName: (some room info)
-  //all exist in the rooms object below
+  // Rooms of Key Value type roomName: (some room info)
+  // all exist in the rooms object below
   rooms: {}
 };
 
-//Add a room to roomData.rooms
+// A function to get all roomNames and current sizes
+exports.allRooms = function () {
+  var result = [];
+  for(var roomName in exports.roomData.rooms) {
+    result.push({
+      roomName: roomName,
+      maxCount: exports.roomData.rooms[roomName].maxPlayers,
+      count:
+        Object.keys(exports.roomData.rooms[roomName].playerInfo).length
+    });
+  }
+  return result;
+};
+
+// Add a room to roomData.rooms
 exports.addRoom = function (size) {
-  //If room limit hasn't been reached, create room
+  // If room limit hasn't been reached, create room
   if (exports.roomData.roomCount < exports.roomData.maxRooms) {
     var newRoom = {
       roomName: exports.roomNames[exports.roomData.roomCount],
+      playerCount: 0,
       maxPlayers: size || exports.roomData.defaultMaxPlayersPerRoom,
       playerInfo: {}
     };
@@ -44,8 +69,8 @@ exports.addRoom = function (size) {
   }
 };
 
-//Remove a room
-//NOTE ON CLEVER THING:
+// Remove a room
+// NOTE ON CLEVER THING:
 /*
 Roomnames are picked by using exports.roomData.roomCount
 as the index to reference a name from exports.roomNames
@@ -79,61 +104,86 @@ exports.removeRoom = function (roomName) {
   return roomRemoved;
 };
 
-//Add a room when starting the server
+// Add a room when starting the server
 exports.addRoom();
 
-//Calculate a valid player position to create
-//a new player bsaed off of the current players in the room
+// Calculate a valid player position to create
+// a new player bsaed off of the current players in the room
 exports.getValidPlayerPosition = function (roomName) {
   var result = {x: 0, y: 0};
   return result;
 };
 
-//Put a player in a new room
-exports.addPlayerToRoom = function (roomName, player) {
-  //If the roomName exists and
-  //the player count of the room is under the max
+// Put a player in a new room
+exports.addPlayerToRoom = function (roomName, data) {
+  // If the roomName exists and
+  // the player isn't already in the room and
+  // the player count of the room is under the max
   if (roomName in exports.roomData.rooms
+    && !(data.username in exports.roomData.rooms[roomName])
     && (Object.keys(exports.roomData.rooms[roomName].playerInfo).length
       < exports.roomData.rooms[roomName].maxPlayers)) {
 
-    //Make a player
+    // Make a player
     var validPlayerPosition = exports.getValidPlayerPosition(roomName);
-    exports.roomData.rooms[roomName].playerInfo[player.username] = {
-      positionAndMass: [
+    // Need radius, position, skin, and username to instantiate a player
+    // clientside
+    exports.roomData.rooms[roomName].playerInfo[data.username] = {
+      positionAndRadius: [
         {
           x: validPlayerPosition.x,
           y: validPlayerPosition.y,
-          mass: 1
+          radius: 50
         }
       ],
-      skin: player.skin
+      skin: exports.sockets[data.socketID]['skins'][0] || ''
     };
 
-    exports.sockets[player.socketID].gameRoom = roomName;
+    exports.sockets[data.socketID].gameRoom = roomName;
 
-    console.log('\nPLAYER', player.username,
-      'ADDED TO ROOM', roomName, '\n.');
+    console.log('\nPLAYER', data.username,
+      'ADDED TO ROOM', roomName, '.\n');
     return true;
   } else {
-    console.log('\nPLAYER', player.username, 'COULD NOT JOIN',
+    console.log('\nPLAYER', data.username, 'COULD NOT JOIN',
       roomName, '\n. ?!?!??!?!!!?!');
   }
 };
 
-//Remove a player from their current game room
+// Check if a new room is needed
+// NOTE:
+/*
+In exports.roomData, leastFilledRoomPercentage corresponds to the
+percentage of the room that is full for the relatively least
+populated room. If roomA has 5/10 players and roomB has 2/5
+players, the minRoomFilledPercentage will be 2/5 = .4.
+
+Based on this principle, if the least populated room exceeds
+the exports.roomData.leastFilledRoomPercentageThreshold, a
+new room will be created, assuming the max room count hasn't
+been reached.
+*/
+exports.makeNewRoomIfNeeded = function () {
+};
+
+var modifyLeastFilledRoomPercentage = function (roomName) {
+};
+
+// Remove a player from their current game room
 exports.removePlayerFromGame = function (data) {
   var gameRoom = exports.sockets[data.socketID].gameRoom;
   var username = exports.sockets[data.socketID].username;
-  delete exports.roomData.rooms[gameRoom].playerInfo[username];
+  if (gameRoom !== '') {
+    delete exports.roomData.rooms[gameRoom].playerInfo[username];
+  }  
   exports.sockets[data.socketID].gameRoom = '';
   return gameRoom;
 };
 
-//Update a player by referencing data on the client
-// { username, roomName, positionAndMass }
+// Update a player by referencing data on the client
+// { username, roomName, positionAndRadius }
 exports.updatePlayer = function (data) {
   exports.roomData.rooms[data.roomName]
-    .playerInfo[data.username].positionAndMass
-    = data.positionAndMass;
+    .playerInfo[data.username].positionAndRadius
+    = data.positionAndRadius;
 };
