@@ -1,4 +1,4 @@
-app.controller("friendsDivController", function ($scope, mySocket) {
+app.controller("friendsDivController", function ($rootScope, $scope, mySocket) {
   var GUIvars = {
     "#friendsDiv": {
       expanded: false,
@@ -15,87 +15,9 @@ app.controller("friendsDivController", function ($scope, mySocket) {
   };
 
   $scope.friendFilter = "";
-  
-  $scope.friends = [
-    {
-      username: "AngelOfDeath",
-      profileImage: "http://vignette1.wikia.nocookie.net/youtubepoop/images/" +
-        "f/f7/5Pikachu.png/revision/latest?cb=20141108062013",
-      status: "offline"
-    },
-    {
-      username: "alexWAShere",
-      profileImage: "http://vignette1.wikia.nocookie.net/pokemon/images/a/ab/" +
-        "143Snorlax_AG_anime.png/revision/latest?cb=20140924022330",
-      status: "online"
-    },
-    {
-      username: "hiD_destroys",
-      profileImage: "http://vignette2.wikia.nocookie.net/pokemon/images/a/a0/" +
-        "150Mewtwo_AG_anime_2.png/revision/20150101075100",
-      status: "idle"
-    },
-    {
-      username: "alexWAShere",
-      profileImage: "http://vignette1.wikia.nocookie.net/pokemon/images/a/ab/" +
-        "143Snorlax_AG_anime.png/revision/latest?cb=20140924022330",
-      status: "online"
-    },
-    {
-      username: "hiD_destroys",
-      profileImage: "http://vignette2.wikia.nocookie.net/pokemon/images/a/a0/" +
-        "150Mewtwo_AG_anime_2.png/revision/20150101075100",
-      status: "idle"
-    },
-    {
-      username: "alexWAShere",
-      profileImage: "http://vignette1.wikia.nocookie.net/pokemon/images/a/ab/" +
-        "143Snorlax_AG_anime.png/revision/latest?cb=20140924022330",
-      status: "online"
-    },
-    {
-      username: "hiD_destroys",
-      profileImage: "http://vignette2.wikia.nocookie.net/pokemon/images/a/a0/" +
-        "150Mewtwo_AG_anime_2.png/revision/20150101075100",
-      status: "idle"
-    },
-    {
-      username: "AngelOfDeath",
-      profileImage: "http://vignette1.wikia.nocookie.net/youtubepoop/images/" +
-        "f/f7/5Pikachu.png/revision/latest?cb=20141108062013",
-      status: "offline"
-    },
-    {
-      username: "alexWAShere",
-      profileImage: "http://vignette1.wikia.nocookie.net/pokemon/images/a/ab/" +
-        "143Snorlax_AG_anime.png/revision/latest?cb=20140924022330",
-      status: "online"
-    },
-    {
-      username: "hiD_destroys",
-      profileImage: "http://vignette2.wikia.nocookie.net/pokemon/images/a/a0/" +
-        "150Mewtwo_AG_anime_2.png/revision/20150101075100",
-      status: "idle"
-    },
-    {
-      username: "alexWAShere",
-      profileImage: "http://vignette1.wikia.nocookie.net/pokemon/images/a/ab/" +
-        "143Snorlax_AG_anime.png/revision/latest?cb=20140924022330",
-      status: "online"
-    },
-    {
-      username: "hiD_destroys",
-      profileImage: "http://vignette2.wikia.nocookie.net/pokemon/images/a/a0/" +
-        "150Mewtwo_AG_anime_2.png/revision/20150101075100",
-      status: "idle"
-    }
-  ];
 
-  $scope.getFromServerFriend = function () {
-    mySocket.emit("getFromServerFriend", null);
-  };
-  mySocket.on("getFromServerFriend_Response", function (data) {
-    $scope.friends = data;
+  mySocket.on('receiveFromServerFriendOnline', function (data) {
+    $rootScope.socialVars.friends[data.username]['status'] = data['status'];
   });
 
   //jQuery animation

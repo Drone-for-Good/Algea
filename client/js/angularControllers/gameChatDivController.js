@@ -1,4 +1,4 @@
-app.controller("gameChatDivController", function ($scope, mySocket) {
+app.controller("gameChatDivController", function ($rootScope, $scope, mySocket) {
   var GUIvars = {
     "#gameChatDiv": {
       expanded: true,
@@ -11,7 +11,7 @@ app.controller("gameChatDivController", function ($scope, mySocket) {
   };
 
   $scope.messages = [
-    {
+    /*{
       username: "zach_LFHoodie",
       message: "Mimi where is my hoodie at?"
     },
@@ -58,19 +58,31 @@ app.controller("gameChatDivController", function ($scope, mySocket) {
     {
       username: "hi_D",
       message: "time to do some tests"
-    }
+    }*/
   ];
 
+  //Send a chat message to the game room
   $scope.sendToServerChatMessage = function () {
-    if (0 < $("#gameChatDivInput").val().length
-        && $("#gameChatDivInput").val().length <= 72) {
-      mySocket.emit("sendToServerChatMessage", {
-        message: $("#gameChatDivInput").text()
-      });
+    //If the username is defined (user logged in)
+    if ($rootScope.gameVars.username){
+      //If the chat message is of proper length
+      if (0 < $("#gameChatDivInput").val().length
+          && $("#gameChatDivInput").val().length <= 72) {
+        mySocket.emit("sendToServerChatMessage", {
+          username: $rootScope.gameVars.username,
+          message: $("#gameChatDivInput").val()
+        });
+        $('#gameChatDivInput').val('');
+      } 
     }
   };
+  //Receive chat messages from the server
   mySocket.on("receiveFromServerChatMessage", function (data) {
     $scope.messages.push(data);
+
+    $('#gameChatDivMessages').animate({
+      scrollTop: $('#gameChatDivMessages')[0].scrollHeight
+    }, 'slow');
   });
 
   //jQuery animation
