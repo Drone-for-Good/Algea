@@ -117,6 +117,7 @@ body {
 #friendsDivList li {
   border-bottom: 2px solid pink;
   padding: 10px 0;
+  cursor: pointer;
 }
 
 .friendsDivListStatus {
@@ -191,6 +192,7 @@ body {
 #playersDivList li {
   border-bottom: 2px solid pink;
   padding: 10px 0;
+  cursor: pointer;
 }
 
 .playersDivListStatus {
@@ -260,9 +262,12 @@ body {
 }
 
 #gameChatDivMessages ul li {
-  padding-top: 3px;
+  /*line-height: 3px;*/
   margin-left: 5px;
+  margin: 0;
+  padding: 0;
   font-size: 12px;
+  word-wrap: break-word;
 }
 
 .gameChatDivMessagesUser {

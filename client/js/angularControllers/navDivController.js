@@ -1,4 +1,4 @@
-app.controller("navDivController", function ($scope, mySocket) {
+app.controller("navDivController", function ($rootScope, $scope, mySocket) {
   var GUIvars = {
   };
 
@@ -8,18 +8,11 @@ app.controller("navDivController", function ($scope, mySocket) {
       password: $("#loginPassword").val()
     };
     mySocket.emit("getFromServerLogin", loginData);
-
-    //I dont know where were storing the current user's username.
-    //Change this if necessary
-    $scope.username = loginData.username;
   };
   mySocket.on("getFromServerLogin_Response", function (data) {
-    //POPULATE FRIENDS
-    //Populate rooms
-    $scope.gameRooms = data.rooms;
     //If successful, close modal
     if (data.passwordMatch) {
-      $('#showLoginModal').trigger('click');
+      $scope.handleSuccessfulLogin(data);
     }
   });
 
@@ -29,34 +22,49 @@ app.controller("navDivController", function ($scope, mySocket) {
       password: $("#signupUsername").val()
     };
     mySocket.emit("getFromServerSignup", signupData);
-
-    //I dont know where were storing the current user's username.
-    //Change this if necessary
-    $scope.username = signupData.username;
   };
-  mySocket.on("getFromServerSignup_Response", function ( data ) {
-    //Populate rooms
-    $scope.gameRooms = data.rooms;
-    //If successful, close modal
+  mySocket.on("getFromServerSignup_Response", function (data) {
+    //If successful, close modal and use data
     if (data.passwordMatch) {
-      $('#showLoginModal').trigger('click');
+      $scope.handleSuccessfulLogin(data);
     }
   });
 
-  $scope.joinRoom = function (roomName) {
-    var roomData = {
-      roomName: roomName,
-      username: $scope.username
-    };
-    mySocket.emit('sendToServerJoinGame', roomData);
-  };
+  //Handles data after successful login
+  $scope.handleSuccessfulLogin = function (data) {
+    //Close modal
+    $('#showLoginModal').trigger('click');
 
+    // Set $rootScope game variables
+    $rootScope.gameVars.username = data.username;
+    $rootScope.gameVars.skins = data.skins;
+
+    // Set $rootScope social variables
+    $rootScope.socialVars.friends = data.friends;
+    $rootScope.socialVars.friendsKeys = Object.keys(data.friends);
+
+    //Populate rooms
+    $scope.gameRooms = data.rooms;
+    console.log($rootScope.socialVars);
+  };
+  // Player can only try to join one room at a time
+  $scope.joiningRoom = false;
+  $scope.joinRoom = function (roomName) {
+    if (!$scope.joiningRoom) {
+      var roomData = {
+        roomName: roomName,
+        username: $rootScope.gameVars.username
+      };
+      mySocket.emit('sendToServerJoinGame', roomData); 
+    }
+  };
   mySocket.on('receiveFromServerJoinGame', function (data) {
     if(data.roomJoined){
       //Successfully joined room
     } else {
       //Unable to join room
     }
+    $scope.joiningRoom = true;
   });
 
   mySocket.on('receiveFromServerGameState', function (data) {

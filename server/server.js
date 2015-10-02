@@ -26,7 +26,7 @@ io.sockets.on('connection', function (socket) {
     userID: null,
     gameRoom: '',
     skins: [],
-    friends: []
+    friends: {}
   };
 
   //On disconnect
@@ -34,8 +34,15 @@ io.sockets.on('connection', function (socket) {
     game.removePlayerFromGame({socketID: socket.id});
     //Remove socket and place user offline
     var username = game.sockets[socket.id].username;
+    var friends = game.sockets[socket.id].friends;
+
+    //Delete socket information
     delete game.sockets[socket.id];
     delete game.onlineUsers[username];
+
+    //Check for any friends online
+    findFriendsOnlineAndNotify(username, friends, 'offline');
+
     console.log("\n" + socket.id, "disconnected.");
     console.log((username || 'anonymous'), 'offline.\n');
   });
@@ -49,6 +56,7 @@ io.sockets.on('connection', function (socket) {
           userFound: true,
           userOnline: true
         });
+      return;
     }
 
     //Proceed because user doesn't exist or is offline
@@ -65,11 +73,14 @@ io.sockets.on('connection', function (socket) {
         game.sockets[socket.id].skins = result.skins;
         game.sockets[socket.id].friends = result.friends;
 
-        //Get rooms
+        //Check for any friends online
+        findFriendsOnlineAndNotify(result.username, result.friends, 'online');
+
+        //Get all rooms
         result.rooms = game.allRooms();
 
         //Put user online
-        game.onlineUsers[result.username] = true;
+        game.onlineUsers[result.username] = socket.id;
       }
       socket.emit('getFromServerLogin_Response', result);
     });
@@ -89,7 +100,14 @@ io.sockets.on('connection', function (socket) {
         game.sockets[socket.id].skins = result.skins;
         game.sockets[socket.id].friends = result.friends;
 
+        //Check for any friends online
+        findFriendsOnlineAndNotify(result.username, result.friends, 'online');
+
+        //Get all rooms
         result.rooms = game.allRooms();
+
+        //Put user online
+        game.onlineUsers[result.username] = socket.id;
       }
       socket.emit('getFromServerSignup_Response', result);
     });
@@ -97,6 +115,7 @@ io.sockets.on('connection', function (socket) {
 
   //On join game attempt
   socket.on('sendToServerJoinGame', function (data) {
+    console.log(data);
     var joined = game.addPlayerToRoom(data.roomName,
       {
         username: data.username,
@@ -156,8 +175,10 @@ io.sockets.on('connection', function (socket) {
   //On individual chat message
   //NOTE: Include in setInterval later
   socket.on('sendToServerChatMessage', function (data) {
-    io.to(data.roomName).emit('receiveFromServerChatMessage',
-      data.message.substring(0, serverAttributes.chatMessageMaxSize));
+    data.message
+      = data.message.substring(0, serverAttributes.chatMessageMaxSize);
+    io.to(game.sockets[socket.id].gameRoom)
+      .emit('receiveFromServerChatMessage', data);
   });
 });
 
@@ -180,6 +201,24 @@ setInterval(function () {
     }
   }
 }, 5000);
+
+// A function to see if a user's friends are online,
+// and notify them about his online/offline status
+var findFriendsOnlineAndNotify = function (baseUser, friends, status) {
+  for (var friend in friends) {
+    //If friend is online
+    if (friend in game.onlineUsers) {
+      //Mark status
+      friends[friend]['status'] = status;
+      //Notify online friends that baseUser is online
+      io.to(game.onlineUsers[friend])
+        .emit('receiveFromServerFriendOnline', {
+          username: baseUser,
+          status: status
+        });
+    }
+  }
+};
 
 http.listen(3000, function(){
   console.log('listening on *:3000');

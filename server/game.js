@@ -9,7 +9,7 @@ exports.sockets = {
 };
 
 exports.onlineUsers = {
-  // user1: true,
+  // user1: user1SocketID
   // user 2: true,
   // ...
 }
@@ -44,7 +44,7 @@ exports.allRooms = function () {
       roomName: roomName,
       maxCount: exports.roomData.rooms[roomName].maxPlayers,
       count:
-        Object.keys(exports.roomData.rooms[roomName].playerInfo).length
+        exports.roomData.rooms[roomName].playerCount
     });
   }
   return result;
@@ -121,7 +121,7 @@ exports.addPlayerToRoom = function (roomName, data) {
   // the player count of the room is under the max
   if (roomName in exports.roomData.rooms
     && !(data.username in exports.roomData.rooms[roomName])
-    && (Object.keys(exports.roomData.rooms[roomName].playerInfo).length
+    && (exports.roomData.rooms[roomName].playerCount
       < exports.roomData.rooms[roomName].maxPlayers)) {
 
     // Make a player
@@ -138,7 +138,9 @@ exports.addPlayerToRoom = function (roomName, data) {
       ],
       skin: exports.sockets[data.socketID]['skins'][0] || ''
     };
-
+    // Increment room count
+    exports.roomData.rooms[roomName].playerCount++;
+    // Set gameRoom on player
     exports.sockets[data.socketID].gameRoom = roomName;
 
     console.log('\nPLAYER', data.username,
@@ -151,22 +153,7 @@ exports.addPlayerToRoom = function (roomName, data) {
 };
 
 // Check if a new room is needed
-// NOTE:
-/*
-In exports.roomData, leastFilledRoomPercentage corresponds to the
-percentage of the room that is full for the relatively least
-populated room. If roomA has 5/10 players and roomB has 2/5
-players, the minRoomFilledPercentage will be 2/5 = .4.
-
-Based on this principle, if the least populated room exceeds
-the exports.roomData.leastFilledRoomPercentageThreshold, a
-new room will be created, assuming the max room count hasn't
-been reached.
-*/
 exports.makeNewRoomIfNeeded = function () {
-};
-
-var modifyLeastFilledRoomPercentage = function (roomName) {
 };
 
 // Remove a player from their current game room
@@ -174,8 +161,12 @@ exports.removePlayerFromGame = function (data) {
   var gameRoom = exports.sockets[data.socketID].gameRoom;
   var username = exports.sockets[data.socketID].username;
   if (gameRoom !== '') {
+    //Decrement roomCount
+    exports.roomData.rooms[gameRoom].playerCount--;
+    //Remove player information
     delete exports.roomData.rooms[gameRoom].playerInfo[username];
   }  
+  //Set gameRoom to be empty
   exports.sockets[data.socketID].gameRoom = '';
   return gameRoom;
 };

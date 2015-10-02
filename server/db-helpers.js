@@ -92,7 +92,7 @@ exports.verifyUserLogin = function (data) {
       result["userid"] = user["id"];
       result.profileImage = user.profileImage;
       result.skins = [];
-      result.friends = [];
+      result.friends = {};
       //Populate skins parameter on result object
       return exports.userSkins(result).then(function (skinResult) {
         //Populate friends parameter on result object
@@ -133,22 +133,69 @@ exports.userSkins = function (data) {
     where: { userid: data.userid }
   }).then(function (skins) {
     data.skins = skins;
+    console.log(Array.isArray(skins));
     return data;
   });
 };
 
-//Get all user friends
+// Get all user friends
+// NOTE: PROMISE HELL AHEAD, could be avoided with INNER JOIN
 exports.userFriends = function (data) {
+  // Find friends where we match the user1 id
   return db.Friendship.findAll({
     where: { user1: data.userid }
   }).then(function (friends_user2) {
-    data.friends = friends_user2;
+    // Iterate over all friendships
+    var user2IDs = [];
+    for (var i = 0; i < friends_user2.length; ++i) {
+      user2IDs.push(friends_user2[i].dataValues.user2);
+    }
+    // Find all users with user IDs in user2IDs
+    return db.User.findAll({
+      where: {
+        id: {
+          $in: user2IDs
+        }
+      }
+    }).then(function (users) {
+      // Add user data
+      for (var i = 0; i < users.length; ++i) {
+        data.friends[users[i].username] = {
+          profileImage: users[i].profileImage,
+          status: 'offline'
+        };
+      }
 
-    return db.Friendship.findAll({
-      where: {user2: data.userid }
-    }).then(function (friends_user1) {
-      data.friends.concat(friends_user1);
-      return data;
+      //Find friends where we match the user2 id
+      return db.Friendship.findAll({
+        where: { user2: data.userid }
+      }).then(function (friends_user1) {
+        // Iterate over all friendships
+        var user1IDs = [];
+        for (var i = 0; i < friends_user1.length; ++i) {
+          user1IDs.push(friends_user1[i].dataValues.user1);
+        }
+        
+        // Find all users with user IDs in user1IDs
+        return db.User.findAll({
+          where: {
+            id: {
+              $in: user1IDs
+            }
+          }
+        }).then(function (users) {
+          //Add user data
+          for (var i = 0; i < users.length; ++i) {
+            data.friends[users[i].username] = {
+              profileImage: users[i].profileImage,
+              status: 'offline'
+            };
+          }
+        }).then(function (){
+          //Return original data object with newly populated friends
+          return data;
+        });
+      });
     });
   });
 };
