@@ -31,26 +31,47 @@ io.sockets.on('connection', function (socket) {
 
   //On disconnect
   socket.on('disconnect', function () {
-    console.log("\n" + socket.id, "disconnected.\n");
-    game.removePlayerFromGame(socket.id);
+    game.removePlayerFromGame({socketID: socket.id});
+    //Remove socket and place user offline
+    var username = game.sockets[socket.id].username;
     delete game.sockets[socket.id];
+    delete game.onlineUsers[username];
+    console.log("\n" + socket.id, "disconnected.");
+    console.log((username || 'anonymous'), 'offline.\n');
   });
 
   //On login attempt
   socket.on('getFromServerLogin', function (data) {
+    //If user already logged in, fail
+    if (data.username in game.onlineUsers) {
+      socket.emit('getFromServerLogin_Response', 
+        {
+          userFound: true,
+          userOnline: true
+        });
+    }
+
+    //Proceed because user doesn't exist or is offline
     return new Promise(function (resolve, reject) {
       resolve(dbHelpers.verifyUserLogin({
         username: data.username,
         password: data.password
       }));
     }).then(function (result) {
-      socket.emit('getFromServerLogin_Response', result);
       if (result.passwordMatch) {
+        //Populate user data
         game.sockets[socket.id].username = result.username;
         game.sockets[socket.id].userID = result.userid;
         game.sockets[socket.id].skins = result.skins;
         game.sockets[socket.id].friends = result.friends;
+
+        //Get rooms
+        result.rooms = game.allRooms();
+
+        //Put user online
+        game.onlineUsers[result.username] = true;
       }
+      socket.emit('getFromServerLogin_Response', result);
     });
   });
 
@@ -62,36 +83,35 @@ io.sockets.on('connection', function (socket) {
         password: data.password
       }));
     }).then(function (result) {
-      socket.emit('getFromServerSignup_Response', result);
       if (result.passwordMatch) {
         game.sockets[socket.id].username = result.username;
         game.sockets[socket.id].userID = result.userid;
         game.sockets[socket.id].skins = result.skins;
         game.sockets[socket.id].friends = result.friends;
 
-        game.addPlayerToRoom("The Room", {
-          username: result.username,
-          socketID: socket.id,
-          skin: "SOME SKIN BREH"
-        });
+        result.rooms = game.allRooms();
       }
+      socket.emit('getFromServerSignup_Response', result);
     });
   });
 
   //On join game attempt
   socket.on('sendToServerJoinGame', function (data) {
     var joined = game.addPlayerToRoom(data.roomName,
-      { username: data.username });
+      {
+        username: data.username,
+        socketID: socket.id
+      });
     var result = { roomJoined: joined };
     if (joined) {
-      socket.join(roomName);
+      socket.join(data.roomName);
       result.roomName = data.roomName;
     }
     socket.emit('receiveFromServerJoinGame', result);
   });
 
   socket.on('sendToServerLeaveGame', function (data) {
-    game.removePlayerFromGameRoom(socket.id);
+    game.removePlayerFromGame({socketID: socket.id});
     socket.emit('receiveFromServerLeaveGame', {
       leaveSuccess: true
     });
@@ -99,7 +119,11 @@ io.sockets.on('connection', function (socket) {
 
   //On individual player update
   socket.on('sendToServerPlayerState', function (data) {
-    game.updatePlayer(data);
+    game.updatePlayer({
+      roomName: data.roomName,
+      username: data.username,
+      positionAndRadius: data.positionAndRadius
+    });
   });
 
   //On individual player death
@@ -138,12 +162,24 @@ io.sockets.on('connection', function (socket) {
 });
 
 //Emit player data for every room
-setInterval(function(){
+setInterval(function () {
   for (var roomName in game.roomData.rooms) {
     io.to(roomName).emit('receiveFromServerGameState',
       game.roomData.rooms[roomName]);
   }
 }, 100);
+
+//Emit server data every 5 seconds
+setInterval(function () {
+  var rooms = { rooms: game.allRooms() };
+  //Only display rooms to players who are logged in
+  for (var clientSocket in game.sockets) {
+    if (game.sockets[clientSocket].username !== null) {
+      io.to(clientSocket).emit('receiveFromServerRoomsData',
+        rooms);
+    }
+  }
+}, 5000);
 
 http.listen(3000, function(){
   console.log('listening on *:3000');

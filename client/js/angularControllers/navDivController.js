@@ -15,7 +15,12 @@ app.controller("navDivController", function ($scope, mySocket) {
   };
   mySocket.on("getFromServerLogin_Response", function (data) {
     //POPULATE FRIENDS
-    //POPULATE AVAILABLE GAME ROOMS
+    //Populate rooms
+    $scope.gameRooms = data.rooms;
+    //If successful, close modal
+    if (data.passwordMatch) {
+      $('#showLoginModal').trigger('click');
+    }
   });
 
   $scope.getFromServerSignup = function () {
@@ -30,7 +35,12 @@ app.controller("navDivController", function ($scope, mySocket) {
     $scope.username = signupData.username;
   };
   mySocket.on("getFromServerSignup_Response", function ( data ) {
-    //POPULATE AVAILABLE GAME ROOMS
+    //Populate rooms
+    $scope.gameRooms = data.rooms;
+    //If successful, close modal
+    if (data.passwordMatch) {
+      $('#showLoginModal').trigger('click');
+    }
   });
 
   $scope.joinRoom = function (roomName) {
@@ -49,8 +59,12 @@ app.controller("navDivController", function ($scope, mySocket) {
     }
   });
 
+  mySocket.on('receiveFromServerGameState', function (data) {
+    window.dataIWant = data;
+  });
+
   $scope.gameRoomsFilter = "";
-  $scope.gameRooms = [
+  $scope.gameRooms = [/*
     {
       roomName: "room0",
       count: 27,
@@ -95,11 +109,10 @@ app.controller("navDivController", function ($scope, mySocket) {
       roomName: "room8",
       count: 23,
       maxCount: 50
-    }
+    }*/
   ];
 
-  mySocket.on("receiveFromServerGameRooms", function (data) {
-    $scope.gameRooms = data;
+  mySocket.on('receiveFromServerRoomsData', function (data) {
+    $scope.gameRooms = data.rooms;
   });
-
 });
