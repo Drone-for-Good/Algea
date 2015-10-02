@@ -58,9 +58,28 @@ exports.removeRoom = function (roomName) {
 
 exports.addRoom();
 
-exports.getValidPlayerPosition = function (roomName) {
-  var result = {x: 0, y: 0};
-  return result;
+//will be used for valid player position and for valid food position
+exports.getValidPosition = function (roomName) {
+
+  //get random coordinates
+  var coordinatesObj = exports.getCoordinates();
+
+  //check if those coordinates are in use
+
+  //if not in use, add to RoomInfo
+
+
+  // var result = {x: 0, y: 0};
+  // return result;
+};
+
+exports.getCoordinates = function(){
+
+  var xCoor = Math.floor(Math.random * //roomSize)
+  var yCoor = Math.floor(Math.random * //roomSize)
+
+  return {x: xCoor, y: uCoor};
+
 };
 
 exports.addPlayerToRoom = function (roomName, player) {
