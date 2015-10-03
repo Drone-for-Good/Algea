@@ -8,6 +8,10 @@ exports.sockets = {
   // }
 };
 
+//According to the game mechanics, the player board size is:
+var WORLD_WIDTH = 4096;
+var WORLD_HEIGHT = 2048;
+
 exports.roomNames = [
   "The Room",
   "Hack Reactor",
@@ -20,7 +24,6 @@ exports.roomData = {
   maxRooms: 10,
   roomCount: 0,
   rooms: {},
-  food: {}
 };
 
 exports.addRoom = function (size) {
@@ -28,7 +31,8 @@ exports.addRoom = function (size) {
     var newRoom = {
       roomName: exports.roomNames[exports.roomData.roomCount],
       maxPlayers: size || exports.roomData.defaultMaxPlayersPerRoom,
-      playerInfo: {}
+      playerInfo: {},
+      food: {}
     };
     exports.roomData.rooms[newRoom.roomName] = newRoom;
     exports.roomData.roomCount++;
@@ -61,7 +65,8 @@ exports.addRoom();
 
 //will be used for valid player position and for valid food position
 //checkFood is a boolean which says whether you need to check food positions
-exports.getValidPosition = function (roomName, checkFood) {
+//Expected syntax of food -> id: {x: positionX, y: positionY}
+exports.getValidPosition = function (checkFood, roomName) {
   //get random coordinates
   var coordinatesObj = exports.getCoordinates();
   //check if those coordinates are in use:
@@ -79,7 +84,6 @@ exports.getValidPosition = function (roomName, checkFood) {
   //need to go through food posiitions to see if they match
   if (match === false && checkFood){
     //object of all the food in room
-    //EXPECTED SYNTAX OF FOOD OBJECT {x: positionX, y: positionY, color:??}
     var foodInRoom = exports.roomData.food;
     for (var food in foodInRoom){
       if (food.x === coordinatesObj.x && food.y === coordinatesObj.y){
@@ -95,12 +99,10 @@ exports.getValidPosition = function (roomName, checkFood) {
   return coordinatesObj;
 };
 
-//According to the game mechanics, the player board size is:
-  // var WORLD_WIDTH = 4096;
-  // var WORLD_HEIGHT = 2048;
+
 exports.getCoordinates = function(){
-  var xCoor = Math.round(Math.random * 4096;
-  var yCoor = Math.round(Math.random * 2048;
+  var xCoor = Math.round(Math.random * WORLD_WIDTH;
+  var yCoor = Math.round(Math.random * WORLD_HEIGHT;
 
   return {x: xCoor, y: yCoor};
 };
@@ -141,6 +143,32 @@ exports.removePlayerFromGame = function (data) {
   return gameRoom;
 };
 
+exports.addFood = function(foodId){
+  //object with x and y coordinates
+  var coordinates = getValidPosition(true);
+  return {
+    x: coordinates.x,
+    y: coordinates.y
+  };
+}
+
+//Front-end needs to signal the server when the food is eaten.
+exports.removeFood = function(foodId){
+  //this has to be done when the food is eaten
+  delete exports.roomData.rooms[roomName].food.id[i];
+}
+
+//to be called in server's setTimeout
+exports.refreshFood = function(){
+  //how much food on the board should be based on the size of the board and the
+  //size of the food. For now, I'm hardcoding a number as filler.
+  var foodQuantity = 100;
+  for (i=0; i<foodQuantity; i++){
+    if (!exports.roomData.food[i]){
+      exports.roomData.rooms[roomName].food[i] = addFood(i);
+    }
+  }
+};
 
 exports.updatePlayer = function (data) {
   exports.roomData.rooms[roomName].playerInfo[data.username].positionAndMass

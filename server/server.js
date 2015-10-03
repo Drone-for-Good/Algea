@@ -149,9 +149,10 @@ io.sockets.on('connection', function (socket) {
 //server's global obj
 // Need to emit for every room
 setInterval(function(){
+
   for (var roomName in game.roomData.rooms) {
     io.to(roomName).emit('receiveFromServerGameState',
-      game.roomData.rooms[roomName]);
+      game.roomData.rooms[roomName]);                   //need to change this to include food
   }
 }, 100);
 
