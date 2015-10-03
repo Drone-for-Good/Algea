@@ -8,6 +8,10 @@ exports.sockets = {
   // }
 };
 
+//According to the game mechanics, the player board size is:
+var WORLD_WIDTH = 4096;
+var WORLD_HEIGHT = 2048;
+
 exports.onlineUsers = {
   // user1: user1SocketID
   // user 2: true,
@@ -58,7 +62,8 @@ exports.addRoom = function (size) {
       roomName: exports.roomNames[exports.roomData.roomCount],
       playerCount: 0,
       maxPlayers: size || exports.roomData.defaultMaxPlayersPerRoom,
-      playerInfo: {}
+      playerInfo: {},
+      food: {}
     };
     exports.roomData.rooms[newRoom.roomName] = newRoom;
     exports.roomData.roomCount++;
@@ -107,11 +112,58 @@ exports.removeRoom = function (roomName) {
 // Add a room when starting the server
 exports.addRoom();
 
-// Calculate a valid player position to create
-// a new player bsaed off of the current players in the room
-exports.getValidPlayerPosition = function (roomName) {
-  var result = {x: 0, y: 0};
-  return result;
+//will be used for valid player position and for valid food position
+//checkFood is a boolean which says whether you need to check food positions
+//Expected syntax of food -> id: {id: id, x: positionX, y: positionY}
+exports.getValidPosition = function (checkFood, roomName) {
+  //get random coordinates
+  var coordinatesObj = exports.getCoordinates();
+  //starting radius of all beginners:
+  var startingRadius = 50;
+  //check if those coordinates are in use:
+  var match = false;
+  //object of all the players in the room
+  var players = exports.roomData.rooms[roomName].playerInfo;
+  for (var player in players){
+    var max_X = coordinatesObj.x + player.positionAndRadius.radius + startingRadius;
+    var max_Y = coordinatesObj.y + player.positionAndRadius.radius + startingRadius;
+    var min_X = coordinatesObj.x - player.positionAndRadius.radius - startingRadius;
+    var min_Y = coordinatesObj.y - player.positionAndRadius.radius - startingRadius;
+
+    //need to go through player's positions to see if they match
+    if (player.positionAndRadius[0].x >= max_X || player.positionAndRadius[0].x <= min_X
+      && player.positionAndRadius[0].y >= max_Y || player.positionAndRadius[0].y <= min_Y){
+      //continue on if these conditions are met
+    } else {
+      //if conditions not met, position is in another player's spot
+      match = true;
+      break;
+    }
+  };
+  //need to go through food posiitions to see if they match
+  if (match === false && checkFood){
+    //object of all the food in room
+    var foodInRoom = exports.roomData.food;
+    for (var food in foodInRoom){
+      if (food.x === coordinatesObj.x && food.y === coordinatesObj.y){
+        match = true;
+        break;
+      }
+    }
+  }
+  //if already a position, call it again to get different coordinates
+  if (match === true){
+    return exports.getValidPosition(checkFood, roomName);
+  }
+  return coordinatesObj;
+};
+
+
+exports.getCoordinates = function(){
+  var xCoor = Math.round(Math.random * WORLD_WIDTH) - WORLD_WIDTH/2;
+  var yCoor = Math.round(Math.random * WORLD_HEIGHT) - WORLD_HEIGHT/2;
+
+  return {x: xCoor, y: yCoor};
 };
 
 // Put a player in a new room
@@ -125,7 +177,7 @@ exports.addPlayerToRoom = function (roomName, data) {
       < exports.roomData.rooms[roomName].maxPlayers)) {
 
     // Make a player
-    var validPlayerPosition = exports.getValidPlayerPosition(roomName);
+    var validPlayerPosition = exports.getValidPosition(false, roomName);
     // Need radius, position, skin, and username to instantiate a player
     // clientside
     exports.roomData.rooms[roomName].playerInfo[data.username] = {
@@ -165,10 +217,38 @@ exports.removePlayerFromGame = function (data) {
     exports.roomData.rooms[gameRoom].playerCount--;
     //Remove player information
     delete exports.roomData.rooms[gameRoom].playerInfo[username];
-  }  
+  }
   //Set gameRoom to be empty
   exports.sockets[data.socketID].gameRoom = '';
   return gameRoom;
+};
+
+exports.addFood = function(foodId){
+  //object with x and y coordinates
+  var coordinates = getValidPosition(true);
+  return {
+    id: foodId,
+    x: coordinates.x,
+    y: coordinates.y
+  };
+}
+
+//Front-end needs to signal the server when the food is eaten.
+exports.removeFood = function(foodId){
+  //this has to be done when the food is eaten
+  delete exports.roomData.rooms[roomName].food[i];
+}
+
+//to be called in server's setTimeout
+exports.refreshFood = function(roomName){
+  //how much food on the board should be based on the size of the board and the
+  //size of the food. For now, I'm hardcoding a number as filler.
+  var foodQuantity = 100;
+  for (i=0; i<foodQuantity; i++){
+    if (!exports.roomData.food[i]){
+      exports.roomData.rooms[roomName].food[i] = addFood(i);
+    }
+  }
 };
 
 // Update a player by referencing data on the client
