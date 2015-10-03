@@ -51,6 +51,7 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
   $scope.joiningRoom = false;
   $scope.joinRoom = function (roomName) {
     if (!$scope.joiningRoom) {
+      $scope.joiningRoom = true;
       var roomData = {
         roomName: roomName,
         username: $rootScope.gameVars.username
@@ -61,10 +62,12 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
   mySocket.on('receiveFromServerJoinGame', function (data) {
     if(data.roomJoined){
       //Successfully joined room
+      $rootScope.gameVars.roomName = data.roomName;
+      window.agar.game.state.start('game',true, false, $rootScope.gameVars.username, $rootScope.gameVars.roomName );
     } else {
       //Unable to join room
     }
-    $scope.joiningRoom = true;
+    $scope.joiningRoom = false;
   });
 
   mySocket.on('receiveFromServerGameState', function (data) {
@@ -123,4 +126,5 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
   mySocket.on('receiveFromServerRoomsData', function (data) {
     $scope.gameRooms = data.rooms;
   });
+
 });

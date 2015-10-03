@@ -17,4 +17,5 @@ window.addEventListener('load', function () {
 
   // Launch the Boot State
   game.state.start('boot');
+  window.agar.game = game;
 }, false);
