@@ -19,7 +19,8 @@ exports.roomData = {
   defaultMaxPlayersPerRoom: 10,
   maxRooms: 10,
   roomCount: 0,
-  rooms: {}
+  rooms: {},
+  food: {}
 };
 
 exports.addRoom = function (size) {
@@ -59,27 +60,49 @@ exports.removeRoom = function (roomName) {
 exports.addRoom();
 
 //will be used for valid player position and for valid food position
-exports.getValidPosition = function (roomName) {
-
+//checkFood is a boolean which says whether you need to check food positions
+exports.getValidPosition = function (roomName, checkFood) {
   //get random coordinates
   var coordinatesObj = exports.getCoordinates();
-
-  //check if those coordinates are in use
-
-  //if not in use, add to RoomInfo
-
-
-  // var result = {x: 0, y: 0};
-  // return result;
+  //check if those coordinates are in use:
+  var match = false;
+  //object of all the players in the room
+  var players = exports.roomData.rooms[roomName].playerInfo;
+  for (var player in players){
+    //need to go through player's positions to see if they match
+    if (player.positionAndMass[0].x === coordinatesObj.x && player.positionAndMass[0].y
+          === coordinatesObj.y){
+      match = true;
+      break;
+    }
+  };
+  //need to go through food posiitions to see if they match
+  if (match === false && checkFood){
+    //object of all the food in room
+    //EXPECTED SYNTAX OF FOOD OBJECT {x: positionX, y: positionY, color:??}
+    var foodInRoom = exports.roomData.food;
+    for (var food in foodInRoom){
+      if (food.x === coordinatesObj.x && food.y === coordinatesObj.y){
+        match = true;
+        break;
+      }
+    }
+  }
+  //if already a position, call it again to get different coordinates
+  if (match === true){
+    return exports.getValidPosition(roomName, checkFood);
+  }
+  return coordinatesObj;
 };
 
+//According to the game mechanics, the player board size is:
+  // var WORLD_WIDTH = 4096;
+  // var WORLD_HEIGHT = 2048;
 exports.getCoordinates = function(){
+  var xCoor = Math.round(Math.random * 4096;
+  var yCoor = Math.round(Math.random * 2048;
 
-  var xCoor = Math.floor(Math.random * //roomSize)
-  var yCoor = Math.floor(Math.random * //roomSize)
-
-  return {x: xCoor, y: uCoor};
-
+  return {x: xCoor, y: yCoor};
 };
 
 exports.addPlayerToRoom = function (roomName, player) {
@@ -87,7 +110,7 @@ exports.addPlayerToRoom = function (roomName, player) {
     && (Object.keys(exports.roomData.rooms[roomName].playerInfo).length
       < exports.roomData.rooms[roomName].maxPlayers)) {
 
-    var validPlayerPosition = exports.getValidPlayerPosition(roomName);
+    var validPlayerPosition = exports.getValidPosition(roomName);
     exports.roomData.rooms[roomName].playerInfo[player.username] = {
       positionAndMass: [
         {
