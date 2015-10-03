@@ -51,7 +51,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('getFromServerLogin', function (data) {
     //If user already logged in, fail
     if (data.username in game.onlineUsers) {
-      socket.emit('getFromServerLogin_Response', 
+      socket.emit('getFromServerLogin_Response',
         {
           userFound: true,
           userOnline: true
@@ -150,7 +150,6 @@ io.sockets.on('connection', function (socket) {
     //I made this into a promise so I can string together writing to
     //the database and returning data to the user asynchronously
 
-<<<<<<< HEAD
     // Get user id associated with the socket id
     var userID = game.getUserID(socket.id);
 
@@ -178,11 +177,8 @@ io.sockets.on('connection', function (socket) {
     //No response needed.
   });
 
-
-=======
   //On individual chat message
   //NOTE: Include in setInterval later
->>>>>>> cf83913ad4380941f79afc16a6cfbf9645285a63
   socket.on('sendToServerChatMessage', function (data) {
     data.message
       = data.message.substring(0, serverAttributes.chatMessageMaxSize);
