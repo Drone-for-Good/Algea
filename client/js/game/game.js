@@ -8,6 +8,10 @@
   function Game() {}
 
   Game.prototype = {
+    init: function (username, roomName) {
+      this.username = username;
+      this.roomName = roomName
+    },
     preload: function() {
       //set up world so coordinate (0,0) is the center
       this.world.setBounds(-WORLD_WIDTH/2, -WORLD_HEIGHT/2, WORLD_WIDTH,  WORLD_HEIGHT);
@@ -24,8 +28,8 @@
 
       // Updated when server sends updated info about all players
       this.enemiesData = {
-        jiggly: { x: 0, y: 0, radius: 40, created: false },
-        puff: { x: 50, y: 50, radius: 30, created: false }
+        // jiggly: { x: 0, y: 0, radius: 40, created: false },
+        // puff: { x: 50, y: 50, radius: 30, created: false }
       };
 
       //worldGroup is a group is used for zooming out.
@@ -61,6 +65,9 @@
         'score: 0', { fontSize: '32px', fill: '#000' });
       this.scoreText.fixedToCamera = true;
 
+      window.playerUpdateRoutine = setInterval(this.sendPlayerState.bind(this), 17);
+      window.globalSocket.on('receiveFromServerGameState', this.processGameStateData.bind(this));
+
       // Spacebar splits the player
       var spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
       spacebar.onDown.add(function(key) {
@@ -84,7 +91,7 @@
       var upKey = this.input.keyboard.addKey(Phaser.Keyboard.UP);
       upKey.onDown.add(function(key) {
         this.scalePlayer(this.player);
-        this.zoomOut();
+        this.zoomOut(0.1);
       }, this);
 
       function createBackground(game) {
@@ -147,7 +154,7 @@
 
       this.playerCells.forEach(function(cell) {
         // Only split if cell is not a newly split cell
-        if (count < originalCellCount) {
+        if (count < originalCellCount && cell.width > 100) {
           // Halve the mass of the original cell
           cell.width = cell.width / Math.sqrt(2);
           cell.height = cell.height / Math.sqrt(2);
@@ -156,8 +163,20 @@
           var newRadius = cell.width / 2;
           var newX = this.getPlayerCellsRight(this.playerCells) + newRadius + 30;
           var newY = this.getPlayerCellsTop(this.playerCells) - newRadius - 30;
+          var newCell = this.initializePlayer( newRadius, cell.x, cell.y);
+
           var newCell = this.initializePlayer( newRadius, newX, newY);
           this.playerCells.add(newCell);
+
+          // var dist = this.physics.arcade.distanceToPointer(cell);
+          // var split = this.game.add.tween(newCell.body);
+          // split.to({x: newX, y: newY}, 500)
+          // split.onComplete.add(function(){
+          //   this.playerCells.add(newCell);
+          //   this.game.physics.arcade.enable(newCell);
+          // }, this);
+          // split.start();
+          //this.physics.arcade.moveToXY(newCell, newX, newY, 60, 500);
           count++;
         }
       }, this);
@@ -200,35 +219,15 @@
 
       // Update location of every player cell
       this.playerCells.forEach(function(cell) {
-        // 30 is arbitrary number so that cells with larger mass move more slowly
-        var dist = this.physics.arcade.distanceToPointer(cell) * 40/cell.width;
-        this.physics.arcade.moveToPointer(cell, dist);
+        var dist = this.physics.arcade.distanceToPointer(cell);
+        //Weird math so you dont have to move the cursor to the edge of the window to reach max speed
+        //Also scales max speed with area rather than radius/diameter
+        var velocity = Math.min(dist*5, 5000000/Math.pow(cell.width,2));
+        this.physics.arcade.moveToPointer(cell, velocity);
       }, this);
 
       // Render all enemies
-      for (var username in this.enemiesData){
-        var enemyData = this.enemiesData[username];
-
-        // Create a new enemy object
-        if (!enemyData.created){
-          var newEnemy = this.initializePlayer(enemyData.radius, enemyData.x, enemyData.y);
-          newEnemy.username = username;
-          enemyData.created = true;
-          this.enemies.add(newEnemy);
-
-        // Othewise, update enemy size and position
-        } else {
-          // Get the enemy object
-          var enemyMatches = this.enemies.filter(function(enemy) {
-            return enemy.username === username ? true : false;
-          }, true);
-          var enemy = enemyMatches.list[0];
-          enemy.width = enemyData.radius * 2;
-          enemy.height = enemyData.radius * 2;
-          // TODO: this causes object to shake. Fix it
-          this.physics.arcade.moveToXY(enemy, enemyData.x, enemyData.y);
-        }
-      }
+      this.renderEnemies();
 
       // Check for collisions
       this.physics.arcade.collide(this.playerCells, this.walls);
@@ -244,6 +243,31 @@
         var i = this.playerCells.getIndex(cell);
         this.game.debug.spriteCoords(cell, 32, 120+100*i, 'black');
      }, this);
+    },
+
+    renderEnemies: function() {
+      for (var username in this.enemiesData){
+        var enemyData = this.enemiesData[username];
+        // Create a new enemy object
+        if (enemyData && !enemyData.created){
+          var newEnemy = this.initializePlayer(enemyData.radius, enemyData.x, enemyData.y);
+          newEnemy.username = username;
+          enemyData.created = true;
+          this.enemies.add(newEnemy);
+
+        // Othewise, update enemy size and position
+        } else {
+          // Get the enemy object
+          var enemyMatches = this.enemies.filter(function(enemy) {
+            return enemy.username === username ? true : false;
+          }, true);
+          var enemy = enemyMatches.list[0];
+          enemy.width = enemyData.radius * 2;
+          enemy.height = enemyData.radius * 2;
+          enemy.x = enemyData.x;
+          enemy.y = enemyData.y;
+        }
+      }
     },
 
     eatFood: function(playerCell, food) {
@@ -263,6 +287,7 @@
 
       } else if (enemyCell.width > playerCell.width) {
         playerCell.destroy();
+        clearInterval(window.playerUpdateRoutine);
       }
     },
 
@@ -304,6 +329,27 @@
         });
       }, this);
       return playerState;
+    },
+    sendPlayerState: function() {
+      window.globalSocket.emit('sendToServerPlayerState', {
+        roomName: this.roomName,
+        username: this.username,
+        positionAndRadius: this.getPlayerState()
+      });
+    },
+    processGameStateData: function(data) {
+      //TODO: Handle multiple cells
+      for(var username in data.playerInfo){
+        if(username === this.username) {
+          continue;
+        }
+        if(this.enemiesData[username] && this.enemiesData[username].created){
+          this.enemiesData[username] = data.playerInfo[username].positionAndRadius.cells[0];
+          this.enemiesData[username].created = true;
+        } else {
+          this.enemiesData[username] = data.playerInfo[username].positionAndRadius.cells[0];
+        }
+      }
     }
   };
 
