@@ -96,48 +96,56 @@ io.sockets.on('connection', function (socket) {
     game.updatePlayer(data);
   });
 
+  // This shouldn't be necessary as playerInfo is included in the room's data
+  //  when we send it out on a setInterval:
+  //
+  // //The following needs to be incorporated into sendToServerPlayerState
+  // socket.on('getFromServerAllFriends', function(friendRequest){
+  //   var promise = new Promise(function(resolve, reject){
+  //       helpers.sendFriends(friendRequest.userID);  //need to handle resolve and reject
+  //   })
+  //   .then(function(allFriends){
+  //       io.emit('getFromServerAllFriends_Response', function(){
+  //       });
+  //   })
+  //   .catch(function(err){
+  //     console.err('Error in getFromServerAllFriends promise.');
+  //     throw new Error(err);
+  //   });
+  // });
+
   // When user dies in a game
   socket.on('sendToServerDeath', function(finalStats){
-      //I made this into a promise so I can string together writing to
-      //the database and returning data to the user asynchronously
+    //I made this into a promise so I can string together writing to
+    //the database and returning data to the user asynchronously
 
-      // Get user id associated with the socket id
-      var userID = game.getUserID(socket.id);
+    // Get user id associated with the socket id
+    var userID = game.getUserID(socket.id);
 
-      // Update the DB records of the user - do we need these in promises
-      helpers.addGameStats(userID, finalStats);
-      helpers.updateBestStats(userID, finalStats);
-      helpers.updateTotalStats(userID, finalStats);
+    // Update the DB records of the user - doesn't need to be in promise
+    helpers.addGameStats(userID, finalStats);
+    helpers.updateBestStats(userID, finalStats);
+    helpers.updateTotalStats(userID, finalStats);
 
-      var promise = new Promise(function(resolve, reject){
-          return helpers.sendDeath(finalStats);           //NEED TO HANDLE AS RESOLVE AND REJECT
-      });
-      promise().then(function(dataForClient){
-          io.emit('receiveFromServerDeath', function(){
-            //for now I haven't made something back to the client.
-          });
-      })
-      .catch(function(err){
-          console.err('Error in sendToServerDeath promise.');
-          throw new Error(err);
-      });
-  });
-
-  //The following needs to be incorporated into sendToServerPlayerState
-  socket.on('getFromServerAllFriends', function(friendRequest){
     var promise = new Promise(function(resolve, reject){
-
-        helpers.sendFriends(friendRequest.userID);  //need to handle resolve and reject
-    })
-    .then(function(allFriends){
-        io.emit('getFromServerAllFriends_Response', function(){
-
+        return helpers.sendDeath(finalStats);           //NEED TO HANDLE AS RESOLVE AND REJECT
+    });
+    promise().then(function(dataForClient){
+        io.emit('receiveFromServerDeath', function(){
+          //for now I haven't made something back to the client.
         });
     })
     .catch(function(err){
-
+        console.err('Error in sendToServerDeath promise.');
+        throw new Error(err);
     });
   });
+
+  socket.on('sendToServerFoodEaten', function(foodId){
+    game.removeFood(foodId);
+    //No response needed.
+  });
+
 
   socket.on('sendToServerChatMessage', function (data) {
     io.to(data.roomName).emit('receiveFromServerChatMessage',
@@ -149,11 +157,12 @@ io.sockets.on('connection', function (socket) {
 //server's global obj
 // Need to emit for every room
 setInterval(function(){
-
   for (var roomName in game.roomData.rooms) {
+    game.refreshFood(roomName);
     io.to(roomName).emit('receiveFromServerGameState',
-      game.roomData.rooms[roomName]);                   //need to change this to include food
-  }
+      game.roomData.rooms[roomName]
+    );
+  };
 }, 100);
 
 http.listen(3000, function(){

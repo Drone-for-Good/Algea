@@ -65,7 +65,7 @@ exports.addRoom();
 
 //will be used for valid player position and for valid food position
 //checkFood is a boolean which says whether you need to check food positions
-//Expected syntax of food -> id: {x: positionX, y: positionY}
+//Expected syntax of food -> id: {id: id, x: positionX, y: positionY}
 exports.getValidPosition = function (checkFood, roomName) {
   //get random coordinates
   var coordinatesObj = exports.getCoordinates();
@@ -147,6 +147,7 @@ exports.addFood = function(foodId){
   //object with x and y coordinates
   var coordinates = getValidPosition(true);
   return {
+    id: foodId,
     x: coordinates.x,
     y: coordinates.y
   };
@@ -155,11 +156,11 @@ exports.addFood = function(foodId){
 //Front-end needs to signal the server when the food is eaten.
 exports.removeFood = function(foodId){
   //this has to be done when the food is eaten
-  delete exports.roomData.rooms[roomName].food.id[i];
+  delete exports.roomData.rooms[roomName].food[i];
 }
 
 //to be called in server's setTimeout
-exports.refreshFood = function(){
+exports.refreshFood = function(roomName){
   //how much food on the board should be based on the size of the board and the
   //size of the food. For now, I'm hardcoding a number as filler.
   var foodQuantity = 100;
