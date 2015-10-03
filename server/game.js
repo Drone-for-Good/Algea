@@ -118,14 +118,24 @@ exports.addRoom();
 exports.getValidPosition = function (checkFood, roomName) {
   //get random coordinates
   var coordinatesObj = exports.getCoordinates();
+  //starting radius of all beginners:
+  var startingRadius = 50;
   //check if those coordinates are in use:
   var match = false;
   //object of all the players in the room
   var players = exports.roomData.rooms[roomName].playerInfo;
   for (var player in players){
+    var max_X = coordinatesObj.x + player.positionAndRadius.radius + startingRadius;
+    var max_Y = coordinatesObj.y + player.positionAndRadius.radius + startingRadius;
+    var min_X = coordinatesObj.x - player.positionAndRadius.radius - startingRadius;
+    var min_Y = coordinatesObj.y - player.positionAndRadius.radius - startingRadius;
+
     //need to go through player's positions to see if they match
-    if (player.positionAndMass[0].x === coordinatesObj.x && player.positionAndMass[0].y
-          === coordinatesObj.y){
+    if (player.positionAndRadius[0].x >= max_X || player.positionAndRadius[0].x <= min_X
+      && player.positionAndRadius[0].y >= max_Y || player.positionAndRadius[0].y <= min_Y){
+      //continue on if these conditions are met
+    } else {
+      //if conditions not met, position is in another player's spot
       match = true;
       break;
     }
@@ -167,7 +177,7 @@ exports.addPlayerToRoom = function (roomName, data) {
       < exports.roomData.rooms[roomName].maxPlayers)) {
 
     // Make a player
-    var validPlayerPosition = exports.getValidPlayerPosition(roomName);
+    var validPlayerPosition = exports.getValidPosition(roomName);
     // Need radius, position, skin, and username to instantiate a player
     // clientside
     exports.roomData.rooms[roomName].playerInfo[data.username] = {
