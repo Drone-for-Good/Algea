@@ -190,7 +190,7 @@ io.sockets.on('connection', function (socket) {
 //Emit player data for every room
 setInterval(function () {
   for (var roomName in game.roomData.rooms) {
-    game.refreshFood(roomName);
+    // game.refreshFood(roomName);
     io.to(roomName).emit('receiveFromServerGameState',
       game.roomData.rooms[roomName]
     );
