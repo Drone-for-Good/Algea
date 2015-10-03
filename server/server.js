@@ -11,45 +11,82 @@ app.use(express.static(__dirname + '/../client'));
 //sets the path under which static files will be served
 io.path('/');
 
+//Attributes specific to the server
 var serverAttributes = {
   chatMessageMaxSize: 72
 };
 
+//On connection
 io.sockets.on('connection', function (socket) {
 
   console.log("\n" + socket.id, "connected.\n");
+  //Initialize socket information
   game.sockets[socket.id] = {
     username: null,
     userID: null,
     gameRoom: '',
     skins: [],
-    friends: []
+    friends: {}
   };
 
-
+  //On disconnect
   socket.on('disconnect', function () {
-    console.log("\n" + socket.id, "disconnected.\n");
-    game.removePlayerFromGame(socket.id);
+    game.removePlayerFromGame({socketID: socket.id});
+    //Remove socket and place user offline
+    var username = game.sockets[socket.id].username;
+    var friends = game.sockets[socket.id].friends;
+
+    //Delete socket information
     delete game.sockets[socket.id];
+    delete game.onlineUsers[username];
+
+    //Check for any friends online
+    findFriendsOnlineAndNotify(username, friends, 'offline');
+
+    console.log("\n" + socket.id, "disconnected.");
+    console.log((username || 'anonymous'), 'offline.\n');
   });
 
+  //On login attempt
   socket.on('getFromServerLogin', function (data) {
+    //If user already logged in, fail
+    if (data.username in game.onlineUsers) {
+      socket.emit('getFromServerLogin_Response', 
+        {
+          userFound: true,
+          userOnline: true
+        });
+      return;
+    }
+
+    //Proceed because user doesn't exist or is offline
     return new Promise(function (resolve, reject) {
       resolve(dbHelpers.verifyUserLogin({
         username: data.username,
         password: data.password
       }));
     }).then(function (result) {
-      socket.emit('getFromServerLogin_Response', result);
       if (result.passwordMatch) {
+        //Populate user data
         game.sockets[socket.id].username = result.username;
         game.sockets[socket.id].userID = result.userid;
         game.sockets[socket.id].skins = result.skins;
         game.sockets[socket.id].friends = result.friends;
+
+        //Check for any friends online
+        findFriendsOnlineAndNotify(result.username, result.friends, 'online');
+
+        //Get all rooms
+        result.rooms = game.allRooms();
+
+        //Put user online
+        game.onlineUsers[result.username] = socket.id;
       }
+      socket.emit('getFromServerLogin_Response', result);
     });
   });
 
+  //On signup attempt
   socket.on('getFromServerSignup', function (data) {
     return new Promise(function (resolve, reject) {
       resolve(dbHelpers.verifyUserSignup({
@@ -57,50 +94,63 @@ io.sockets.on('connection', function (socket) {
         password: data.password
       }));
     }).then(function (result) {
-      socket.emit('getFromServerSignup_Response', result);
       if (result.passwordMatch) {
         game.sockets[socket.id].username = result.username;
         game.sockets[socket.id].userID = result.userid;
         game.sockets[socket.id].skins = result.skins;
         game.sockets[socket.id].friends = result.friends;
 
-        game.addPlayerToRoom("The Room", {
-          username: result.username,
-          socketID: socket.id,
-          skin: "SOME SKIN BREH"
-        });
+        //Check for any friends online
+        findFriendsOnlineAndNotify(result.username, result.friends, 'online');
+
+        //Get all rooms
+        result.rooms = game.allRooms();
+
+        //Put user online
+        game.onlineUsers[result.username] = socket.id;
       }
+      socket.emit('getFromServerSignup_Response', result);
     });
   });
 
+  //On join game attempt
   socket.on('sendToServerJoinGame', function (data) {
+    console.log(data);
     var joined = game.addPlayerToRoom(data.roomName,
-      { username: data.username });
+      {
+        username: data.username,
+        socketID: socket.id
+      });
     var result = { roomJoined: joined };
     if (joined) {
-      socket.join(roomName);
+      socket.join(data.roomName);
       result.roomName = data.roomName;
     }
     socket.emit('receiveFromServerJoinGame', result);
   });
 
   socket.on('sendToServerLeaveGame', function (data) {
-    game.removePlayerFromGameRoom(socket.id);
+    game.removePlayerFromGame({socketID: socket.id});
     socket.emit('receiveFromServerLeaveGame', {
       leaveSuccess: true
     });
   });
 
-  // While user is playing a game, user will emit this event at interval
+  //On individual player update
   socket.on('sendToServerPlayerState', function (data) {
-    game.updatePlayer(data);
+    game.updatePlayer({
+      roomName: data.roomName,
+      username: data.username,
+      positionAndRadius: data.positionAndRadius
+    });
   });
 
-  // When user dies in a game
+  //On individual player death
   socket.on('sendToServerDeath', function(finalStats){
     //I made this into a promise so I can string together writing to
     //the database and returning data to the user asynchronously
 
+<<<<<<< HEAD
     // Get user id associated with the socket id
     var userID = game.getUserID(socket.id);
 
@@ -129,16 +179,20 @@ io.sockets.on('connection', function (socket) {
   });
 
 
+=======
+  //On individual chat message
+  //NOTE: Include in setInterval later
+>>>>>>> cf83913ad4380941f79afc16a6cfbf9645285a63
   socket.on('sendToServerChatMessage', function (data) {
-    io.to(data.roomName).emit('receiveFromServerChatMessage',
-      data.message.substring(0, serverAttributes.chatMessageMaxSize));
+    data.message
+      = data.message.substring(0, serverAttributes.chatMessageMaxSize);
+    io.to(game.sockets[socket.id].gameRoom)
+      .emit('receiveFromServerChatMessage', data);
   });
 });
 
-//this will be an ongoing function to update players on the positions in
-//server's global obj
-// Need to emit for every room
-setInterval(function(){
+//Emit player data for every room
+setInterval(function () {
   for (var roomName in game.roomData.rooms) {
     game.refreshFood(roomName);
     io.to(roomName).emit('receiveFromServerGameState',
@@ -146,6 +200,36 @@ setInterval(function(){
     );
   };
 }, 100);
+
+//Emit server data every 5 seconds
+setInterval(function () {
+  var rooms = { rooms: game.allRooms() };
+  //Only display rooms to players who are logged in
+  for (var clientSocket in game.sockets) {
+    if (game.sockets[clientSocket].username !== null) {
+      io.to(clientSocket).emit('receiveFromServerRoomsData',
+        rooms);
+    }
+  }
+}, 5000);
+
+// A function to see if a user's friends are online,
+// and notify them about his online/offline status
+var findFriendsOnlineAndNotify = function (baseUser, friends, status) {
+  for (var friend in friends) {
+    //If friend is online
+    if (friend in game.onlineUsers) {
+      //Mark status
+      friends[friend]['status'] = status;
+      //Notify online friends that baseUser is online
+      io.to(game.onlineUsers[friend])
+        .emit('receiveFromServerFriendOnline', {
+          username: baseUser,
+          status: status
+        });
+    }
+  }
+};
 
 http.listen(3000, function(){
   console.log('listening on *:3000');

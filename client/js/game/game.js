@@ -21,6 +21,13 @@
     },
 
     create: function () {
+
+      // Updated when server sends updated info about all players
+      this.enemiesData = {
+        jiggly: { x: 0, y: 0, radius: 40, created: false },
+        puff: { x: 50, y: 50, radius: 30, created: false }
+      };
+
       //worldGroup is a group is used for zooming out.
       //Add all objects that are part of the world, except the player, to this group.
       //E.g. Enemies, food, not score or leaderboard.
@@ -39,12 +46,14 @@
         this.food.create(this.world.randomX, this.world.randomY, 'food');
       }
 
+      // All the the other players
+      this.enemies = this.add.group(this.worldGroup);
+
       // Create the player group, which is an array
       this.playerCells = this.add.group();
 
       // Create the primary player cell
       this.player = this.initializePlayer(50, 0, 0);
-      this.player.old = true;
       this.playerCells.add(this.player);
       this.camera.follow(this.player);
 
@@ -60,15 +69,22 @@
       }, this);
 
       // For testing: down key console logs info
-      var downkey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-      downkey.onDown.add(function(key) {
-        console.log(playerCells);
+      var downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+      downKey.onDown.add(function(key) {
+        console.log(this.enemies);
       }, this);
 
-      // For testing: left key calls getPlayerState
-      var leftkey = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-      leftkey.onDown.add(function(key) {
-        this.getPlayerState();
+      // For testing:
+      var leftKey = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        leftKey.onDown.add(function(key) {
+          this.enemiesData["jiggly"] = { x: -50, y: -50, radius: 15, created: true }
+      }, this);
+
+      // For testing: up key scales the player
+      var upKey = this.input.keyboard.addKey(Phaser.Keyboard.UP);
+      upKey.onDown.add(function(key) {
+        this.scalePlayer(this.player);
+        this.zoomOut();
       }, this);
 
       function createBackground(game) {
@@ -126,9 +142,12 @@
     // TODO: Bug: sometimes new cells get stuck outside of the world
     split: function(){
 
+      var originalCellCount = this.playerCells.length;
+      var count = 0;
+
       this.playerCells.forEach(function(cell) {
         // Only split if cell is not a newly split cell
-        if (cell.old) {
+        if (count < originalCellCount) {
           // Halve the mass of the original cell
           cell.width = cell.width / Math.sqrt(2);
           cell.height = cell.height / Math.sqrt(2);
@@ -139,15 +158,9 @@
           var newY = this.getPlayerCellsTop(this.playerCells) - newRadius - 30;
           var newCell = this.initializePlayer( newRadius, newX, newY);
           this.playerCells.add(newCell);
+          count++;
         }
       }, this);
-
-      // Set flag of all cells to "old"
-      this.playerCells.forEach(function(cell) {
-        if (!cell.old) {
-          cell.old = true;
-        }
-      });
     },
 
     // Get the x coordinate of the right boundary of the player cells group
@@ -180,27 +193,48 @@
       return top;
     },
 
-    // Update function is called by the core game loop every frame
+    // Called by game loop to update rendering of objects
     update: function () {
 
       var player = this.player;
 
-      // Update each child
+      // Update location of every player cell
       this.playerCells.forEach(function(cell) {
-        this.physics.arcade.collide(cell, this.walls);
-        this.physics.arcade.overlap(cell, this.food, this.eatFood, null, this);
-        this.physics.arcade.collide(cell, this.playerCells);
-
         // 30 is arbitrary number so that cells with larger mass move more slowly
-        var dist = this.physics.arcade.distanceToPointer(cell) * 30/cell.width;
+        var dist = this.physics.arcade.distanceToPointer(cell) * 40/cell.width;
         this.physics.arcade.moveToPointer(cell, dist);
       }, this);
 
-      //This is for testing
-      if (this.cursors.up.isDown){
-        this.scalePlayer(player);
-        this.zoomOut();
+      // Render all enemies
+      for (var username in this.enemiesData){
+        var enemyData = this.enemiesData[username];
+
+        // Create a new enemy object
+        if (!enemyData.created){
+          var newEnemy = this.initializePlayer(enemyData.radius, enemyData.x, enemyData.y);
+          newEnemy.username = username;
+          enemyData.created = true;
+          this.enemies.add(newEnemy);
+
+        // Othewise, update enemy size and position
+        } else {
+          // Get the enemy object
+          var enemyMatches = this.enemies.filter(function(enemy) {
+            return enemy.username === username ? true : false;
+          }, true);
+          var enemy = enemyMatches.list[0];
+          enemy.width = enemyData.radius * 2;
+          enemy.height = enemyData.radius * 2;
+          // TODO: this causes object to shake. Fix it
+          this.physics.arcade.moveToXY(enemy, enemyData.x, enemyData.y);
+        }
       }
+
+      // Check for collisions
+      this.physics.arcade.collide(this.playerCells, this.walls);
+      this.physics.arcade.overlap(this.playerCells, this.food, this.eatFood, null, this);
+      // this.physics.arcade.overlap(this.playerCells, this.enemies, this.eatOrBeEaten, null, this);
+      this.physics.arcade.collide(this.playerCells, this.playerCells);
     },
 
     // Show debug info
@@ -212,14 +246,24 @@
      }, this);
     },
 
-    eatFood: function(player, food) {
-      food.kill();
+    eatFood: function(playerCell, food) {
+      food.destroy();
 
       this.score += 10;
       this.scoreText.text = 'Score: ' + this.score;
 
-      this.scalePlayer(this.player, this.score);
+      this.scalePlayer(playerCell, this.score);
       this.zoomOut();
+    },
+
+    // Todo: need to remove enemeyData as well
+    eatOrBeEaten: function(playerCell, enemyCell) {
+      if(playerCell.width > enemyCell.width){
+        enemyCell.destroy();
+
+      } else if (enemyCell.width > playerCell.width) {
+        playerCell.destroy();
+      }
     },
 
     zoomOut: function(scaleRate){
@@ -237,7 +281,8 @@
 
     scalePlayer: function(player, mass) {
       //TODO: Figure out how to scale player based on mass
-      player.scale.setTo(player.scale.x+0.002, player.scale.y+0.002);
+      //TODO: check for collisions?
+      player.scale.setTo(player.scale.x+0.1, player.scale.y+0.1);
     },
 
     win: function() {

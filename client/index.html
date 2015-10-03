@@ -29,8 +29,11 @@
         </li>
         </ul>
       </div>
-      <input id="gameChatDivInput" type="text" placeholder="Message..."
-        maxlength="72">
+      <form ng-submit='sendToServerChatMessage()'>
+        <input id="gameChatDivInput" type="text" placeholder="Message..."
+          maxlength="72">
+        <!-- <input type="submit" id="gameChatDivSubmit" value="Submit" /> -->
+      </form>
     </div>
   </div>
 
@@ -115,7 +118,9 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default"
-              data-dismiss="modal">Close</button>
+              data-dismiss="modal" id="loginSignupModalClose">
+              Close
+            </button>
           </div>
         </div>
 
@@ -147,9 +152,12 @@
   </div>
 
   <div id="friendsDiv" ng-controller="friendsDivController">
-    <div ng-model="friends" id="friendsDivTitle">Friends</div>
+    <div ng-model="friends" id="friendsDivTitle">
+      Friends
+    </div>
     <ul id="friendsDivList">
-      <li ng-repeat="friend in friends | filter:friendFilter"
+      <li ng-repeat
+        ="friend in socialVars.friendsKeys | filter:friendFilter"
         class="friendsDivListFriend"
         ng-mouseenter="hover = true"
         ng-mouseleave="hover = false"
@@ -157,12 +165,15 @@
         <div class="friendsDivListStatus"
           ng-class="
           {
-            'friendsDivListStatus_Online': friend.status === 'online',
-            'friendsDivListStatus_Offline': friend.status === 'offline',
-            'friendsDivListStatus_Idle': friend.status === 'idle'
+            'friendsDivListStatus_Online':
+              socialVars.friends[friend].status === 'online',
+            'friendsDivListStatus_Offline':
+              socialVars.friends[friend].status === 'offline',
+            'friendsDivListStatus_Idle':
+              socialVars.friends[friend].status === 'idle'
           }">
       </div>
-        {{ friend.username }}
+        {{ friend }}
       </li>
     </ul>
     <p id="friendsDivListFind_Title">Find friend</p>
@@ -196,5 +207,13 @@
   <script src="js/angularControllers/playersDivController.js"></script>
   <script src="js/angularControllers/gameChatDivController.js"></script>
   <scripc src="js/indexSocketIO.js"></script>
+  
+  <script src="bower_components/phaser-official/build/custom/phaser-arcade-physics.min.js"></script>
+  <script src="js/game/boot.js"></script>
+  <script src="js/game/preloader.js"></script>
+  <script src="js/game/menu.js"></script>
+  <script src="js/game/game.js"></script>
+  <script src="js/game/main.js"></script>
+
 </body>
 </html>
