@@ -23,7 +23,7 @@ exports.roomData = {
   defaultMaxPlayersPerRoom: 10,
   maxRooms: 10,
   roomCount: 0,
-  rooms: {},
+  rooms: {}
 };
 
 exports.addRoom = function (size) {
