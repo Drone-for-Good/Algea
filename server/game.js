@@ -160,8 +160,8 @@ exports.getValidPosition = function (checkFood, roomName) {
 
 
 exports.getCoordinates = function(){
-  var xCoor = Math.round(Math.random * WORLD_WIDTH;
-  var yCoor = Math.round(Math.random * WORLD_HEIGHT;
+  var xCoor = Math.round(Math.random * WORLD_WIDTH);
+  var yCoor = Math.round(Math.random * WORLD_HEIGHT);
 
   return {x: xCoor, y: yCoor};
 };
