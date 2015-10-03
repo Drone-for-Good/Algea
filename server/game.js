@@ -153,7 +153,7 @@ exports.getValidPosition = function (checkFood, roomName) {
   }
   //if already a position, call it again to get different coordinates
   if (match === true){
-    return exports.getValidPosition(roomName, checkFood);
+    return exports.getValidPosition(checkFood, roomName);
   }
   return coordinatesObj;
 };
@@ -177,7 +177,7 @@ exports.addPlayerToRoom = function (roomName, data) {
       < exports.roomData.rooms[roomName].maxPlayers)) {
 
     // Make a player
-    var validPlayerPosition = exports.getValidPosition(roomName);
+    var validPlayerPosition = exports.getValidPosition(false, roomName);
     // Need radius, position, skin, and username to instantiate a player
     // clientside
     exports.roomData.rooms[roomName].playerInfo[data.username] = {
