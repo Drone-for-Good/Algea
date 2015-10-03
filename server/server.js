@@ -96,24 +96,6 @@ io.sockets.on('connection', function (socket) {
     game.updatePlayer(data);
   });
 
-  // This shouldn't be necessary as playerInfo is included in the room's data
-  //  when we send it out on a setInterval:
-  //
-  // //The following needs to be incorporated into sendToServerPlayerState
-  // socket.on('getFromServerAllFriends', function(friendRequest){
-  //   var promise = new Promise(function(resolve, reject){
-  //       helpers.sendFriends(friendRequest.userID);  //need to handle resolve and reject
-  //   })
-  //   .then(function(allFriends){
-  //       io.emit('getFromServerAllFriends_Response', function(){
-  //       });
-  //   })
-  //   .catch(function(err){
-  //     console.err('Error in getFromServerAllFriends promise.');
-  //     throw new Error(err);
-  //   });
-  // });
-
   // When user dies in a game
   socket.on('sendToServerDeath', function(finalStats){
     //I made this into a promise so I can string together writing to
