@@ -83,7 +83,7 @@
       this.playerCells = this.add.group();
 
       // Create the primary player cell
-      this.player = this.initializePlayer(50, 0, 0);
+      this.player = this.initializePlayer(50, 0, 0, this.username);
       this.playerCells.add(this.player);
       this.camera.follow(this.player);
 
@@ -156,15 +156,19 @@
       }
     },
 
-    initializePlayer: function (radius, x, y) {
+    initializePlayer: function (radius, x, y, username) {
       var circle = this.game.add.bitmapData(radius * 2, radius * 2)
         .circle(radius, radius, radius, '#0000FF');
       var player = this.game.add.sprite(x, y, circle);
       player.anchor.setTo(0.5, 0.5);
 
       this.game.physics.arcade.enable(player);
-
       player.body.collideWorldBounds = true;
+      
+      var style = { font: "30px Arial", fill: "#ffffff" };
+      var text = this.game.add.text(0, 0, username, style);
+      text.anchor.setTo(0.5, 0.5);
+      player.addChild(text);
 
       // All physics bodies are rectangles when using Arcade Physics.
       // By default, the rectangle will enclose the player circle
@@ -297,7 +301,7 @@
         // Create a new enemy object
         if (enemyData && !enemyData.created) {
           var newEnemy = this.initializePlayer(enemyData.radius,
-            enemyData.x, enemyData.y);
+            enemyData.x, enemyData.y, username);
           newEnemy.username = username;
           enemyData.created = true;
           this.enemies.add(newEnemy);
