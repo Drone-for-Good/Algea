@@ -50,6 +50,10 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
   $scope.joiningRoom = false;
   $scope.joinRoom = function (roomName) {
     if (!$scope.joiningRoom) {
+      if (roomName === $rootScope.gameVars.roomName) {
+        //Already in room
+        return;
+      }
       // Currently trying to join a room
       $scope.joiningRoom = true;
       var roomData = {
