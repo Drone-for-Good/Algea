@@ -19,7 +19,7 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
   $scope.getFromServerSignup = function () {
     var signupData = {
       username: $("#signupUsername").val(),
-      password: $("#signupUsername").val()
+      password: $("#signupPassword").val()
     };
     mySocket.emit("getFromServerSignup", signupData);
   };

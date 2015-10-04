@@ -71,7 +71,27 @@ var gameParams = {
 
 // All food data
 exports.foodData = {
-  // roomName: {foodInfo}
+  // roomName: {foodInfo, eatenFood, newFood}
+};
+
+// Initialize food data for a specified room
+var initializeFoodData = function (roomName) {
+  // Set food eaten and new food to be empty
+  exports.foodData[roomName] = {
+    /*
+      foodInfo: {
+        0: {
+          id: 0,
+          x: 200 (in pixels),
+          y: -500 (in pixels),
+          color: '#ff0000' (css style hex red, stringifed)
+        }
+      }
+    */
+    foodInfo: {},
+    newFood: [],//Array of objects like those in foodInfo
+    eatenFood: {}//{foodID_0: foodID_0}
+  };
 };
 
 // Returns a random position on the player map
@@ -107,9 +127,9 @@ var makeOneRandomFood = function (id, color) {
 // Prepopulates a food object
 var prepopulateFood = function (roomName) {
   var room = exports.roomData.rooms[roomName];
+  var roomFoodInfo = exports.foodData[roomName].foodInfo;
   var foodCount = room.foodCount;
   var maxFoodCount = room.maxFoodCount;
-  var roomFoodInfo = exports.foodData[roomName].foodInfo;
   // Make a food object associated with an integer ID
   // maxFoodCount-many times
   while (room.foodCount < maxFoodCount) {
@@ -232,8 +252,8 @@ exports.addRoom = function (size) {
     };
     // Assign room
     exports.roomData.rooms[newRoom.roomName] = newRoom;
-    // Populate food with room
-    exports.foodData[newRoom.roomName] = { foodInfo: {} };
+    // Initialize and populate food with room
+    initializeFoodData(newRoom.roomName);
     prepopulateFood(newRoom.roomName);
     // Increment room count
     exports.roomData.roomCount++;
