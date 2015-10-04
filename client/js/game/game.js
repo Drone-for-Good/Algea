@@ -85,7 +85,6 @@
       // Create the primary player cell
       this.player = this.initializePlayer(50, 0, 0, this.username);
       this.playerCells.add(this.player);
-      this.camera.follow(this.player);
 
       this.scoreText = this.add.text(20, this.game.height - 52,
         'score: 0', { fontSize: '32px', fill: '#000' });
@@ -193,7 +192,7 @@
 
       this.playerCells.forEach(function (cell) {
         // Only split if cell is not a newly split cell
-        if (count < originalCellCount && cell.width > 100) {
+        if (count < originalCellCount && cell.width > 141) {
           // Halve the mass of the original cell
           cell.width = cell.width / Math.sqrt(2);
           cell.height = cell.height / Math.sqrt(2);
@@ -256,9 +255,6 @@
 
     // Called by game loop to update rendering of objects
     update: function () {
-
-      var player = this.player;
-
       // Update location of every player cell
       this.playerCells.forEach(function (cell) {
         var dist = this.physics.arcade.distanceToPointer(cell);
@@ -283,6 +279,10 @@
         // this.enemies, this.eatOrBeEaten, null, this);
       this.physics.arcade.collide(this.playerCells,
         this.playerCells);
+
+      //Rectangle that bounds all player cells
+      var boundingRect = this.playerCells.getLocalBounds();
+      this.camera.focusOnXY(boundingRect.centerX, boundingRect.centerY);
     },
 
     // Show debug info
