@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "description": "my first socket.io app",
   "dependencies": {
+    "bcrypt": "^0.8.5",
+    "bcrypt-nodejs": "0.0.3",
     "bluebird": "^2.10.1",
     "express": "^4.10.2",
     "mysql": "^2.9.0",
