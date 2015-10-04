@@ -125,10 +125,10 @@ var removeFoodFromRoom = function (foodID, roomName) {
 }
 
 // Returns one random food object
-var makeOneRandomFood = function (id, color) {
+var makeOneRandomFood = function (foodID, color) {
   var foodPosition = getRandomFoodPosition();
   return {
-    id: id,
+    id: foodID,
     x: foodPosition.x,
     y: foodPosition.y,
     color: color || getRandomFoodColor()
