@@ -342,11 +342,13 @@
 
       } else if (enemyCell.width > playerCell.width) {
         playerCell.destroy();
-        clearInterval(window.playerUpdateRoutine);
 
-        //TODO: Allow user to continue playing in same room
-        //Currently user will have to rejoin room after dying
-        this.game.state.start('menu');
+        if (this.playerCells.length === 0){
+          clearInterval(window.playerUpdateRoutine);
+          //TODO: Allow user to continue playing in same room
+          //Currently user will have to rejoin room after dying
+          this.game.state.start('menu');
+        }
       }
     },
 
