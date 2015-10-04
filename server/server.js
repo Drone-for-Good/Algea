@@ -43,8 +43,8 @@ io.sockets.on('connection', function (socket) {
     //Check for any friends online
     findFriendsOnlineAndNotify(username, friends, 'offline');
 
-    console.log("\n" + socket.id, "disconnected.");
-    console.log((username || 'anonymous'), 'offline.\n');
+    console.log("\nSOCKET " + socket.id, "disconnected.");
+    console.log("USERNAME " + (username || 'anonymous'), 'is offline.\n');
   });
 
   //On login attempt
@@ -116,15 +116,14 @@ io.sockets.on('connection', function (socket) {
   //On join game attempt
   socket.on('sendToServerJoinGame', function (data) {
     console.log(data);
-    var joined = game.addPlayerToRoom(data.roomName,
+    var result = game.addPlayerToRoom(data.roomName,
       {
         username: data.username,
         socketID: socket.id
       });
-    var result = { roomJoined: joined };
-    if (joined) {
-      socket.join(data.roomName);
-      result.roomName = data.roomName;
+    // Join room on success
+    if (result.roomJoined) {
+      socket.join(result.roomName);
     }
     socket.emit('receiveFromServerJoinGame', result);
   });
@@ -138,11 +137,16 @@ io.sockets.on('connection', function (socket) {
 
   //On individual player update
   socket.on('sendToServerPlayerState', function (data) {
+    // Update player
     game.updatePlayer({
       roomName: data.roomName,
       username: data.username,
       positionAndRadius: data.positionAndRadius
     });
+    // Update eaten food
+    if (0 < data.eatenFoodIDs.length) {
+      game.deleteFood(game.sockets[socket.id].gameRoom, data.eatenFoodIDs);
+    }
   });
 
   //On individual player death
@@ -172,11 +176,6 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
-  socket.on('sendToServerFoodEaten', function(foodId){
-    game.removeFood(foodId);
-    //No response needed.
-  });
-
   //On individual chat message
   //NOTE: Include in setInterval later
   socket.on('sendToServerChatMessage', function (data) {
@@ -190,12 +189,16 @@ io.sockets.on('connection', function (socket) {
 //Emit player data for every room
 setInterval(function () {
   for (var roomName in game.roomData.rooms) {
-    // game.refreshFood(roomName);
+    // Add new food
+    game.refreshFood(roomName);
+    // Emit updated game
     io.to(roomName).emit('receiveFromServerGameState',
       game.roomData.rooms[roomName]
     );
+    // Restore food params
+    game.restoreFoodParams(roomName);
   };
-}, 100);
+}, 20);
 
 //Emit server data every 5 seconds
 setInterval(function () {

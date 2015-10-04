@@ -1,3 +1,30 @@
+/*
+
+ _______  _______  _______  ___   _  _______  _______  _______                                    
+|       ||       ||       ||   | | ||       ||       ||       |                                   
+|  _____||   _   ||       ||   |_| ||    ___||_     _||  _____|                                   
+| |_____ |  | |  ||       ||      _||   |___   |   |  | |_____                                    
+|_____  ||  |_|  ||      _||     |_ |    ___|  |   |  |_____  | ___                               
+ _____| ||       ||     |_ |    _  ||   |___   |   |   _____| ||_  |                              
+|_______||_______||_______||___| |_||_______|  |___|  |_______|  |_|                              
+ _______  ___      _______  __   __  _______  ______    _______                                   
+|       ||   |    |   _   ||  | |  ||       ||    _ |  |       |                                  
+|    _  ||   |    |  |_|  ||  |_|  ||    ___||   | ||  |  _____|                                  
+|   |_| ||   |    |       ||       ||   |___ |   |_||_ | |_____                                   
+|    ___||   |___ |       ||_     _||    ___||    __  ||_____  | ___                              
+|   |    |       ||   _   |  |   |  |   |___ |   |  | | _____| ||_  |                             
+|___|    |_______||__| |__|  |___|  |_______||___|  |_||_______|  |_|                             
+ _______  _______  __   __  _______         _______  _______  ______    _______  __   __  _______ 
+|       ||   _   ||  |_|  ||       |       |       ||   _   ||    _ |  |   _   ||  |_|  ||       |
+|    ___||  |_|  ||       ||    ___|       |    _  ||  |_|  ||   | ||  |  |_|  ||       ||  _____|
+|   | __ |       ||       ||   |___        |   |_| ||       ||   |_||_ |       ||       || |_____ 
+|   ||  ||       ||       ||    ___|       |    ___||       ||    __  ||       ||       ||_____  |
+|   |_| ||   _   || ||_|| ||   |___        |   |    |   _   ||   |  | ||   _   || ||_|| | _____| |
+|_______||__| |__||_|   |_||_______|       |___|    |__| |__||___|  |_||__| |__||_|   |_||_______|
+
+*/
+
+// Connected sockets object
 exports.sockets = {
   // 123455: {
   //   username: Angel,
@@ -8,15 +35,149 @@ exports.sockets = {
   // }
 };
 
-//According to the game mechanics, the player board size is:
-var WORLD_WIDTH = 4096;
-var WORLD_HEIGHT = 2048;
 
+// Online users object
 exports.onlineUsers = {
   // user1: user1SocketID
-  // user 2: true,
-  // ...
 }
+
+// Game parameters
+var gameParams = {
+  worldWidth: 4096,//In pixels
+  worldHeight: 2048,
+  foodColors: [
+    '#ff0000',//Red
+    '#ff6600',//Orange
+    '#ffcc00',//Gold
+    '#33cc33',//Green
+    '#0066ff',//Blue
+    '#6600cc',//Purple
+    '#ff0066'//Pink
+  ],
+  foodPerUpdate: 2
+};
+
+/*
+ 
+ _______  _______  _______  ______  
+|       ||       ||       ||      | 
+|    ___||   _   ||   _   ||  _    |
+|   |___ |  | |  ||  | |  || | |   |
+|    ___||  |_|  ||  |_|  || |_|   |
+|   |    |       ||       ||       |
+|___|    |_______||_______||______| 
+
+*/
+
+// All food data
+exports.foodData = {
+  // roomName: {foodInfo}
+};
+
+// Returns a random position on the player map
+var getRandomFoodPosition = function () {
+  return {
+    x: Math.round(gameParams.worldWidth * (Math.random() - .5)),
+    y: Math.round(gameParams.worldHeight * (Math.random() - .5))
+  };
+};
+
+// Returns a random food color
+var getRandomFoodColor = function () {
+  var idx = Math.round(Math.random() * gameParams.foodColors.length);
+  return gameParams.foodColors[idx];
+};
+
+// Remove specified food from specified room
+var removeFoodFromRoom = function (foodID, roomName) {
+  delete exports.roomData.rooms[roomName].food[foodID];
+}
+
+// Returns one random food object
+var makeOneRandomFood = function (id, color) {
+  var foodPosition = getRandomFoodPosition();
+  return {
+    id: id,
+    x: foodPosition.x,
+    y: foodPosition.y,
+    color: color || getRandomFoodColor()
+  };
+};
+
+// Prepopulates a food object
+var prepopulateFood = function (roomName) {
+  var room = exports.roomData.rooms[roomName];
+  var foodCount = room.foodCount;
+  var maxFoodCount = room.maxFoodCount;
+  var roomFoodInfo = exports.foodData[roomName].foodInfo;
+  // Make a food object associated with an integer ID
+  // maxFoodCount-many times
+  while (room.foodCount < maxFoodCount) {
+    // room.foodInfo[room.foodCount] = makeOneRandomFood(room.foodCount);
+    roomFoodInfo[room.foodCount] = makeOneRandomFood(room.foodCount);
+    ++room.foodCount;
+  }
+};
+
+// Delete food server side
+exports.deleteFood = function (roomName, foodIDs) {
+  var foodInfo = exports.foodData[roomName];
+  var room = exports.roomData.rooms[roomName];
+
+  for (var i = 0; i < foodIDs.length; ++i) {
+    // If food hasn't been claimed by another player
+    if (!(foodIDs[i] in room.eatenFood)) {
+      // Delete on next update
+      room.eatenFood[foodIDs[i]] = foodIDs[i];
+      room.eatenFoodIDs.push(foodIDs[i]);
+      foodInfo[foodIDs[i]] = null;
+      // Decrement food count
+      --room.foodCount;
+    }
+  }
+};
+
+// Refresh food on the board
+exports.refreshFood = function (roomName) {
+  var room = exports.roomData.rooms[roomName];
+  var foodInfo = exports.foodData[roomName].foodInfo;
+  var eatenFoodIDs = room.eatenFoodIDs;
+  var eatenFood = room.eatenFood;
+  var newFood = room.newFood;
+  // Only add gameParams.foodPerUpdate-many food per update
+  for (var i = 0; i < gameParams.foodPerUpdate; ++i) {
+    // Priority Queue implementation
+    if (0 < eatenFoodIDs.length) {
+      // Make a new food
+      foodInfo[eatenFoodIDs[0]] = makeOneRandomFood(eatenFoodIDs[0]);
+      ++room.foodCount;
+      // Store new food
+      newFood.push(foodInfo[eatenFoodIDs[0]]);
+      // Remove food from eaten food
+      delete eatenFood[eatenFoodIDs.shift()];
+    } else {
+      // No food left to be repopulated
+      break;
+    }
+  }
+};
+
+// Restore food parameters in between updates
+exports.restoreFoodParams = function (roomName) {
+  exports.roomData.rooms[roomName].newFood = [];
+};
+
+/*
+ 
+ ______    _______  _______  __   __  _______ 
+|    _ |  |       ||       ||  |_|  ||       |
+|   | ||  |   _   ||   _   ||       ||  _____|
+|   |_||_ |  | |  ||  | |  ||       || |_____ 
+|    __  ||  |_|  ||  |_|  ||       ||_____  |
+|   |  | ||       ||       || ||_|| | _____| |
+|___|  |_||_______||_______||_|   |_||_______|
+
+*/
 
 // All possible roomnames
 exports.roomNames = [
@@ -32,13 +193,13 @@ exports.roomNames = [
 
 // All room data
 exports.roomData = {
-  defaultMaxPlayersPerRoom: 10,
+  defaultMaxPlayerCount: 10,
+  defaultMaxFoodCount: 100,
   maxRooms: 10,
   roomCount: 0,
-  // Rooms of Key Value type roomName: (some room info)
-  // all exist in the rooms object below
   rooms: {}
 };
+
 
 // A function to get all roomNames and current sizes
 exports.allRooms = function () {
@@ -46,7 +207,7 @@ exports.allRooms = function () {
   for(var roomName in exports.roomData.rooms) {
     result.push({
       roomName: roomName,
-      maxCount: exports.roomData.rooms[roomName].maxPlayers,
+      maxCount: exports.roomData.rooms[roomName].maxPlayerCount,
       count:
         exports.roomData.rooms[roomName].playerCount
     });
@@ -61,11 +222,20 @@ exports.addRoom = function (size) {
     var newRoom = {
       roomName: exports.roomNames[exports.roomData.roomCount],
       playerCount: 0,
-      maxPlayers: size || exports.roomData.defaultMaxPlayersPerRoom,
+      maxPlayerCount: size || exports.roomData.defaultMaxPlayerCount,
       playerInfo: {},
-      food: {}
+      foodCount: 0,
+      maxFoodCount: exports.roomData.defaultMaxFoodCount,
+      eatenFood: {},
+      eatenFoodIDs: [],
+      newFood: []
     };
+    // Assign room
     exports.roomData.rooms[newRoom.roomName] = newRoom;
+    // Populate food with room
+    exports.foodData[newRoom.roomName] = { foodInfo: {} };
+    prepopulateFood(newRoom.roomName);
+    // Increment room count
     exports.roomData.roomCount++;
     console.log('\nA NEW ROOM has been CREATED.\n');
     return newRoom;
@@ -98,9 +268,12 @@ exports.removeRoom = function (roomName) {
   var roomRemoved = false;
   var roomIndex = exports.roomNames.indexOf(roomName);
   if (roomIndex !== -1 && roomName in exports.roomData.rooms) {
+    // Delete room
     exports.roomNames.splice(roomIndex, 1);
     exports.roomNames.push(roomName);
     delete exports.roomData.rooms[roomName];
+    // Delete room's food
+    delete exports.foodData[roomName];
     roomRemoved = true;
     console.log('\nROOM', roomName, 'REMOVED.\n');
   } else {
@@ -112,100 +285,59 @@ exports.removeRoom = function (roomName) {
 // Add a room when starting the server
 exports.addRoom();
 
-//will be used for valid player position and for valid food position
-//checkFood is a boolean which says whether you need to check food positions
-//Expected syntax of food -> id: {id: id, x: positionX, y: positionY}
-exports.getValidPosition = function (checkFood, roomName) {
-  //get random coordinates
-  var coordinatesObj = exports.getCoordinates();
-  //starting radius of all beginners:
-  var startingRadius = 50;
-  //check if those coordinates are in use:
-  var match = false;
-  //object of all the players in the room
-  var players = exports.roomData.rooms[roomName].playerInfo;
-  for (var player in players){
-    var max_X = coordinatesObj.x + player.positionAndRadius.radius + startingRadius;
-    var max_Y = coordinatesObj.y + player.positionAndRadius.radius + startingRadius;
-    var min_X = coordinatesObj.x - player.positionAndRadius.radius - startingRadius;
-    var min_Y = coordinatesObj.y - player.positionAndRadius.radius - startingRadius;
-
-    //need to go through player's positions to see if they match
-    if (player.positionAndRadius[0].x >= max_X || player.positionAndRadius[0].x <= min_X
-      && player.positionAndRadius[0].y >= max_Y || player.positionAndRadius[0].y <= min_Y){
-      //continue on if these conditions are met
-    } else {
-      //if conditions not met, position is in another player's spot
-      match = true;
-      break;
-    }
-  };
-  //need to go through food posiitions to see if they match
-  if (match === false && checkFood){
-    //object of all the food in room
-    var foodInRoom = exports.roomData.food;
-    for (var food in foodInRoom){
-      if (food.x === coordinatesObj.x && food.y === coordinatesObj.y){
-        match = true;
-        break;
-      }
-    }
-  }
-  //if already a position, call it again to get different coordinates
-  if (match === true){
-    return exports.getValidPosition(checkFood, roomName);
-  }
-  return coordinatesObj;
-};
-
-
-exports.getCoordinates = function(){
-  var xCoor = Math.round(Math.random * WORLD_WIDTH) - WORLD_WIDTH/2;
-  var yCoor = Math.round(Math.random * WORLD_HEIGHT) - WORLD_HEIGHT/2;
-
-  return {x: xCoor, y: yCoor};
-};
-
 // Put a player in a new room
 exports.addPlayerToRoom = function (roomName, data) {
-  // If the roomName exists and
-  // the player isn't already in the room and
-  // the player count of the room is under the max
+  // Assume room won't be joined
+  var roomJoined = false;
+  // If the room exists
+  // AND the player isn't already in the room
+  // AND the player count of the room is under the max
   if (roomName in exports.roomData.rooms
     && !(data.username in exports.roomData.rooms[roomName])
     && (exports.roomData.rooms[roomName].playerCount
-      < exports.roomData.rooms[roomName].maxPlayers)) {
+      < exports.roomData.rooms[roomName].maxPlayerCount)) {
 
-    // Make a player
-    var validPlayerPosition = exports.getValidPosition(false, roomName);
     // Need radius, position, skin, and username to instantiate a player
     // clientside
     exports.roomData.rooms[roomName].playerInfo[data.username] = {
       positionAndRadius: [
         {
-          x: validPlayerPosition.x,
-          y: validPlayerPosition.y,
+          x: 0,
+          y: 0,
           radius: 50
         }
       ],
-      skin: exports.sockets[data.socketID]['skins'][0] || ''
+      skin: exports.sockets[data.socketID]['skins'][0] || '',
+      // eatenFoodIDs: []
     };
     // Increment room count
     exports.roomData.rooms[roomName].playerCount++;
     // Set gameRoom on player
     exports.sockets[data.socketID].gameRoom = roomName;
+    // Set room joined to rue
+    roomJoined = true;
 
-    console.log('\nPLAYER', data.username,
-      'ADDED TO ROOM', roomName, '.\n');
-    return true;
+    console.log('\nPLAYER', data.username, 'ADDED TO ROOM', roomName + '.\n');
   } else {
+    // Player could not join room
     console.log('\nPLAYER', data.username, 'COULD NOT JOIN',
       roomName, '\n. ?!?!??!?!!!?!');
   }
+
+  // Return data necessary for response
+  var result = {
+    roomName: roomName,
+    roomJoined: roomJoined,
+  };
+  // If room was joined, add foodInfo
+  if (result.roomJoined) {
+    result.foodInfo = exports.foodData[roomName].foodInfo;
+  }
+  return result;
 };
 
 // Check if a new room is needed
-exports.makeNewRoomIfNeeded = function () {
+var makeNewRoomIfNeeded = function () {
 };
 
 // Remove a player from their current game room
@@ -213,42 +345,14 @@ exports.removePlayerFromGame = function (data) {
   var gameRoom = exports.sockets[data.socketID].gameRoom;
   var username = exports.sockets[data.socketID].username;
   if (gameRoom !== '') {
-    //Decrement roomCount
+    // Decrement roomCount
     exports.roomData.rooms[gameRoom].playerCount--;
-    //Remove player information
+    // Remove player information
     delete exports.roomData.rooms[gameRoom].playerInfo[username];
   }
-  //Set gameRoom to be empty
+  // Set gameRoom to be empty
   exports.sockets[data.socketID].gameRoom = '';
   return gameRoom;
-};
-
-exports.addFood = function(foodId){
-  //object with x and y coordinates
-  var coordinates = getValidPosition(true);
-  return {
-    id: foodId,
-    x: coordinates.x,
-    y: coordinates.y
-  };
-}
-
-//Front-end needs to signal the server when the food is eaten.
-exports.removeFood = function(foodId){
-  //this has to be done when the food is eaten
-  delete exports.roomData.rooms[roomName].food[i];
-}
-
-//to be called in server's setTimeout
-exports.refreshFood = function(roomName){
-  //how much food on the board should be based on the size of the board and the
-  //size of the food. For now, I'm hardcoding a number as filler.
-  var foodQuantity = 100;
-  for (i=0; i<foodQuantity; i++){
-    if (!exports.roomData.food[i]){
-      exports.roomData.rooms[roomName].food[i] = addFood(i);
-    }
-  }
 };
 
 // Update a player by referencing data on the client

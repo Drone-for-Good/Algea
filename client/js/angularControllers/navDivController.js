@@ -45,12 +45,12 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
 
     //Populate rooms
     $scope.gameRooms = data.rooms;
-    console.log($rootScope.socialVars);
   };
   // Player can only try to join one room at a time
   $scope.joiningRoom = false;
   $scope.joinRoom = function (roomName) {
     if (!$scope.joiningRoom) {
+      // Currently trying to join a room
       $scope.joiningRoom = true;
       var roomData = {
         roomName: roomName,
@@ -61,12 +61,18 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
   };
   mySocket.on('receiveFromServerJoinGame', function (data) {
     if(data.roomJoined){
-      //Successfully joined room
+      // Successfully joined room
       $rootScope.gameVars.roomName = data.roomName;
-      window.agar.game.state.start('game',true, false, $rootScope.gameVars.username, $rootScope.gameVars.roomName );
+      // Start game in room
+      window.agar.game.state.start('game',
+        true, false, $rootScope.gameVars.username,
+        $rootScope.gameVars.roomName,
+        data.foodInfo);
+      console.log(data.foodInfo);
     } else {
-      //Unable to join room
+      // Unable to join room
     }
+    // No longer attempting to join a room
     $scope.joiningRoom = false;
   });
 
