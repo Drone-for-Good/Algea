@@ -8,10 +8,17 @@
   function Game() {}
 
   Game.prototype = {
-    init: function (username, roomName) {
+    init: function (username, roomName, foodInfo) {
       this.username = username;
-      this.roomName = roomName
+      this.roomName = roomName;
+      // this.initialFoodData = foodInfo;
+      // For testing
+      this.initialFoodData = {
+        0: { id: 0, x: 100, y: 100, color: '#ffffe0' },
+        1: { id: 1, x: -100, y: -100, color: '#ffffe0' }
+      };
     },
+
     preload: function() {
       //set up world so coordinate (0,0) is the center
       this.world.setBounds(-WORLD_WIDTH/2, -WORLD_HEIGHT/2, WORLD_WIDTH,  WORLD_HEIGHT);
@@ -32,6 +39,13 @@
         // puff: { x: 50, y: 50, radius: 30, created: false }
       };
 
+      // Reference to all current food objects, for easy removal
+      // Example: { 12: reference, 13: reference };
+      this.foodIDs = {};
+
+      // List of all foods player has eaten since the last update sent to server
+      this.eatenFoodIDs = [];
+
       //worldGroup is a group is used for zooming out.
       //Add all objects that are part of the world, except the player, to this group.
       //E.g. Enemies, food, not score or leaderboard.
@@ -43,12 +57,19 @@
       this.walls = this.add.group(this.worldGroup);
       this.walls.addMultiple( createWalls(this.game) );
 
-      //For testing. Server will have to handle where to place food
+      // Create food group
       this.food = this.add.group(this.worldGroup);
       this.food.enableBody = true;
-      for (var i = 0; i < 60; i++) {
-        this.food.create(this.world.randomX, this.world.randomY, 'food');
+
+      // Add all the initial food
+      for(var key in this.initialFoodData){
+        this.addFood(this.initialFoodData[key]);
       }
+
+      // For testing
+      // for (var i = 0; i < 60; i++) {
+      //   this.food.create(this.world.randomX, this.world.randomY, 'food');
+      // }
 
       // All the the other players
       this.enemies = this.add.group(this.worldGroup);
@@ -271,6 +292,9 @@
     },
 
     eatFood: function(playerCell, food) {
+      // foodPlayerAte will be send to server at interval
+      this.eatenFoodIDs.push(food.id);
+      this.foodIDs[food.id] = null;
       food.destroy();
 
       this.score += 10;
@@ -315,6 +339,28 @@
       this.game.state.start('win');
     },
 
+    addFood: function(foodData) {
+      // Render the new food object
+      var newFood = this.food.create(foodData.x, foodData.y, 'food');
+      newFood.id = foodData.id;
+      // If there is still food currently with the same id, destroy it
+      if (this.foodIDs[foodData.id]) {
+        this.removeFood(foodData.id);
+      }
+      // Add reference to newFood object to foodIDs
+      this.foodIDs[foodData.id] = newFood;
+    },
+
+    removeFood: function(id){
+      // If the food still exists
+      if (this.foodIDs[id]) {
+        // delete the object
+        this.foodIDs[id].destroy();
+        // Update the foodIDs
+        this.foodIDs[id] = null;
+      }
+    },
+
     // TODO: decide what info to send to server
     // TODO: call this function to send info to server
     getPlayerState: function() {
@@ -330,15 +376,21 @@
       }, this);
       return playerState;
     },
+
     sendPlayerState: function() {
       window.globalSocket.emit('sendToServerPlayerState', {
         roomName: this.roomName,
         username: this.username,
-        positionAndRadius: this.getPlayerState()
+        positionAndRadius: this.getPlayerState(),
+        eatenFoodIDs: this.eatenFoodIDs
       });
+      this.eatenFoodID = [];
     },
+
     processGameStateData: function(data) {
       //TODO: Handle multiple cells
+
+      // Process enemy data
       for(var username in data.playerInfo){
         if(username === this.username) {
           continue;
@@ -349,6 +401,16 @@
         } else {
           this.enemiesData[username] = data.playerInfo[username].positionAndRadius.cells[0];
         }
+      }
+
+      // Process new food data
+      for(var i = 0; i < data.newFood.length; i++){
+        this.addFood(data.newFood[i]);
+      }
+
+      // Process eatenFood data
+      for(var i = 0; i < data.eatenFood.length; i++){
+        this.removeFood[data.newFood[i]];
       }
     }
   };
