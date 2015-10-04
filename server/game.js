@@ -71,7 +71,38 @@ var gameParams = {
 
 // All food data
 exports.foodData = {
-  // roomName: {foodInfo}
+  // roomName: {foodInfo, eatenFood, newFood}
+};
+
+// Initialize food data for a specified room
+var initializeFoodData = function (roomName) {
+  // Set food eaten and new food to be empty
+  exports.foodData[roomName] = {
+    /*
+      foodInfo: {
+        0: {
+          id: 0,
+          x: 200 (in pixels),
+          y: -500 (in pixels),
+          color: '#ff0000' (css style hex red, stringifed)
+        }
+      }
+    */
+    foodInfo: {},
+    // Array of objects like those in foodInfo
+    newFood: [],
+    // { foodID_0: foodID_0 }
+    eatenFood: {},
+    // Current food count
+    foodCount: 0,
+    // Max food count
+    maxFoodCount: 100
+  };
+  // Initialize 1-1 correspondence with roomData food params
+  exports.roomData.rooms[roomName].newFood
+    = exports.foodData[roomName].newFood;
+  exports.roomData.rooms[roomName].eatenFood
+    = exports.foodData[roomName].eatenFood;
 };
 
 // Returns a random position on the player map
@@ -94,10 +125,10 @@ var removeFoodFromRoom = function (foodID, roomName) {
 }
 
 // Returns one random food object
-var makeOneRandomFood = function (id, color) {
+var makeOneRandomFood = function (foodID, color) {
   var foodPosition = getRandomFoodPosition();
   return {
-    id: id,
+    id: foodID,
     x: foodPosition.x,
     y: foodPosition.y,
     color: color || getRandomFoodColor()
@@ -107,32 +138,31 @@ var makeOneRandomFood = function (id, color) {
 // Prepopulates a food object
 var prepopulateFood = function (roomName) {
   var room = exports.roomData.rooms[roomName];
-  var foodCount = room.foodCount;
-  var maxFoodCount = room.maxFoodCount;
-  var roomFoodInfo = exports.foodData[roomName].foodInfo;
+  var roomFoodData = exports.foodData[roomName];
+  var roomFoodInfo = roomFoodData.foodInfo;
   // Make a food object associated with an integer ID
   // maxFoodCount-many times
-  while (room.foodCount < maxFoodCount) {
-    // room.foodInfo[room.foodCount] = makeOneRandomFood(room.foodCount);
-    roomFoodInfo[room.foodCount] = makeOneRandomFood(room.foodCount);
-    ++room.foodCount;
+  while (roomFoodData.foodCount < roomFoodData.maxFoodCount) {
+    roomFoodInfo[roomFoodData.foodCount]
+      = makeOneRandomFood(roomFoodData.foodCount);
+    roomFoodData.foodCount++;
   }
 };
 
 // Delete food server side
 exports.deleteFood = function (roomName, foodIDs) {
-  var foodInfo = exports.foodData[roomName];
+  var foodInfo = exports.foodData[roomName].foodInfo;
+  var eatenFood = exports.foodData[roomName].eatenFood;
   var room = exports.roomData.rooms[roomName];
 
   for (var i = 0; i < foodIDs.length; ++i) {
     // If food hasn't been claimed by another player
-    if (!(foodIDs[i] in room.eatenFood)) {
+    if (!(foodIDs[i] in eatenFood)) {
       // Delete on next update
-      room.eatenFood[foodIDs[i]] = foodIDs[i];
-      room.eatenFoodIDs.push(foodIDs[i]);
+      eatenFood[foodIDs[i]] = foodIDs[i];
       foodInfo[foodIDs[i]] = null;
       // Decrement food count
-      --room.foodCount;
+      --exports.foodData[roomName].foodCount;
     }
   }
 };
@@ -141,20 +171,23 @@ exports.deleteFood = function (roomName, foodIDs) {
 exports.refreshFood = function (roomName) {
   var room = exports.roomData.rooms[roomName];
   var foodInfo = exports.foodData[roomName].foodInfo;
-  var eatenFoodIDs = room.eatenFoodIDs;
-  var eatenFood = room.eatenFood;
-  var newFood = room.newFood;
+  var eatenFood = exports.foodData[roomName].eatenFood;
+  var newFood = exports.foodData[roomName].newFood;
   // Only add gameParams.foodPerUpdate-many food per update
   for (var i = 0; i < gameParams.foodPerUpdate; ++i) {
-    // Priority Queue implementation
-    if (0 < eatenFoodIDs.length) {
+    var eatenFoodKeys = Object.keys(eatenFood);
+    if (0 < eatenFoodKeys.length) {
+      // Get the first ID
+      var tmpID = eatenFoodKeys[0];
       // Make a new food
-      foodInfo[eatenFoodIDs[0]] = makeOneRandomFood(eatenFoodIDs[0]);
-      ++room.foodCount;
+      foodInfo[tmpID] = makeOneRandomFood(tmpID);
+      exports.foodData[roomName].foodCount++;
       // Store new food
-      newFood.push(foodInfo[eatenFoodIDs[0]]);
+      newFood.push(foodInfo[tmpID]);
+      console.log(exports.foodData[roomName].newFood);
+      console.log(exports.roomData.rooms[roomName].newFood);
       // Remove food from eaten food
-      delete eatenFood[eatenFoodIDs.shift()];
+      delete eatenFood[tmpID];
     } else {
       // No food left to be repopulated
       break;
@@ -164,7 +197,14 @@ exports.refreshFood = function (roomName) {
 
 // Restore food parameters in between updates
 exports.restoreFoodParams = function (roomName) {
-  exports.roomData.rooms[roomName].newFood = [];
+  if (exports.foodData[roomName].newFood.length > 0) {
+    console.log('YOU HAVE FOOOOOOOOD');
+    console.log(exports.foodData[roomName].newFood);
+  }
+  // Reassign empty food array
+  exports.foodData[roomName].newFood = [];
+  exports.roomData.rooms[roomName].newFood
+    = exports.foodData[roomName].newFood;
 };
 
 /*
@@ -223,17 +263,12 @@ exports.addRoom = function (size) {
       roomName: exports.roomNames[exports.roomData.roomCount],
       playerCount: 0,
       maxPlayerCount: size || exports.roomData.defaultMaxPlayerCount,
-      playerInfo: {},
-      foodCount: 0,
-      maxFoodCount: exports.roomData.defaultMaxFoodCount,
-      eatenFood: {},
-      eatenFoodIDs: [],
-      newFood: []
+      playerInfo: {}
     };
     // Assign room
     exports.roomData.rooms[newRoom.roomName] = newRoom;
-    // Populate food with room
-    exports.foodData[newRoom.roomName] = { foodInfo: {} };
+    // Initialize and populate food with room
+    initializeFoodData(newRoom.roomName);
     prepopulateFood(newRoom.roomName);
     // Increment room count
     exports.roomData.roomCount++;

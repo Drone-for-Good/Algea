@@ -144,7 +144,6 @@ io.sockets.on('connection', function (socket) {
       positionAndRadius: data.positionAndRadius
     });
     // Update eaten food
-    console.log('FOOD EATEN:', data.eatenFoodIDs);
     if (0 < data.eatenFoodIDs.length) {
       game.deleteFood(game.sockets[socket.id].gameRoom, data.eatenFoodIDs);
     }
@@ -192,14 +191,13 @@ setInterval(function () {
   for (var roomName in game.roomData.rooms) {
     // Add new food
     game.refreshFood(roomName);
-    // Emit updated game
     io.to(roomName).emit('receiveFromServerGameState',
       game.roomData.rooms[roomName]
     );
     // Restore food params
     game.restoreFoodParams(roomName);
   };
-}, 20);
+}, 200);
 
 //Emit server data every 5 seconds
 setInterval(function () {
