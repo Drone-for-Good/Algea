@@ -343,6 +343,10 @@
       } else if (enemyCell.width > playerCell.width) {
         playerCell.destroy();
         clearInterval(window.playerUpdateRoutine);
+
+        //TODO: Allow user to continue playing in same room
+        //Currently user will have to rejoin room after dying
+        this.game.state.start('menu');
       }
     },
 
@@ -448,6 +452,15 @@
       for (var i = 0; i < data.eatenFood.length; i++) {
         this.removeFood[data.eatenFood[i]];
       }
+    },
+    shutdown: function () {
+      clearInterval(window.playerUpdateRoutine);
+      window.globalSocket.off('receiveFromServerGameState',
+        this.processGameStateData.bind(this));
+      window.globalSocket.emit('sendToServerLeaveGame', {
+        username: this.username,
+        gameRoom: this.roomName
+      });
     }
   };
 
