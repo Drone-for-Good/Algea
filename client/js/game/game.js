@@ -35,12 +35,6 @@
 
     create: function () {
 
-      // Updated when server sends updated info about all players
-      this.enemiesData = {
-        // jiggly: { x: 0, y: 0, radius: 40, created: false },
-        // puff: { x: 50, y: 50, radius: 30, created: false }
-      };
-
       // Reference to all current food objects, for easy removal
       // Example: { 12: reference, 13: reference };
       this.foodIDs = {};
@@ -76,8 +70,38 @@
       //      this.world.randomY, 'food');
       // }
 
-      // All the the other players
+      // All the other players
       this.enemies = this.add.group(this.worldGroup);
+
+      // Hold reference to each enemy group. Key is the username of the player
+      this.enemyNames = {};
+
+      // // SEED ENEMY DATA FOR TESTING
+      // // Add a new enemy group with username
+      // var newEnemyGroup = this.add.group(this.enemies);
+      // newEnemyGroup.username = 'jiggly';
+
+      // // Map username of enemey group for easy access
+      // this.enemyNames[newEnemyGroup.username] = newEnemyGroup;
+
+      // // Add some cells to the new enemy group
+      // var newEnemyCell = this.initializePlayer(40, 0, 0);
+      // newEnemyGroup.add(newEnemyCell);
+
+      // // Add some cells to the new enemy group
+      // var newEnemyCell = this.initializePlayer(40, 50, 50);
+      // newEnemyGroup.add(newEnemyCell);
+
+      // // Add a new enemy group with username
+      // var newEnemyGroup = this.add.group(this.enemies);
+      // newEnemyGroup.username = 'evil';
+
+      // // Map username of enemey group for easy access
+      // this.enemyNames[newEnemyGroup.username] = newEnemyGroup;
+
+      // // Add some cells to the new enemy group
+      // var newEnemyCell = this.initializePlayer(30, -100, -100);
+      // newEnemyGroup.add(newEnemyCell);
 
       // Create the player group, which is an array
       this.playerCells = this.add.group();
@@ -105,14 +129,15 @@
       // For testing: down key console logs info
       var downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
       downKey.onDown.add(function(key) {
-        console.log(this.enemies);
+        // Change the enemies
+        this.processGameStateDataTEST();
       }, this);
 
       // For testing:
       var leftKey = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         leftKey.onDown.add(function(key) {
-          this.enemiesData["jiggly"]
-            = { x: -50, y: -50, radius: 15, created: true }
+          console.log("enemy group objects: ", this.enemies);
+          console.log("enemy names: ", this.enemyNames);
       }, this);
 
       // For testing: up key scales the player
@@ -163,7 +188,7 @@
 
       this.game.physics.arcade.enable(player);
       player.body.collideWorldBounds = true;
-      
+
       var style = { font: "30px Arial", fill: "#ffffff" };
       var text = this.game.add.text(0, 0, username, style);
       text.anchor.setTo(0.5, 0.5);
@@ -268,8 +293,8 @@
         this.physics.arcade.moveToPointer(cell, velocity);
       }, this);
 
-      // Render all enemies
-      this.renderEnemies();
+      // // Render all enemies
+      // this.renderEnemies();
 
       // Check for collisions
       this.physics.arcade.collide(this.playerCells, this.walls);
@@ -294,32 +319,32 @@
      }, this);
     },
 
-    // Render enemies
-    renderEnemies: function () {
-      for (var username in this.enemiesData) {
-        var enemyData = this.enemiesData[username];
-        // Create a new enemy object
-        if (enemyData && !enemyData.created) {
-          var newEnemy = this.initializePlayer(enemyData.radius,
-            enemyData.x, enemyData.y, username);
-          newEnemy.username = username;
-          enemyData.created = true;
-          this.enemies.add(newEnemy);
+    // // Render enemies
+    // renderEnemies: function () {
+    //   for (var username in this.enemiesData) {
+    //     var enemyData = this.enemiesData[username];
+    //     // Create a new enemy object
+    //     if (enemyData && !enemyData.created) {
+    //       var newEnemy = this.initializePlayer(enemyData.radius,
+    //         enemyData.x, enemyData.y, username);
+    //       newEnemy.username = username;
+    //       enemyData.created = true;
+    //       this.enemies.add(newEnemy);
 
-        // Othewise, update enemy size and position
-        } else {
-          // Get the enemy object
-          var enemyMatches = this.enemies.filter(function (enemy) {
-            return enemy.username === username ? true : false;
-          }, true);
-          var enemy = enemyMatches.list[0];
-          enemy.width = enemyData.radius * 2;
-          enemy.height = enemyData.radius * 2;
-          enemy.x = enemyData.x;
-          enemy.y = enemyData.y;
-        }
-      }
-    },
+    //     // Othewise, update enemy size and position
+    //     } else {
+    //       // Get the enemy object
+    //       var enemyMatches = this.enemies.filter(function (enemy) {
+    //         return enemy.username === username ? true : false;
+    //       }, true);
+    //       var enemy = enemyMatches.list[0];
+    //       enemy.width = enemyData.radius * 2;
+    //       enemy.height = enemyData.radius * 2;
+    //       enemy.x = enemyData.x;
+    //       enemy.y = enemyData.y;
+    //     }
+    //   }
+    // },
 
     eatFood: function (playerCell, food) {
       // foodPlayerAte will be send to server at interval
@@ -335,7 +360,6 @@
       this.zoomOut();
     },
 
-    // TODO: need to remove enemeyData as well
     eatOrBeEaten: function (playerCell, enemyCell) {
       if (playerCell.width > enemyCell.width) {
         enemyCell.destroy();
@@ -400,6 +424,20 @@
       }
     },
 
+    updateEnemyGroup: function(enemyGroup, data) {
+      // Destroy all existing enemy cells
+      enemyGroup.removeAll(true);
+      console.log("destroyed all cells");
+      console.log(data);
+      // Re-draw all enemy cells with current data
+      for (var i = 0; i < data.length; i++) {
+        var newEnemyCell =
+          this.initializePlayer(data[i].radius, data[i].x, data[i].y);
+        enemyGroup.add(newEnemyCell);
+      // TODO: should we do collision detection here?
+      }
+    },
+
     // TODO: decide what info to send to server
     // TODO: call this function to send info to server
     getPlayerState: function () {
@@ -426,24 +464,76 @@
       this.eatenFoodIDs = [];
     },
 
-    processGameStateData: function (data) {
-      //TODO: Handle multiple cells
+    // TESTING ONLY. Press DOWN key to call this function,
+    // which will render the new enemies based on the given data
+    processGameStateDataTEST: function () {
+
+      var data = {};
+
+      data.playerInfo =
+      {
+        jiggly: {
+          positionAndRadius: [
+            { x: 0, y: 0, radius: 40 },
+            { x: 50, y: 50, radius: 40 }],
+          skin : '' },
+        evil: {
+          positionAndRadius: [
+            { x: -100, y: -100, radius: 30 },
+            { x: -200, y: -200, radius: 30 }],
+          skin : '' }
+      };
 
       // Process enemy data
       for (var username in data.playerInfo) {
+        // Do not process own player's data
         if (username === this.username) {
           continue;
         }
-        if (this.enemiesData[username]
-          && this.enemiesData[username].created) {
-          this.enemiesData[username]
-            = data.playerInfo[username].positionAndRadius.cells[0];
-          this.enemiesData[username].created = true;
-        } else {
-          this.enemiesData[username]
-            = data.playerInfo[username].positionAndRadius.cells[0];
+        // Create an enemy group if it doesn't exist already
+        if (!this.enemyNames.hasOwnProperty(username)) {
+          console.log("make a new enemy group cuz it's not there");
+          // Add a new enemy group with username
+          var newEnemyGroup = this.add.group(this.enemies);
+          newEnemyGroup.username = username;
+
+          // Map username of enemy group for easy access
+          this.enemyNames[username] = newEnemyGroup;
         }
+
+        var enemy = this.enemyNames[username];
+        this.updateEnemyGroup(enemy, data.playerInfo[username].positionAndRadius);
       }
+
+      // TODO: Handle when player leaves game
+      // Delete any enemy groups no longer on server
+    },
+
+    processGameStateData: function (data) {
+
+      // Process enemy data
+      for (var username in data.playerInfo) {
+        // Do not process own player's data
+        if (username === this.username) {
+          continue;
+        }
+        // Create an enemy group if it doesn't exist already
+        if (!this.enemyNames.hasOwnProperty(username)) {
+          console.log("make a new enemy group cuz it's not there");
+          // Add a new enemy group with username
+          var newEnemyGroup = this.add.group(this.enemies);
+          newEnemyGroup.username = username;
+
+          // Map username of enemy group for easy access
+          this.enemyNames[username] = newEnemyGroup;
+        }
+
+        var enemy = this.enemyNames[username];
+        this.updateEnemyGroup(enemy, data.playerInfo[username].positionAndRadius);
+      }
+
+      // TODO: Handle when player leaves game
+      // Delete any enemy groups no longer on server
 
       // Process new food data
       for (var i = 0; i < data.newFood.length; i++) {
