@@ -185,8 +185,6 @@
           var newRadius = cell.width / 2;
           var newX = this.getPlayerCellsRight(this.playerCells) + newRadius + 30;
           var newY = this.getPlayerCellsTop(this.playerCells) - newRadius - 30;
-          var newCell = this.initializePlayer( newRadius, cell.x, cell.y);
-
           var newCell = this.initializePlayer( newRadius, newX, newY);
           this.playerCells.add(newCell);
 
