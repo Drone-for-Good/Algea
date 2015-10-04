@@ -144,6 +144,7 @@ io.sockets.on('connection', function (socket) {
       positionAndRadius: data.positionAndRadius
     });
     // Update eaten food
+    console.log('FOOD EATEN:', data.eatenFoodIDs);
     if (0 < data.eatenFoodIDs.length) {
       game.deleteFood(game.sockets[socket.id].gameRoom, data.eatenFoodIDs);
     }

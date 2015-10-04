@@ -68,7 +68,6 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
         true, false, $rootScope.gameVars.username,
         $rootScope.gameVars.roomName,
         data.foodInfo);
-      console.log(data.foodInfo);
     } else {
       // Unable to join room
     }

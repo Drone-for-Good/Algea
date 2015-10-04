@@ -11,12 +11,13 @@
     init: function (username, roomName, foodInfo) {
       this.username = username;
       this.roomName = roomName;
-      // this.initialFoodData = foodInfo;
+      this.initialFoodData = foodInfo;
       // For testing
-      this.initialFoodData = {
-        0: { id: 0, x: 100, y: 100, color: '#ffffe0' },
-        1: { id: 1, x: -100, y: -100, color: '#ffffe0' }
-      };
+      // this.initialFoodData = {
+      //   0: { id: 0, x: 100, y: 100, color: '#ffffe0' },
+      //   1: { id: 1, x: -100, y: -100, color: '#ffffe0' },
+      //   2: { id: 1, x: -100, y: -100, color: '#ffffe0' }
+      // };
     },
 
     preload: function() {
@@ -294,8 +295,9 @@
     eatFood: function(playerCell, food) {
       // foodPlayerAte will be send to server at interval
       this.eatenFoodIDs.push(food.id);
-      this.foodIDs[food.id] = null;
-      food.destroy();
+      // this.foodIDs[food.id] = null;
+      // food.destroy();
+      this.removeFood(food.id);
 
       this.score += 10;
       this.scoreText.text = 'Score: ' + this.score;
@@ -345,6 +347,7 @@
       newFood.id = foodData.id;
       // If there is still food currently with the same id, destroy it
       if (this.foodIDs[foodData.id]) {
+        console.log('food is already there');
         this.removeFood(foodData.id);
       }
       // Add reference to newFood object to foodIDs
@@ -384,7 +387,7 @@
         positionAndRadius: this.getPlayerState(),
         eatenFoodIDs: this.eatenFoodIDs
       });
-      this.eatenFoodID = [];
+      this.eatenFoodIDs = [];
     },
 
     processGameStateData: function(data) {
@@ -410,7 +413,7 @@
 
       // Process eatenFood data
       for(var i = 0; i < data.eatenFood.length; i++){
-        this.removeFood[data.newFood[i]];
+        this.removeFood[data.eatenFood[i]];
       }
     }
   };
