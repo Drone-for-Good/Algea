@@ -61,27 +61,11 @@ io.sockets.on('connection', function (socket) {
     }
 
     //Proceed because user doesn't exist or is offline
-    var data = data;
-    var password = data.password;
-    return new Promise( function (resolve, reject) {
-      bcrypt.genSalt(32, function (err, newSalt) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(newSalt);
-        }
-      });
-    }).then( function (salt) {
-      return bcrypt.hash(password, salt, null, function (err, hash) {
-        return (new Promise( function (resolve, reject) {
-          resolve(dbHelpers.verifyUserSignup({
-            username: data.username,
-            password: hash
-          }));
-        })).then( function (result) {
-          return result;
-        });
-      });
+    return new Promise(function (resolve, reject) {
+      resolve(dbHelpers.verifyUserLogin({
+        username: data.username,
+        password: data.password
+      }));
     }).then(function (result) {
       if (result.passwordMatch) {
         //Populate user data
@@ -106,23 +90,11 @@ io.sockets.on('connection', function (socket) {
 
   // On signup attempt
   socket.on('getFromServerSignup', function (data) {
-    var data = data;
-    var password = data.password;
-    return (new Promise( function (resolve, reject) {
-      bcrypt.genSalt(32, function (err, newSalt) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(newSalt);
-        }
-      });
-    })).then( function (salt) {
-      bcrypt.hash(password, salt, null, function (err, hash) {
-        return dbHelpers.verifyUserSignup({
-          username: data.username,
-          password: hash
-        });
-      });
+    return new Promise(function (resolve, reject) {
+      resolve(dbHelpers.verifyUserSignup({
+        username: data.username,
+        password: data.password
+      }));
     }).then( function (result) {
       if (result.passwordMatch) {
         game.sockets[socket.id].username = result.username;
