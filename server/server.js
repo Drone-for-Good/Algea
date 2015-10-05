@@ -73,7 +73,7 @@ io.sockets.on('connection', function (socket) {
         username: data.username,
         password: data.password
       });
-    }).then( function (result) {
+    }).then(function (result) {
       if (result.passwordMatch) {
         //Populate user data
         game.sockets[socket.id].username = result.username;
@@ -96,7 +96,7 @@ io.sockets.on('connection', function (socket) {
 
   //On signup attempt
   socket.on('getFromServerSignup', function (data) {
-    return new Promise( function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       //encrypt password
       bcrypt.hash(data.password, null, null, function(err, hash){
         data.password = hash;
@@ -165,7 +165,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   //On individual player death
-  socket.on('sendToServerDeath', function (finalStats) {
+  socket.on('sendToServerDeath', function(finalStats){
     //I made this into a promise so I can string together writing to
     //the database and returning data to the user asynchronously
 
@@ -177,15 +177,15 @@ io.sockets.on('connection', function (socket) {
     helpers.updateBestStats(userID, finalStats);
     helpers.updateTotalStats(userID, finalStats);
 
-    var promise = new Promise( function (resolve, reject) {
+    var promise = new Promise(function(resolve, reject){
         return helpers.sendDeath(finalStats);           //NEED TO HANDLE AS RESOLVE AND REJECT
     });
     promise().then(function(dataForClient){
-        io.emit('receiveFromServerDeath', function () {
+        io.emit('receiveFromServerDeath', function(){
           //for now I haven't made something back to the client.
         });
     })
-    .catch(function (err) {
+    .catch(function(err){
         console.err('Error in sendToServerDeath promise.');
         throw new Error(err);
     });
@@ -244,6 +244,6 @@ var findFriendsOnlineAndNotify = function (baseUser, friends, status) {
   }
 };
 
-http.listen(3000, function () {
+http.listen(3000, function(){
   console.log('listening on *:3000');
 });
