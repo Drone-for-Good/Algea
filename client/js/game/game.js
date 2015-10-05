@@ -241,7 +241,7 @@
           newCell.body.checkCollision.none = true;
           var split = this.game.add.tween(newCell.body.velocity);
           split.to({x: 0, y: 0}, 1000, Phaser.Easing.Cubic.In);
-          split.onComplete.add(function(){
+          split.onComplete.add(function () {
             newCell.body.checkCollision.none = false;
           }, this);
           split.start();
@@ -305,7 +305,7 @@
       this.physics.arcade.overlap(this.playerCells,
         this.food, this.eatFood, null, this);
 
-      this.enemies.forEachAlive(function(enemy){
+      this.enemies.forEachAlive(function (enemy) {
         this.physics.arcade.overlap(this.playerCells,
           enemy, this.eatOrBeEaten, null, this);
       }, this);
