@@ -169,8 +169,8 @@ io.sockets.on('connection', function (socket) {
   // On individual cell death
   socket.on('sendToServerCellEaten', function(data) {
     // Inform player they may increase their size
-    io.to(socket.id).emit('receiveFromServerCellEaten',
-      data);
+    io.to(game.onlineUsers[data.username])
+      .emit('receiveFromServerCellEaten', data);
   });
 
   // On individual player death
