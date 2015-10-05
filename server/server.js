@@ -5,7 +5,7 @@ var io = require('socket.io')(http);
 var dbHelpers = require('../server/db-helpers.js');
 var game = require('../server/game.js');
 var Promise = require('bluebird');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-nodejs');
 
 // Serve static files
 app.use(express.static(__dirname + '/../client'));
@@ -61,18 +61,27 @@ io.sockets.on('connection', function (socket) {
     }
 
     //Proceed because user doesn't exist or is offline
-    return new Promise(function (resolve, reject) {
-      //encrypt password
-      /*bcrypt.hash(data.password, null, null, function(err, hash){
-        data.password = hash;
-      }).then( function () {
-        return data;
+    var data = data;
+    var password = data.password;
+    return new Promise( function (resolve, reject) {
+      bcrypt.genSalt(32, function (err, newSalt) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(newSalt);
+        }
       });
-    }).then( function (data) {
-      return */resolve(dbHelpers.verifyUserLogin({
-        username: data.username,
-        password: data.password
-      }));
+    }).then( function (salt) {
+      return bcrypt.hash(password, salt, null, function (err, hash) {
+        return (new Promise( function (resolve, reject) {
+          resolve(dbHelpers.verifyUserSignup({
+            username: data.username,
+            password: hash
+          }));
+        })).then( function (result) {
+          return result;
+        });
+      });
     }).then(function (result) {
       if (result.passwordMatch) {
         //Populate user data
@@ -97,18 +106,23 @@ io.sockets.on('connection', function (socket) {
 
   // On signup attempt
   socket.on('getFromServerSignup', function (data) {
-    return new Promise(function (resolve, reject) {
-      // encrypt password
-      /*bcrypt.hash(data.password, null, null, function(err, hash){
-        data.password = hash;
-      }).then( function () {
-        return data;
+    var data = data;
+    var password = data.password;
+    return (new Promise( function (resolve, reject) {
+      bcrypt.genSalt(32, function (err, newSalt) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(newSalt);
+        }
       });
-    }).then( function (data) {
-      return */resolve(dbHelpers.verifyUserSignup({
-        username: data.username,
-        password: data.password
-      }));
+    })).then( function (salt) {
+      bcrypt.hash(password, salt, null, function (err, hash) {
+        return dbHelpers.verifyUserSignup({
+          username: data.username,
+          password: hash
+        });
+      });
     }).then( function (result) {
       if (result.passwordMatch) {
         game.sockets[socket.id].username = result.username;
@@ -132,7 +146,6 @@ io.sockets.on('connection', function (socket) {
 
   // On join game attempt
   socket.on('sendToServerJoinGame', function (data) {
-    console.log(data);
     var result = game.addPlayerToRoom(data.roomName,
       {
         username: data.username,
