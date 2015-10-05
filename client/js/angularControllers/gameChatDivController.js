@@ -13,7 +13,7 @@ app.controller("gameChatDivController", function ($rootScope, $scope, mySocket) 
   $scope.messages = [
     {
       username: 'SERVER',
-      message: 'CLOSE THE CHAT TO SPLIT (Hit "C")'
+      message: 'CLOSE CHAT TO SPLIT ("C")'
     }
   ];
 
