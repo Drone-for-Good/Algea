@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Agar Clone</title>
+  <title>Haza.io</title>
   <link rel="stylesheet" 
     href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="css/index.css">
@@ -41,7 +41,7 @@
 
     <button type="button" class="btn btn-info btn-lg" id="showLoginModal"
       data-toggle="modal" data-target="#loginSignupModal">
-      Log In
+      Sign In
     </button>
 
     <div id="loginSignupModal" class="modal fade" role="dialog">
@@ -128,7 +128,7 @@
     </div>
 
     <div id="gameRoomsDiv">
-      <div id="gameRoomsDivTitle">Game Rooms</div>
+      <div id="gameRoomsDivTitle">Rooms</div>
       <ul id="gameRoomsList">
         <li ng-repeat="gameRoom in gameRooms | filter:gameRoomsFilter"
           class="gameRoomsDivList_Room"
@@ -145,7 +145,7 @@
           {{ gameRoom.roomName }} ({{ gameRoom.count }}/{{ gameRoom.maxCount }})
         </li>
       </ul>
-      <p id="gameRoomsDivListFind_Title">Find room</p>
+      <p id="gameRoomsDivListFind_Title">Find rooms</p>
       <input ng-model="gameRoomsFilter"
         type="text" id="gameRoomsDivListFind_Input" placeholder="Room Name"/>
     </div>
@@ -158,10 +158,7 @@
     <ul id="friendsDivList">
       <li ng-repeat
         ="friend in socialVars.friendsKeys | filter:friendFilter"
-        class="friendsDivListFriend"
-        ng-mouseenter="hover = true"
-        ng-mouseleave="hover = false"
-        ng-class="{'friendsDivListFriend_Hover': hover}">
+        class="friendsDivListFriend">
         <div class="friendsDivListStatus"
           ng-class="
           {
@@ -176,7 +173,7 @@
         {{ friend }}
       </li>
     </ul>
-    <p id="friendsDivListFind_Title">Find friend</p>
+    <p id="friendsDivListFind_Title">Find friends</p>
     <input ng-model="friendFilter" type="text" id="friendsDivListFind_Input"
       placeholder="Friend Name"/>
   </div>
@@ -190,7 +187,7 @@
         {{ player.username }}
       </li>
     </ul>
-    <p id="playersDivListFind_Title">Find player</p>
+    <p id="playersDivListFind_Title">Find players</p>
     <input ng-model="playerFilter" type="text" id="playersDivListFind_Input"
       placeholder="Player Name"/>
   </div>
