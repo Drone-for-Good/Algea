@@ -5,6 +5,7 @@ var io = require('socket.io')(http);
 var dbHelpers = require('../server/db-helpers.js');
 var game = require('../server/game.js');
 var Promise = require('bluebird');
+var bcrypt = require('bcrypt');
 
 // Serve static files
 app.use(express.static(__dirname + '/../client'));
@@ -61,10 +62,17 @@ io.sockets.on('connection', function (socket) {
 
     //Proceed because user doesn't exist or is offline
     return new Promise(function (resolve, reject) {
-      resolve(dbHelpers.verifyUserLogin({
+      //encrypt password
+      bcrypt.hash(data.password, null, null, function(err, hash){
+        data.password = hash;
+      }).then( function () {
+        return data;
+      });
+    }).then( function (data) {
+      return dbHelpers.verifyUserLogin({
         username: data.username,
         password: data.password
-      }));
+      });
     }).then(function (result) {
       if (result.passwordMatch) {
         //Populate user data
@@ -89,11 +97,18 @@ io.sockets.on('connection', function (socket) {
   //On signup attempt
   socket.on('getFromServerSignup', function (data) {
     return new Promise(function (resolve, reject) {
-      resolve(dbHelpers.verifyUserSignup({
+      //encrypt password
+      bcrypt.hash(data.password, null, null, function(err, hash){
+        data.password = hash;
+      }).then( function () {
+        return data;
+      });
+    }).then( function (data) {
+      return dbHelpers.verifyUserSignup({
         username: data.username,
         password: data.password
-      }));
-    }).then(function (result) {
+      });
+    }).then( function (result) {
       if (result.passwordMatch) {
         game.sockets[socket.id].username = result.username;
         game.sockets[socket.id].userID = result.userid;
