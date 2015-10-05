@@ -241,10 +241,9 @@ body {
 }
 
 #playersDivList img {
-  width: 30%;
+  float: left;
+  width: 20%;
   left: 5%;
-/*  height: 80%;
-  top: 10%;*/
 }
 
 #playersDivListFind_Title {
