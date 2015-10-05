@@ -166,8 +166,15 @@ io.sockets.on('connection', function (socket) {
     }
   });
 
-  //On individual player death
-  socket.on('sendToServerDeath', function(finalStats){
+  // On individual cell death
+  socket.on('sendToServerCellEaten', function(data) {
+    // Inform player they may increase their size
+    io.to(data.username).emit('receiveFromServerCellEaten',
+      result);
+  });
+
+  // On individual player death
+  socket.on('sendToServerDeath', function (finalStats) {
     //I made this into a promise so I can string together writing to
     //the database and returning data to the user asynchronously
 
