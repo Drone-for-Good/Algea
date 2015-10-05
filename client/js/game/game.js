@@ -300,7 +300,7 @@
         // Also scales max speed with area rather
         // than radius/diameter
         var velocity
-          = Math.min(dist * 5, 80000 / cell.mass);
+          = Math.min(dist * 5, 70000 / cell.mass);
         this.physics.arcade.moveToPointer(cell, velocity);
       }, this);
 
@@ -368,16 +368,16 @@
       // food.destroy();
       this.removeFood(food.id);
 
-      this.score += 2;
+      this.score += 5;
       this.scoreText.text = 'Score: ' + this.score;
 
-      playerCell.mass += 2;
+      playerCell.mass += 5;
       this.scalePlayer(playerCell, playerCell.mass);
       this.zoomOut(0.005);
     },
 
     eatOrBeEaten: function (playerCell, enemyCell) {
-      if (enemyCell.width > playerCell.width + 10) {
+      if (enemyCell.mass*0.8 > playerCell.mass) {
         var mass = playerCell.mass;
         var enemyName = enemyCell.parent.username;
         var cellIndex = enemyCell.parent.getChildIndex(enemyCell);
@@ -579,7 +579,7 @@
 
       var grow = this.game.add.tween(cell);
       var newWidth = this.massToWidth(cell.mass);
-      
+
       grow.to({width: newWidth, height: newWidth}, 1000, Phaser.Easing.Cubic.In);
       grow.start();
 
