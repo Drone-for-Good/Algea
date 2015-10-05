@@ -184,22 +184,22 @@ io.sockets.on('connection', function (socket) {
     // If userID was found
     if (userID !== undefined) {
       // Update the DB records of the user - doesn't need to be in promise
-      helpers.addGameStats(userID, finalStats);
-      helpers.updateBestStats(userID, finalStats);
-      helpers.updateTotalStats(userID, finalStats);
+      dbHelpers.addGameStats(userID, finalStats);
+      dbHelpers.updateBestStats(userID, finalStats);
+      dbHelpers.updateTotalStats(userID, finalStats);
 
-      var promise = new Promise(function (resolve, reject) {
-          resolve(helpers.sendDeath(finalStats));
-      });
-      promise().then(function (data) {
-          io.emit('receiveFromServerDeath', {
-            message: 'Your data has been received!!!'
-          });
-      })
-      .catch(function (err) {
-          console.err('Error in sendToServerDeath promise.');
-          throw new Error(err);
-      });
+      // var promise = new Promise(function (resolve, reject) {
+      //     resolve(dbHelpers.sendDeath(finalStats));
+      // });
+      // promise().then(function (data) {
+      //     io.emit('receiveFromServerDeath', {
+      //       message: 'Your data has been received!!!'
+      //     });
+      // })
+      // .catch(function (err) {
+      //     console.err('Error in sendToServerDeath promise.');
+      //     throw new Error(err);
+      // });
     }
   });
 
