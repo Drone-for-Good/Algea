@@ -476,11 +476,6 @@
           positionAndRadius: [
             { x: 0, y: 0, radius: 40 },
             { x: 50, y: 50, radius: 40 }],
-          skin : '' },
-        evil: {
-          positionAndRadius: [
-            { x: -100, y: -100, radius: 30 },
-            { x: -200, y: -200, radius: 30 }],
           skin : '' }
       };
 
@@ -492,7 +487,6 @@
         }
         // Create an enemy group if it doesn't exist already
         if (!this.enemyNames.hasOwnProperty(username)) {
-          console.log("make a new enemy group cuz it's not there");
           // Add a new enemy group with username
           var newEnemyGroup = this.add.group(this.enemies);
           newEnemyGroup.username = username;
@@ -505,8 +499,13 @@
         this.updateEnemyGroup(enemy, data.playerInfo[username].positionAndRadius);
       }
 
-      // TODO: Handle when player leaves game
-      // Delete any enemy groups no longer on server
+      // Delete any enemy groups no longer sent by server
+      for (var username in this.enemyNames) {
+        if (!data.playerInfo.hasOwnProperty(username)) {
+          this.enemyNames[username].destroy();
+          delete this.enemyNames[username];
+        }
+      }
     },
 
     processGameStateData: function (data) {
@@ -519,7 +518,6 @@
         }
         // Create an enemy group if it doesn't exist already
         if (!this.enemyNames.hasOwnProperty(username)) {
-          console.log("make a new enemy group cuz it's not there");
           // Add a new enemy group with username
           var newEnemyGroup = this.add.group(this.enemies);
           newEnemyGroup.username = username;
@@ -532,8 +530,13 @@
         this.updateEnemyGroup(enemy, data.playerInfo[username].positionAndRadius);
       }
 
-      // TODO: Handle when player leaves game
-      // Delete any enemy groups no longer on server
+      // Delete any enemy groups no longer sent by server
+      for (var username in this.enemyNames) {
+        if (!data.playerInfo.hasOwnProperty(username)) {
+          this.enemyNames[username].destroy();
+          delete this.enemyNames[username];
+        }
+      }
 
       // Process new food data
       for (var i = 0; i < data.newFood.length; i++) {
