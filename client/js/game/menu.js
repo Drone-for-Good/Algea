@@ -21,19 +21,11 @@
       var subheader = this.add.text(centerX, centerY, subheaderText,
         {font: '30px Arial', fill: '#000', align: 'center'} );
       subheader.anchor.set(0.5);
-
-      // When mouse is clicked
-      this.input.onDown.add(this.onDown, this);
     },
 
     update: function () {
 
     },
-
-    onDown: function () {
-      // Launch the Game State when user clicks mouse
-      this.game.state.start('game');
-    }
   };
 
   window['agar'] = window['agar'] || {};

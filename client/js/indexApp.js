@@ -6,6 +6,7 @@ app.run(function ($rootScope) {
   $rootScope.gameVars = {
     roomPlayers: []
   };
+  window.gameVars = $rootScope.gameVars;
   $rootScope.socialVars = {
     friendsObj: {},
     friendsKeys: []
