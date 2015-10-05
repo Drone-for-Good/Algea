@@ -1,11 +1,12 @@
-app.controller("playersDivController", function ($scope, mySocket) {
+app.controller("playersDivController",
+  function ($rootScope, $scope, mySocket) {
   var GUIvars = {
     "#playersDiv": {
       expanded: false,
       resizing: false,
       collapsedSize: "6%",
       collapsedLeft: "94%",
-      expandedSize: "10%",
+      expandedSize: "15%",
       expandedLeft: "90%"
     },
     ".playerDivListFriend": {
@@ -16,7 +17,7 @@ app.controller("playersDivController", function ($scope, mySocket) {
 
   $scope.playerFilter = "";
   
-  $scope.players = [
+  /*$scope.players = [
     {
       username: "AngelOfDeath",
       profileImage: "http://vignette1.wikia.nocookie.net/youtubepoop/images/" +
@@ -77,7 +78,7 @@ app.controller("playersDivController", function ($scope, mySocket) {
       profileImage: "http://vignette2.wikia.nocookie.net/pokemon/images/a/a0/" +
         "150Mewtwo_AG_anime_2.png/revision/20150101075100"
     }
-  ];
+  ];*/
 
   $scope.getFromServerAllPlayers = function () {
     mySocket.emit("getFromServerAllFriends", null);

@@ -11,6 +11,7 @@ body {
   background-color: #721330;
   border-right: 5px solid #2e000e;
   color: #f2dfe5;
+  width: 15%;
 }
 
 #showLoginModal {
@@ -70,6 +71,7 @@ body {
 
 #gameRoomsList li {
   padding: 10px 0;
+  font-size: 16px;
 }
 
 #gameRoomsList li:hover {
@@ -111,15 +113,15 @@ body {
 #gameDiv {
   position: absolute;
   top: 10%;
-  left: 10%;
-  width: 80%;
+  left: 15%;
+  width: 70%;
   background-color: black;
 }
 
 #friendsDiv {
   position: absolute;
-  left: 90%;
-  width: 10%;
+  left: 85%;
+  width: 15%;
   background-color: #123652;
   border-bottom: 5px solid #011321;
   border-left: 5px solid #011321;
@@ -150,6 +152,7 @@ body {
   padding: 10px 0;
   cursor: pointer;
   background-color: #042239;
+  font-size: 16px;
 }
 
 #friendsDivList li:hover {
@@ -198,8 +201,8 @@ body {
 
 #playersDiv {
   position: absolute;
-  left: 90%;
-  width: 10%;
+  left: 85%;
+  width: 15%;
   background-color: #802d15;
   color: #f7e6e2;
   border-left: 5px solid #330c00;
@@ -228,27 +231,20 @@ body {
   padding: 10px 0;
   cursor: pointer;
   background-color: #581401;
+  font-size: 16px;
 }
+
 
 #playersDivList li:hover {
   color: #581401;
   background-color: #f7e6e2;
 }
 
-.playersDivListStatus {
-  float: left;
-  background-color: black;
-  position: relative;
-  width: 10px;
-  left: 4%;
-  height: 10px;
-  top: 6px;
-  border-radius: 50%;
-  opacity: 1;
-}
-
-.playersDivListFriend_Hover {
-  background-color: #e0f5ff;
+#playersDivList img {
+  width: 30%;
+  left: 5%;
+/*  height: 80%;
+  top: 10%;*/
 }
 
 #playersDivListFind_Title {

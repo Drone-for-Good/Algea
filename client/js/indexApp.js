@@ -3,7 +3,9 @@ var app = angular.module("myApp", ['btford.socket-io']);
 
 // Initialize $rootScope variables
 app.run(function ($rootScope) {
-  $rootScope.gameVars = {};
+  $rootScope.gameVars = {
+    roomPlayers: []
+  };
   $rootScope.socialVars = {
     friendsObj: {},
     friendsKeys: []
