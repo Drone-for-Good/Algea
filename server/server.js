@@ -224,7 +224,7 @@ setInterval(function () {
     // Restore food params
     game.restoreFoodParams(roomName);
   };
-}, 200);
+}, 17);
 
 //Emit server data every 5 seconds
 setInterval(function () {
