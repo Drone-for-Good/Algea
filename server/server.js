@@ -63,16 +63,16 @@ io.sockets.on('connection', function (socket) {
     //Proceed because user doesn't exist or is offline
     return new Promise(function (resolve, reject) {
       //encrypt password
-      bcrypt.hash(data.password, null, null, function(err, hash){
+      /*bcrypt.hash(data.password, null, null, function(err, hash){
         data.password = hash;
       }).then( function () {
         return data;
       });
     }).then( function (data) {
-      return dbHelpers.verifyUserLogin({
+      return */resolve(dbHelpers.verifyUserLogin({
         username: data.username,
         password: data.password
-      });
+      }));
     }).then(function (result) {
       if (result.passwordMatch) {
         //Populate user data
@@ -82,7 +82,8 @@ io.sockets.on('connection', function (socket) {
         game.sockets[socket.id].friends = result.friends;
 
         //Check for any friends online
-        findFriendsOnlineAndNotify(result.username, result.friends, 'online');
+        findFriendsOnlineAndNotify(result.username,
+          result.friends, 'online');
 
         //Get all rooms
         result.rooms = game.allRooms();
@@ -94,20 +95,20 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
-  //On signup attempt
+  // On signup attempt
   socket.on('getFromServerSignup', function (data) {
     return new Promise(function (resolve, reject) {
-      //encrypt password
-      bcrypt.hash(data.password, null, null, function(err, hash){
+      // encrypt password
+      /*bcrypt.hash(data.password, null, null, function(err, hash){
         data.password = hash;
       }).then( function () {
         return data;
       });
     }).then( function (data) {
-      return dbHelpers.verifyUserSignup({
+      return */resolve(dbHelpers.verifyUserSignup({
         username: data.username,
         password: data.password
-      });
+      }));
     }).then( function (result) {
       if (result.passwordMatch) {
         game.sockets[socket.id].username = result.username;
@@ -115,20 +116,21 @@ io.sockets.on('connection', function (socket) {
         game.sockets[socket.id].skins = result.skins;
         game.sockets[socket.id].friends = result.friends;
 
-        //Check for any friends online
-        findFriendsOnlineAndNotify(result.username, result.friends, 'online');
+        // Check for any friends online
+        findFriendsOnlineAndNotify(result.username,
+          result.friends, 'online');
 
-        //Get all rooms
+        // Get all rooms
         result.rooms = game.allRooms();
 
-        //Put user online
+        // Put user online
         game.onlineUsers[result.username] = socket.id;
       }
       socket.emit('getFromServerSignup_Response', result);
     });
   });
 
-  //On join game attempt
+  // On join game attempt
   socket.on('sendToServerJoinGame', function (data) {
     console.log(data);
     var result = game.addPlayerToRoom(data.roomName,
