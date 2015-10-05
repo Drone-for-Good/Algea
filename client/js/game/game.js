@@ -229,7 +229,7 @@
             + newRadius + 30;
           var newY = this.getPlayerCellsTop(this.playerCells)
             - newRadius - 30;
-          var newCell = this.initializePlayer(newRadius, newX, newY);
+          var newCell = this.initializePlayer(newRadius, newX, newY, this.username);
           this.playerCells.add(newCell);
 
           // var dist = this.physics.arcade.distanceToPointer(cell);
@@ -300,8 +300,12 @@
       this.physics.arcade.collide(this.playerCells, this.walls);
       this.physics.arcade.overlap(this.playerCells,
         this.food, this.eatFood, null, this);
-      // this.physics.arcade.overlap(this.playerCells,
-        // this.enemies, this.eatOrBeEaten, null, this);
+
+      this.enemies.forEachAlive(function(enemy){
+        this.physics.arcade.overlap(this.playerCells,
+          enemy, this.eatOrBeEaten, null, this);
+      }, this);
+
       this.physics.arcade.collide(this.playerCells,
         this.playerCells);
 
@@ -361,10 +365,17 @@
     },
 
     eatOrBeEaten: function (playerCell, enemyCell) {
-      if (playerCell.width > enemyCell.width) {
-        enemyCell.destroy();
+      if (enemyCell.width > playerCell.width + 10) {
+        var radius = playerCell.width/2;
+        var enemyName = enemyCell.parent.username;
+        var cellIdx = enemyCell.parent.getChildIndex(enemyCell);
 
-      } else if (enemyCell.width > playerCell.width) {
+        var data = {
+          username: enemyName,
+          cellIdx: cellIdx,
+          mass: radius
+        };
+        window.globalSocket.emit('sendToServerCellEaten', data);
         playerCell.destroy();
 
         if (this.playerCells.length === 0){
@@ -427,12 +438,10 @@
     updateEnemyGroup: function(enemyGroup, data) {
       // Destroy all existing enemy cells
       enemyGroup.removeAll(true);
-      console.log("destroyed all cells");
-      console.log(data);
       // Re-draw all enemy cells with current data
       for (var i = 0; i < data.length; i++) {
         var newEnemyCell =
-          this.initializePlayer(data[i].radius, data[i].x, data[i].y);
+          this.initializePlayer(data[i].radius, data[i].x, data[i].y, enemyGroup.username);
         enemyGroup.add(newEnemyCell);
       // TODO: should we do collision detection here?
       }
@@ -496,7 +505,7 @@
         }
 
         var enemy = this.enemyNames[username];
-        this.updateEnemyGroup(enemy, data.playerInfo[username].positionAndRadius);
+        this.updateEnemyGroup(enemy, data.playerInfo[username].positionAndRadius.cells);
       }
 
       // Delete any enemy groups no longer sent by server
@@ -527,7 +536,7 @@
         }
 
         var enemy = this.enemyNames[username];
-        this.updateEnemyGroup(enemy, data.playerInfo[username].positionAndRadius);
+        this.updateEnemyGroup(enemy, data.playerInfo[username].positionAndRadius.cells);
       }
 
       // Delete any enemy groups no longer sent by server
@@ -550,7 +559,7 @@
     },
     shutdown: function () {
       clearInterval(window.playerUpdateRoutine);
-      window.globalSocket.off('receiveFromServerGameState',
+      window.globalSocket.removeListener('receiveFromServerGameState',
         this.processGameStateData.bind(this));
       window.globalSocket.emit('sendToServerLeaveGame', {
         username: this.username,
