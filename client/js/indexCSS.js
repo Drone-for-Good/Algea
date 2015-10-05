@@ -6,7 +6,7 @@ $(document).ready(function () {
       expanded: false,
       resizing: false,
       collapsedSize: "6%",
-      expandedSize: "10%"
+      expandedSize: "15%"
     }
   };
 

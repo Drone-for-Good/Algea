@@ -364,9 +364,11 @@ exports.addPlayerToRoom = function (roomName, data) {
     roomName: roomName,
     roomJoined: roomJoined,
   };
-  // If room was joined, add foodInfo
+  // If room was joined, add foodInfo and player names
   if (result.roomJoined) {
     result.foodInfo = exports.foodData[roomName].foodInfo;
+    result.roomPlayers
+      = getRoomPlayersForClient(roomName);
   }
   return result;
 };
@@ -388,6 +390,20 @@ exports.removePlayerFromGame = function (data) {
   // Set gameRoom to be empty
   exports.sockets[data.socketID].gameRoom = '';
   return gameRoom;
+};
+
+// Get the players in a room for a client
+var getRoomPlayersForClient = function (roomName) {
+  var playerInfo = exports.roomData.rooms[roomName].playerInfo;
+  var result = [];
+  for (var username in playerInfo) {
+    result.push({
+      username: username,
+      profileImage: 'http://www.councilforresponsiblegenetics.org/'
+        + 'geneticprivacy/images/cell_2.png'
+    });
+  }
+  return result;
 };
 
 // Update a player by referencing data on the client

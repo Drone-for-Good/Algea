@@ -67,6 +67,9 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
     if(data.roomJoined){
       // Successfully joined room
       $rootScope.gameVars.roomName = data.roomName;
+      // Get players in room
+      $rootScope.gameVars.roomPlayers = data.roomPlayers;
+      console.log(data.roomPlayers);
       // Start game in room
       window.agar.game.state.start('game',
         true, false, $rootScope.gameVars.username,

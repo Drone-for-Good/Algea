@@ -181,9 +181,10 @@
   <div id="playersDiv" ng-controller="playersDivController">
     <div ng-model="players" id="playersDivTitle">Players</div>
     <ul id="playersDivList">
-      <li ng-repeat="player in players | filter:playerFilter:strict" class="playersDivListPlayer" ng-mouseenter="hover = true"
+      <li ng-repeat="player in gameVars.roomPlayers | filter:playerFilter:strict" class="playersDivListPlayer"  ng-mouseenter="hover = true"
         ng-mouseleave="hover = false"
         ng-class="{'playersDivListPlayer_Hover': hover}">
+        <img ng-src='{{ player.profileImage }}' />
         {{ player.username }}
       </li>
     </ul>
