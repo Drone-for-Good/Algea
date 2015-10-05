@@ -118,6 +118,8 @@
         = setInterval(this.sendPlayerState.bind(this), 17);
       window.globalSocket.on('receiveFromServerGameState',
         this.processGameStateData.bind(this));
+      window.globalSocket.on('receiveFromServerCellEaten',
+        this.processCellEatenData.bind(this));
 
       // Spacebar splits the player
       var spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -372,7 +374,7 @@
       if (enemyCell.width > playerCell.width + 10) {
         var radius = playerCell.width/2;
         var enemyName = enemyCell.parent.username;
-        var cellIdx = enemyCell.parent.getChildIndex(enemyCell);
+        var cellIndex = enemyCell.parent.getChildIndex(enemyCell);
 
         var data = {
           username: enemyName,
@@ -407,8 +409,8 @@
     scalePlayer: function (player, mass) {
       //TODO: Figure out how to scale player based on mass
       //TODO: check for collisions?
-      player.scale.setTo(player.scale.x + 0.05,
-        player.scale.y + 0.05);
+      player.width += 10;
+      player.height += 10;
     },
 
     win: function () {
@@ -561,6 +563,13 @@
         this.removeFood[data.eatenFood[i]];
       }
     },
+    processCellEatenData: function (data) {
+      var cell = this.playerCells.getChildAt(data.cellIndex);
+
+      var scale = Math.pow(data.mass/cell.width, 2);
+      cell.width += cell.width*scale;
+      cell.height = cell.width;
+    },
     shutdown: function () {
       clearInterval(window.playerUpdateRoutine);
       window.globalSocket.removeListener('receiveFromServerGameState',
@@ -569,6 +578,7 @@
         username: this.username,
         gameRoom: this.roomName
       });
+      window.gameVars.roomName = null;
     }
   };
 
