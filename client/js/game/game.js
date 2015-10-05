@@ -30,7 +30,7 @@
       // Set up keyboard cursor keys so they can be used
       this.cursors = this.input.keyboard.createCursorKeys();
 
-      this.score = 10;
+      this.score = 25;
     },
 
     create: function () {
@@ -145,8 +145,11 @@
       // For testing: up key scales the player
       var upKey = this.input.keyboard.addKey(Phaser.Keyboard.UP);
       upKey.onDown.add(function(key) {
-        this.scalePlayer(this.player);
-        this.zoomOut(0.1);
+        this.playerCells.forEachAlive(function (cell) {
+          cell.mass += 2;
+          this.scalePlayer(cell, cell.mass);
+          this.zoomOut(0.005);
+        }, this);
       }, this);
 
       function createBackground (game) {
@@ -157,7 +160,7 @@
       }
 
       function createWalls (game) {
-        var WALL_THICKNESS = 10;
+        var WALL_THICKNESS = 20;
 
         var horizontalWall = game.make.bitmapData(game.world.width,
           WALL_THICKNESS).fill(255, 0, 0);
@@ -195,6 +198,7 @@
       var text = this.game.add.text(0, 0, username, style);
       text.anchor.setTo(0.5, 0.5);
       player.addChild(text);
+      player.mass = Math.pow(radius*2, 2)/100;
 
       // All physics bodies are rectangles when using Arcade Physics.
       // By default, the rectangle will enclose the player circle
@@ -221,8 +225,9 @@
         // Only split if cell is not a newly split cell
         if (count < originalCellCount && cell.width > 141) {
           // Halve the mass of the original cell
-          cell.width = cell.width / Math.sqrt(2);
-          cell.height = cell.height / Math.sqrt(2);
+          cell.mass = cell.mass/2
+          cell.width = this.massToWidth(cell.mass);
+          cell.height = cell.width;
 
           // Make new cell appear 30 px from the top right corner
           // of the group
@@ -233,11 +238,11 @@
 
           var velocity= {};
           velocity.x = cell.body.velocity.x > 0 ?
-                          cell.body.velocity.x + 500:
-                          cell.body.velocity.x - 500;
+                          cell.body.velocity.x + 600:
+                          cell.body.velocity.x - 600;
           velocity.y = cell.body.velocity.y > 0 ?
-                          cell.body.velocity.y + 500:
-                          cell.body.velocity.y - 500;
+                          cell.body.velocity.y + 600:
+                          cell.body.velocity.y - 600;
           newCell.body.velocity = velocity;
 
           newCell.body.checkCollision.none = true;
@@ -295,7 +300,7 @@
         // Also scales max speed with area rather
         // than radius/diameter
         var velocity
-          = Math.min(dist * 5, 5000000 / Math.pow(cell.width, 2));
+          = Math.min(dist * 5, 70000 / cell.mass);
         this.physics.arcade.moveToPointer(cell, velocity);
       }, this);
 
@@ -363,23 +368,24 @@
       // food.destroy();
       this.removeFood(food.id);
 
-      this.score += 10;
+      this.score += 5;
       this.scoreText.text = 'Score: ' + this.score;
 
-      this.scalePlayer(playerCell, this.score);
-      this.zoomOut();
+      playerCell.mass += 5;
+      this.scalePlayer(playerCell, playerCell.mass);
+      this.zoomOut(0.005);
     },
 
     eatOrBeEaten: function (playerCell, enemyCell) {
-      if (enemyCell.width > playerCell.width + 10) {
-        var radius = playerCell.width/2;
+      if (enemyCell.mass*0.8 > playerCell.mass) {
+        var mass = playerCell.mass;
         var enemyName = enemyCell.parent.username;
         var cellIndex = enemyCell.parent.getChildIndex(enemyCell);
 
         var data = {
           username: enemyName,
           cellIndex: cellIndex,
-          mass: radius
+          mass: mass
         };
         window.globalSocket.emit('sendToServerCellEaten', data);
         playerCell.destroy();
@@ -394,7 +400,6 @@
     },
 
     zoomOut: function (scaleRate) {
-      var player = this.player;
       var world = this.worldGroup;
 
       scaleRate = scaleRate || 0.001;
@@ -402,15 +407,18 @@
       world.scale.x -= world.scale.x * scaleRate;
       world.scale.y -= world.scale.y * scaleRate;
 
-      player.x -= player.x * scaleRate;
-      player.y -= player.y * scaleRate;
+      this.playerCells.forEachAlive(function (cell) {
+        cell.x -= cell.x * scaleRate;
+        cell.y -= cell.y * scaleRate;
+      }, this);
+
     },
 
     scalePlayer: function (player, mass) {
       //TODO: Figure out how to scale player based on mass
       //TODO: check for collisions?
-      player.width += 10;
-      player.height += 10;
+      player.width = this.massToWidth(mass);
+      player.height = player.width;
     },
 
     win: function () {
@@ -566,9 +574,20 @@
     processCellEatenData: function (data) {
       var cell = this.playerCells.getChildAt(data.cellIndex);
 
-      var scale = Math.pow(data.mass/cell.width, 2);
-      cell.width += cell.width*scale;
-      cell.height = cell.width;
+      this.score += data.mass;
+      cell.mass += data.mass;
+
+      var grow = this.game.add.tween(cell);
+      var newWidth = this.massToWidth(cell.mass);
+
+      grow.to({width: newWidth, height: newWidth}, 1000, Phaser.Easing.Cubic.In);
+      grow.start();
+
+      var scale = Math.pow(0.005, data.mass / 20);
+      this.zoomOut(scale);
+    },
+    massToWidth: function (mass) {
+      return Math.sqrt((mass)*100);
     },
     shutdown: function () {
       clearInterval(window.playerUpdateRoutine);
