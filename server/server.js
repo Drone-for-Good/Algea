@@ -64,7 +64,7 @@ io.sockets.on('connection', function (socket) {
     var data = data;
     var password = data.password;
     return new Promise( function (resolve, reject) {
-    bcrypt.genSalt(32, function (err, newSalt) {
+      bcrypt.genSalt(32, function (err, newSalt) {
         if (err) {
           reject(err);
         } else {
@@ -72,16 +72,18 @@ io.sockets.on('connection', function (socket) {
         }
       });
     }).then( function (salt) {
-      // var hash = bcrypt.hashSync(password, salt);    //says invalid salt
-      bcrypt.hash(password, salt, null, function (err, hash) {
-        dbHelpers.verifyUserSignup({
-          username: data.username,
-          password: hash
+      return bcrypt.hash(password, salt, null, function (err, hash) {
+        return (new Promise( function (resolve, reject) {
+          resolve(dbHelpers.verifyUserSignup({
+            username: data.username,
+            password: hash
+          }));
+        })).then( function (result) {
+          return result;
         });
       });
-      return true;
     }).then(function (result) {
-      if (result) {
+      if (result.passwordMatch) {
         //Populate user data
         game.sockets[socket.id].username = result.username;
         game.sockets[socket.id].userID = result.userid;
@@ -115,7 +117,6 @@ io.sockets.on('connection', function (socket) {
         }
       });
     })).then( function (salt) {
-      // var hash = bcrypt.hashSync(password, salt);    //says invalid salt
       bcrypt.hash(password, salt, null, function (err, hash) {
         return dbHelpers.verifyUserSignup({
           username: data.username,
