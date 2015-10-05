@@ -1,4 +1,4 @@
-exports = function(grunt) {
+module.exports = function(grunt) {
   //grunt plug-ins
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
@@ -7,6 +7,7 @@ exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-express-server')
   grunt.loadNpmTasks('grunt-mocha');
+  grunt.loadNpmTasks('grunt-simple-mocha');
 
   //initial setup
   grunt.initConfig({
@@ -15,17 +16,17 @@ exports = function(grunt) {
     //clears out Grunt folder
     clean: {
       dist: 'dist/*'
-    }
+    },
 
     //copy important stuff into dist:
     copy: {
 
-    }
+    },
 
     //uglify the files
     uglify: {
       //still figuring out how much/which to uglify
-    }
+    },
 
     //configure the server
     express: {
@@ -34,7 +35,21 @@ exports = function(grunt) {
           script: 'server/server.js'
         }
       }
-    }
+    },
+
+    simplemocha: {
+      options: {
+        globals: ['expect'],
+        timeout: 2000,
+        ignoreLeaks: false,
+        ui: 'bdd',
+        reporter: 'tap'
+      },
+      all: {
+        src: ['test/server/*.js']
+      }
+
+    },
 
     //tracks changes in these files while grunt is running
     watch: {
@@ -48,22 +63,22 @@ exports = function(grunt) {
       },
       server: {
         files: ['server/**'],
-        tasks: ['build']
+        tasks: ['build'],
         options: {
           spawn: false //Option to restart the server
         }
-      }
+      },
       tests: {
         files: ['test/**'],
       }
-    };
+    }
   });
 
   //build task:
   grunt.registerTask('build', ['clean', 'copy', 'uglify']); //can add jshint
 
   //run test:
-  grunt.registerTask('test', ['tests']);
+  grunt.registerTask('test', ['simplemocha']);
 
   //build and watch files:
   grunt.registerTask('default', ['build', 'express:dev', 'watch']);
