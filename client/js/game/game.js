@@ -225,22 +225,26 @@
           // Make new cell appear 30 px from the top right corner
           // of the group
           var newRadius = cell.width / 2;
-          var newX = this.getPlayerCellsRight(this.playerCells)
-            + newRadius + 30;
-          var newY = this.getPlayerCellsTop(this.playerCells)
-            - newRadius - 30;
-          var newCell = this.initializePlayer(newRadius, newX, newY, this.username);
+          var newCell = this.initializePlayer(newRadius, cell.x, cell.y, 
+                          this.username);
           this.playerCells.add(newCell);
 
-          // var dist = this.physics.arcade.distanceToPointer(cell);
-          // var split = this.game.add.tween(newCell.body);
-          // split.to({x: newX, y: newY}, 500)
-          // split.onComplete.add(function(){
-          //   this.playerCells.add(newCell);
-          //   this.game.physics.arcade.enable(newCell);
-          // }, this);
-          // split.start();
-          // this.physics.arcade.moveToXY(newCell, newX, newY, 60, 500);
+          var velocity= {};
+          velocity.x = cell.body.velocity.x > 0 ?
+                          cell.body.velocity.x + 500:
+                          cell.body.velocity.x - 500;
+          velocity.y = cell.body.velocity.y > 0 ?
+                          cell.body.velocity.y + 500:
+                          cell.body.velocity.y - 500;
+          newCell.body.velocity = velocity;
+
+          newCell.body.checkCollision.none = true;
+          var split = this.game.add.tween(newCell.body.velocity);
+          split.to({x: 0, y: 0}, 1000, Phaser.Easing.Cubic.In);
+          split.onComplete.add(function(){
+            newCell.body.checkCollision.none = false;
+          }, this);
+          split.start();
           count++;
         }
       }, this);
@@ -372,7 +376,7 @@
 
         var data = {
           username: enemyName,
-          cellIdx: cellIdx,
+          cellIndex: cellIndex,
           mass: radius
         };
         window.globalSocket.emit('sendToServerCellEaten', data);
@@ -403,8 +407,8 @@
     scalePlayer: function (player, mass) {
       //TODO: Figure out how to scale player based on mass
       //TODO: check for collisions?
-      player.scale.setTo(player.scale.x + 0.1,
-        player.scale.y + 0.1);
+      player.scale.setTo(player.scale.x + 0.05,
+        player.scale.y + 0.05);
     },
 
     win: function () {
