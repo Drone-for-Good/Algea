@@ -50,9 +50,10 @@
 
   <div id="navDiv" ng-controller="navDivController">
 
-    <button type="button" class="btn btn-info btn-lg" id="showLoginModal"
+    <button type="button" class="btn btn-info btn-lg"
+      id="showLoginModal"
       data-toggle="modal" data-target="#loginSignupModal">
-      Sign In
+      Sign In/Up
     </button>
 
     <div id="loginSignupModal" class="modal fade" role="dialog">
@@ -190,18 +191,37 @@
   </div>
 
   <div id="playersDiv" ng-controller="playersDivController">
-    <div ng-model="players" id="playersDivTitle">Players</div>
+    <div ng-model="players" id="playersDivTitle">
+      Players
+    </div>
+    <div id="playersDivListFriendNav">
+      <button type="button" class="btn btn-default"
+        id="playersDivListFriendNav_Add"
+        ng-click="addFriend(socialVars.selectedPlayer)">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="btn btn-default"
+        id="playersDivListFriendNav_Remove"
+        ng-click="removeFriend(socialVars.selectedPlayer)">
+        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+      </button>
+    </div>
     <ul id="playersDivList">
-      <li ng-repeat="player in gameVars.roomPlayers | filter:playerFilter:strict" class="playersDivListPlayer"  ng-mouseenter="hover = true"
-        ng-mouseleave="hover = false"
-        ng-class="{'playersDivListPlayer_Hover': hover}">
+      <li ng-repeat="player in gameVars.roomPlayers | filter:playerFilter:strict" class="playersDivListPlayer"
+        ng-class="
+          {
+            'playersDivSelectedPlayerInNav':
+              player.username === socialVars.selectedPlayer
+          }"
+        ng-click="selectPlayerFromNav(player.username)">
         <img ng-src='{{ player.profileImage }}' />
         {{ player.username }}
       </li>
     </ul>
     <p id="playersDivListFind_Title">Find players</p>
-    <input ng-model="playerFilter" type="text" id="playersDivListFind_Input"
-      placeholder="Player Name"/>
+    <input ng-model="playerFilter" type="text"
+      id="playersDivListFind_Input"
+      placeholder="Player Name" />
   </div>
 
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
