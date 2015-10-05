@@ -267,7 +267,7 @@ body {
   position: absolute;
   width: 400px;
   height: 200px;
-  background-color: rgba(230, 230, 230, .5);
+  background-color: rgba(50, 50, 50, .75);
   border-radius: 5px;
   left: 5px;
 }
@@ -285,7 +285,7 @@ body {
 #gameChatDivMessages {
   top: 15px;
   position: relative;
-  background-color: rgba(255, 255, 255, .75);
+  background-color: rgba(25, 25, 25, .75);
   width: 90%;
   height: 150px;
   border-radius: 3px;
@@ -296,15 +296,23 @@ body {
 #gameChatDivMessages ul {
   list-style: none;
   padding: 0;
+  margin-top: 5px;
+  margin-left: 5px;
 }
 
 #gameChatDivMessages ul li {
-  /*line-height: 3px;*/
-  margin-left: 5px;
+  padding-left: 10px;
   margin: 0;
   padding: 0;
-  font-size: 12px;
+  font-size: 14px;
   word-wrap: break-word;
+  color: white;
+}
+
+.gameChatDivServerMessage {
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
 }
 
 .gameChatDivMessagesUser {
@@ -318,6 +326,6 @@ body {
   font-size: 12px;
   border: none;
   border-radius: 3px;
-  background-color: rgba(255, 255, 255, .75);
-  color: #111111;
+  background-color: rgba(25, 25, 25, .75);
+  color: white;
 }

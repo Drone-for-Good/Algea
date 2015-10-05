@@ -22,11 +22,22 @@
       <div id="gameChatDivMessages">
         <ul ng-repeat="message in messages">
           <li>
-            <span class="gameChatDivMessagesUser">
-            {{ message.username }}:
-          </span>
-           {{ message.message }}
-        </li>
+            <span class="gameChatDivMessagesUser"
+              ng-class='
+              {
+                "gameChatDivServerMessage":
+                  message.username === "SERVER"
+              }'>
+              {{ message.username }}:
+            </span>
+            <span ng-class='
+              {
+                "gameChatDivServerMessage":
+                  message.username === "SERVER"
+              }'>
+              {{ message.message }}
+            </span>
+          </li>
         </ul>
       </div>
       <form ng-submit='sendToServerChatMessage()'>

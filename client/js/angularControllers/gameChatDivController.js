@@ -11,61 +11,17 @@ app.controller("gameChatDivController", function ($rootScope, $scope, mySocket) 
   };
 
   $scope.messages = [
-    /*{
-      username: "zach_LFHoodie",
-      message: "Mimi where is my hoodie at?"
-    },
     {
-      username: "AngelOfDeath",
-      message: "I ate themmmmm ya"
-    },
-    {
-      username: "hi_D",
-      message: "time to do some tests"
-    },
-    {
-      username: "alexIsn'tGood",
-      message: "i don't have anything good to say so i won't"
-    },
-    {
-      username: "alexIsn'tGood",
-      message: "i don't have anything good to say so i won't"
-    },
-    {
-      username: "alexIsn'tGood",
-      message: "i don't have anything good to say so i won't"
-    },
-    {
-      username: "alexIsn'tGood",
-      message: "i don't have anything good to say so i won't"
-    },
-    {
-      username: "alexIsn'tGood",
-      message: "i don't have anything good to say so i won't"
-    },
-    {
-      username: "zach_LFHoodie",
-      message: "Mimi where is my hoodie at?"
-    },
-    {
-      username: "AngelOfDeath",
-      message: "I ate themmmmm ya"
-    },
-    {
-      username: "hi_D",
-      message: "time to do some tests"
-    },
-    {
-      username: "hi_D",
-      message: "time to do some tests"
-    }*/
+      username: 'SERVER',
+      message: 'CLOSE CHAT TO SPLIT ("C")'
+    }
   ];
 
-  //Send a chat message to the game room
+  // Send a chat message to the game room
   $scope.sendToServerChatMessage = function () {
-    //If the username is defined (user logged in)
+    // If the username is defined (user logged in)
     if ($rootScope.gameVars.username){
-      //If the chat message is of proper length
+      // If the chat message is of proper length
       if (0 < $("#gameChatDivInput").val().length
           && $("#gameChatDivInput").val().length <= 72) {
         mySocket.emit("sendToServerChatMessage", {
@@ -76,16 +32,16 @@ app.controller("gameChatDivController", function ($rootScope, $scope, mySocket) 
       } 
     }
   };
-  //Receive chat messages from the server
+  // Receive chat messages from the server
   mySocket.on("receiveFromServerChatMessage", function (data) {
     $scope.messages.push(data);
 
     $('#gameChatDivMessages').animate({
       scrollTop: $('#gameChatDivMessages')[0].scrollHeight
-    }, 'slow');
+    }, 0);
   });
 
-  //jQuery animation
+  // jQuery animation
   var toggleChatWindow = function () {
     if (!GUIvars["#gameChatDiv"].resizing) {
       GUIvars["#gameChatDiv"].resizing = true;
