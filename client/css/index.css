@@ -2,7 +2,7 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  background-color: #0f5e2a;
+  background-color: black;
 }
 
 #navDiv {
@@ -52,6 +52,7 @@ body {
   /*color: white;*/
   text-align: center;
   font-size: 24px;
+  border-bottom: 5px solid #2e000e;
 }
 
 #gameRoomsList {
@@ -64,6 +65,7 @@ body {
   height: 300px;
   overflow: scroll;
   font-size: 12px;
+  border-bottom: 5px solid #2e000e;
 }
 
 #gameRoomsList li {
@@ -119,20 +121,21 @@ body {
   left: 90%;
   width: 10%;
   background-color: #123652;
-  border-bottom: 3px solid #011321;
+  border-bottom: 5px solid #011321;
   border-left: 5px solid #011321;
   color: #dbe2e8;
 }
 
 #friendsDivTitle {
+  margin-top: 3px;
   width: 100%;
   height: 35px;
   text-align: center;
   font-size: 24px;
-  border-bottom: 5px solid #011321;
 }
 
 #friendsDivList {
+  border-top: 5px solid #011321;
   background-color: #042239;
   list-style: none;
   padding-left: 0;
@@ -140,6 +143,7 @@ body {
   height: 400px;
   overflow: scroll;
   font-size: 12px;
+  border-bottom: 5px solid #011321;
 }
 
 #friendsDivList li {
@@ -199,7 +203,6 @@ body {
   background-color: #802d15;
   color: #f7e6e2;
   border-left: 5px solid #330c00;
-  border-top: 3px solid #330c00;
 }
 
 #playersDivTitle {
@@ -207,10 +210,10 @@ body {
   height: 35px;
   text-align: center;
   font-size: 24px;
-  border-bottom: 5px solid #330c00;
 }
 
 #playersDivList {
+  border-top: 5px solid #330c00;
   background-color: #581401;
   list-style: none;
   padding-left: 0;
@@ -218,6 +221,7 @@ body {
   height: 400px;
   overflow: scroll;
   font-size: 12px;
+  border-bottom: 5px solid #330c00;
 }
 
 #playersDivList li {
