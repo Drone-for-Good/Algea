@@ -144,6 +144,25 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
+  // On add friend attempt
+  socket.on('getFromServerAddFriend', function (data) {
+    return (new Promise(function (resolve, reject) {
+      resolve(dbHelpers.makeFriends(game.sockets[socket.id].username,
+      data.username));
+    })).then(function (result) {
+        // If friendship was made
+        if (result.friendshipMade) {
+          // Populate friends
+
+        } else {
+          // Friendship wasn't made
+          console.log('friendship failed');
+        }
+        socket.emit('getFromServerAddFriend_Response',
+          result);
+      });
+  });
+
   // On join game attempt
   socket.on('sendToServerJoinGame', function (data) {
     var result = game.addPlayerToRoom(data.roomName,

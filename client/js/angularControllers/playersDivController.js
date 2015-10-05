@@ -115,10 +115,11 @@ app.controller("playersDivController",
       username: username
     });
   };
-  mySocket.on('getFromServerAddFriend', function (data) {
+  mySocket.on('getFromServerAddFriend_Response', function (data) {
     // Set $rootScope social variables
-    $rootScope.socialVars.friends = data.friends;
-    $rootScope.socialVars.friendsKeys = Object.keys(data.friends);
+    // $rootScope.socialVars.friends = data.friends;
+    // $rootScope.socialVars.friendsKeys = Object.keys(data.friends);
+    console.log(data);
   });
 
 

@@ -197,10 +197,10 @@ exports.refreshFood = function (roomName) {
 
 // Restore food parameters in between updates
 exports.restoreFoodParams = function (roomName) {
-  if (exports.foodData[roomName].newFood.length > 0) {
-    console.log('YOU HAVE FOOOOOOOOD');
-    console.log(exports.foodData[roomName].newFood);
-  }
+  // if (exports.foodData[roomName].newFood.length > 0) {
+  //   console.log('YOU HAVE FOOOOOOOOD');
+  //   console.log(exports.foodData[roomName].newFood);
+  // }
   // Reassign empty food array
   exports.foodData[roomName].newFood = [];
   exports.roomData.rooms[roomName].newFood
