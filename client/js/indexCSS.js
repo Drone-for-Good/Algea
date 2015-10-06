@@ -21,7 +21,7 @@ $(document).ready(function () {
     $("#playersDiv").css("height", window.innerHeight/2);
     $("#playersDiv").css("top", "50%");
     $("#playersDivList").css("height",
-      "" + (70 - $("#playersDivTitle").height()/window.innerHeight) + "%");
+      "" + (60 - $("#playersDivTitle").height()/window.innerHeight) + "%");
     $("#gameDiv").css("height", window.innerHeight * .9);
     $("#gameChatDiv").css("top", $("#gameDiv").height() - 205);
     $("#gameChatDivInput").css({

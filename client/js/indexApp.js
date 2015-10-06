@@ -9,7 +9,8 @@ app.run(function ($rootScope) {
   window.gameVars = $rootScope.gameVars;
   $rootScope.socialVars = {
     friendsObj: {},
-    friendsKeys: []
+    friendsKeys: [],
+    selectedPlayer: ""
   };
 });
 

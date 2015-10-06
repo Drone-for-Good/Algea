@@ -98,4 +98,29 @@ app.controller("playersDivController",
     });
   });
 
+  // Set selected player
+  $scope.selectPlayerFromNav = function (username) {
+    $rootScope.socialVars.selectedPlayer = username;
+    console.log($rootScope.socialVars.selectedPlayer);
+  };
+
+  // Clear selected player
+  $scope.clearSelectedPlayerFromNav = function () {
+    $rootScope.socialVars.selectedPlayer = "";
+  };
+
+  // Add a friend
+  $scope.addFriend = function (username) {
+    mySocket.emit('getFromServerAddFriend', {
+      username: username
+    });
+  };
+  mySocket.on('getFromServerAddFriend_Response', function (data) {
+    // Set $rootScope social variables
+    // $rootScope.socialVars.friends = data.friends;
+    // $rootScope.socialVars.friendsKeys = Object.keys(data.friends);
+    console.log(data);
+  });
+
+
 });

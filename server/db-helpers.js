@@ -78,6 +78,55 @@ exports.newUser = function (clientInfo) {
   });
 };
 
+// Make a new friendship
+exports.makeFriends = function (user1, user2) {
+  // Look for both users
+  return db.User.findAll({
+      where: {
+        username: {
+          $in: [user1, user2]
+        }
+      }
+    }).then(function (users) {
+      // If exactly 2 were found
+      if (users.length === 2) {
+        // Search for friendship
+        return db.Friendship.find({
+          where: {
+            user1: {
+              $in: [users[0]['id'], users[1]['id']]
+            },
+            user2: {
+              $in: [users[0]['id'], users[1]['id']]
+            }
+          }
+        }).then(function (friendship) {
+          // If friendship didn't already exist
+          if (!friendship) {
+            // Make the friendship
+            return db.Friendship.create({
+              user1: users[0]['id'],
+              user2: users[1]['id']
+            }).then(function () {
+              return { friendshipMade: true };
+            });
+          } else {
+            // Friendship already exists
+            return {
+              alreadyFriends: true,
+              friendshipMade: false
+            };
+          }
+        });
+      }
+      // Friendship wasn't made, exactly 2 users
+      // weren't provided
+      else {
+        return { friendshipMade: false };
+      }
+    });
+};
+
 //Verify a user when they login
 exports.verifyUserLogin = function (data) {
   return db.User.find({
