@@ -370,8 +370,10 @@
 
       this.score += 5;
       this.scoreText.text = 'Score: ' + this.score;
-
-      playerCell.mass += 5;
+      console.log(playerCell.mass)
+      if (playerCell.mass < 300){
+        playerCell.mass += 5;
+      }
       this.scalePlayer(playerCell, playerCell.mass);
       this.zoomOut(0.005);
     },
@@ -573,10 +575,9 @@
     },
     processCellEatenData: function (data) {
       var cell = this.playerCells.getChildAt(data.cellIndex);
-
       this.score += data.mass;
       cell.mass += data.mass;
-
+      console.log("Mass: ",cell.mass);
       var grow = this.game.add.tween(cell);
       var newWidth = this.massToWidth(cell.mass);
 
