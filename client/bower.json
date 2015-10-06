@@ -1,0 +1,9 @@
+{
+  "name": "agarClone",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular": "latest",
+    "angular-socket-io": "latest",
+    "phaser-official": "latest"
+  }
+}

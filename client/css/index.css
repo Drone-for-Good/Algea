@@ -1,0 +1,385 @@
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background-color: black;
+}
+
+#navDiv {
+  position: absolute;
+  /*background-color: #eb9999;*/
+  background-color: #721330;
+  border-right: 5px solid #2e000e;
+  color: #f2dfe5;
+  width: 15%;
+}
+
+#showLoginModal {
+  margin-left: 5%;
+  margin-top: 5%;
+  width: 90%;
+  background-color: #983251;
+  border: 5px solid #4f0118;
+  color: #f2dfe5;
+}
+
+#showLoginModal:hover {
+  background-color: #f2dfe5;
+  color: #983251;
+}
+
+#showLoginModal:focus {
+  outline: 0;
+}
+
+#loginSignupModal {
+  color: #111111;
+}
+
+#gameRoomsDiv {
+  margin-top: 50px;
+  position: absolute;
+  left: 0%;
+  width: 100%;
+  background-color: #983251;
+  border-top: 5px solid #2e000e;
+  border-bottom: 5px solid #2e000e;
+}
+
+#gameRoomsDivTitle {
+  width: 100%;
+  height: 40px;
+  /*color: white;*/
+  text-align: center;
+  font-size: 24px;
+  border-bottom: 5px solid #2e000e;
+}
+
+#gameRoomsList {
+  background-color: #4f0118;
+  list-style: none;
+  padding-left: 0;
+  text-align: center;
+/*  border-left: 6px solid green;
+  border-right: 6px solid green;*/
+  height: 300px;
+  overflow: scroll;
+  font-size: 12px;
+  border-bottom: 5px solid #2e000e;
+}
+
+#gameRoomsList li {
+  padding: 10px 0;
+  font-size: 16px;
+}
+
+#gameRoomsList li:hover {
+  cursor: pointer;
+}
+
+.gameRoomsDivList_Room_Available {
+  background-color: #4f0118;
+}
+
+.gameRoomsDivList_Room_Full {
+  background-color: #ff8484;
+}
+
+.gameRoomsDivList_Room_Hover {
+  background-color: #f2dfe5;
+  color: #4f0118;
+}
+
+.gameRoomsDivList_Room_Full {
+
+}
+
+#gameRoomsDivListFind_Title {
+  margin: 0;
+  text-align: center;
+  font-size: 20px;
+}
+
+#gameRoomsDivListFind_Input {
+  width: 90%;
+  height: 26px;
+  padding-left: 5px;
+  margin-left: 5%;
+  margin-bottom: 10px;
+  color: #111111;
+}
+
+#gameDiv {
+  position: absolute;
+  top: 10%;
+  left: 15%;
+  width: 70%;
+  background-color: black;
+}
+
+#friendsDiv {
+  position: absolute;
+  left: 85%;
+  width: 15%;
+  background-color: #123652;
+  border-bottom: 5px solid #011321;
+  border-left: 5px solid #011321;
+  color: #dbe2e8;
+}
+
+#friendsDivTitle {
+  margin-top: 3px;
+  width: 100%;
+  height: 35px;
+  text-align: center;
+  font-size: 24px;
+}
+
+#friendsDivList {
+  border-top: 5px solid #011321;
+  background-color: #042239;
+  list-style: none;
+  padding-left: 0;
+  text-align: center;
+  height: 400px;
+  overflow: scroll;
+  font-size: 12px;
+  border-bottom: 5px solid #011321;
+}
+
+#friendsDivList li {
+  padding: 10px 0;
+  cursor: pointer;
+  background-color: #042239;
+  font-size: 16px;
+}
+
+#friendsDivList li:hover {
+  color: #042239;
+  background-color: #dbe2e8;
+}
+
+.friendsDivListStatus {
+  float: left;
+  background-color: black;
+  position: relative;
+  width: 10px;
+  left: 4%;
+  height: 10px;
+  top: 5px;
+  border-radius: 50%;
+  opacity: 1;
+}
+
+.friendsDivListStatus_Online {
+  background-color: #3399ff;
+  opacity: 1;
+}
+
+.friendsDivListStatus_Offline {
+  opacity: 0;
+}
+
+.friendsDivListStatus_Idle {
+  background-color: gray;
+}
+
+#friendsDivListFind_Title {
+  margin: 0;
+  text-align: center;
+  font-size: 20px;
+}
+
+#friendsDivListFind_Input {
+  width: 90%;
+  height: 26px;
+  padding-left: 5px;
+  margin-left: 5%;
+  color: #111111;
+}
+
+#playersDiv {
+  position: absolute;
+  left: 85%;
+  width: 15%;
+  background-color: #802d15;
+  color: #f7e6e2;
+  border-left: 5px solid #330c00;
+}
+
+#playersDivTitle {
+  width: 100%;
+  height: 35px;
+  text-align: center;
+  font-size: 24px;
+}
+
+#playersDivListFriendNav {
+  border-top: 5px solid #330c00;
+  width: 100%;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+#playersDivListFriendNav_Add {
+  background-color: #181818;
+  color: #66ff33;
+  border-color: #111111;
+  border-width: 2px;
+  width: 48%;
+  margin-left: 1%;
+  float: left;
+  padding: 0;
+  font-size: 25px;
+}
+
+#playersDivListFriendNav_Add:hover {
+  background-color: #66ff33;
+  border-color: #66ff33;
+  color: #181818;
+}
+
+.playersDivSelectedPlayerInNav {
+  color: #ffcc00;
+}
+
+#playersDivListFriendNav_Remove {
+  background-color: #181818;
+  color: #ff3333;
+  border-color: #111111;
+  border-width: 2px;
+  width: 48%;
+  margin-right: 1%;
+  float: right;
+  padding: 0;
+  font-size: 25px;
+}
+
+#playersDivListFriendNav_Remove:hover {
+  color: #181818;
+  background-color: #ff3333;
+  border-color: #ff3333;
+}
+
+#playersDivListFriendNav_Remove:focus,
+  #playersDivListFriendNav_Add:focus {
+  outline: 0;
+}
+
+
+#playersDivList {
+  border-top: 5px solid #330c00;
+  background-color: #581401;
+  list-style: none;
+  padding-left: 0;
+  text-align: center;
+  height: 400px;
+  overflow: scroll;
+  font-size: 12px;
+  border-bottom: 5px solid #330c00;
+  clear: both;
+}
+
+#playersDivList li {
+  padding: 10px 0;
+  cursor: pointer;
+  background-color: #581401;
+  font-size: 16px;
+}
+
+
+#playersDivList li:hover {
+  color: #581401;
+  background-color: #f7e6e2;
+}
+
+#playersDivList img {
+  float: left;
+  width: 20%;
+  left: 5%;
+  margin-top: -2%;
+}
+
+
+#playersDivListFind_Title {
+  margin: 0;
+  font-size: 20px;
+  text-align: center;
+}
+
+#playersDivListFind_Input {
+  width: 90%;
+  height: 26px;
+  padding-left: 5px;
+  margin-left: 5%;
+  color: #111111;
+}
+
+#gameChatDiv {
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 400px;
+  height: 200px;
+  background-color: rgba(50, 50, 50, .75);
+  border-radius: 5px;
+  left: 5px;
+}
+
+#minGameChatDiv {
+  position: absolute;
+  height: 13px;
+  width: 13px;
+  background-color: red;
+  left: 96%;
+  top: 1%;
+  border-radius: 3px;
+}
+
+#gameChatDivMessages {
+  top: 15px;
+  position: relative;
+  background-color: rgba(25, 25, 25, .75);
+  width: 90%;
+  height: 150px;
+  border-radius: 3px;
+  left: 4%;
+  overflow: scroll;
+}
+
+#gameChatDivMessages ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+
+#gameChatDivMessages ul li {
+  padding-left: 10px;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  word-wrap: break-word;
+  color: white;
+}
+
+.gameChatDivServerMessage {
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.gameChatDivMessagesUser {
+  font-weight: bold;
+}
+
+#gameChatDivInput {
+  position: absolute;
+  width: 90%;
+  left: 4%;
+  font-size: 12px;
+  border: none;
+  border-radius: 3px;
+  background-color: rgba(25, 25, 25, .75);
+  color: white;
+}
