@@ -469,8 +469,8 @@
       playerState.cells = [];
       this.playerCells.forEach(function (cell) {
         playerState.cells.push({
-          "x" : cell.x,
-          "y" : cell.y,
+          "x" : cell.x/this.worldGroup.scale.x,
+          "y" : cell.y/this.worldGroup.scale.x,
           "radius" : cell.width / 2
         });
       }, this);
