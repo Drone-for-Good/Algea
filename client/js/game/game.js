@@ -12,6 +12,10 @@
       this.username = username;
       this.roomName = roomName;
       this.initialFoodData = foodInfo;
+
+      //TODO: add the virus here, too:
+      //this.virus = virus;
+
       // For testing
       // this.initialFoodData = {
       //   0: { id: 0, x: 100, y: 100, color: '#ffffe0' },
@@ -64,11 +68,18 @@
         this.addFood(this.initialFoodData[key]);
       }
 
+      //add all of the initial viruses:
+
+
       // For testing
       // for (var i = 0; i < 60; i++) {
       //   this.food.create(this.world.randomX,
       //      this.world.randomY, 'food');
       // }
+
+      //TODO: Create virus here
+      //this.virus = this.add.group(this.worldGroup); //maybe?
+      //this.virus.breakBody = true; //need to make a method called breakBody
 
       // All the other players
       this.enemies = this.add.group(this.worldGroup);
@@ -232,7 +243,7 @@
           // Make new cell appear 30 px from the top right corner
           // of the group
           var newRadius = cell.width / 2;
-          var newCell = this.initializePlayer(newRadius, cell.x, cell.y, 
+          var newCell = this.initializePlayer(newRadius, cell.x, cell.y,
                           this.username);
           this.playerCells.add(newCell);
 
@@ -447,6 +458,11 @@
         // Update the foodIDs
         this.foodIDs[id] = null;
       }
+    },
+
+    //TODO: addVirus here
+    addVirus: function() {
+
     },
 
     updateEnemyGroup: function(enemyGroup, data) {
