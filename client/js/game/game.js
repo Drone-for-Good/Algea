@@ -7,6 +7,7 @@
 
   var count = 0;
   var countZoom = 0;
+  var countZoomIn = 0;
 
 
   function Game() {}
@@ -305,6 +306,7 @@
         cell.width = this.massToWidth(cell.mass);
         cell.height = cell.width;
         count = 0;
+        this.zoomIn(massLost/1000);
         //console.log(this.player.mass)
       }
       
@@ -444,6 +446,25 @@
         this.playerCells.forEachAlive(function (cell) {
           cell.x -= cell.x * scaleRate;
           cell.y -= cell.y * scaleRate;
+        }, this);
+      }
+
+
+    },
+
+    zoomIn: function (scaleRate) {
+      countZoomIn++;
+      if(countZoomIn < 240){
+        var world = this.worldGroup;
+
+        scaleRate = scaleRate || 0.001;
+
+        world.scale.x += world.scale.x * scaleRate;
+        world.scale.y += world.scale.y * scaleRate;
+
+        this.playerCells.forEachAlive(function (cell) {
+          cell.x += cell.x * scaleRate;
+          cell.y += cell.y * scaleRate;
         }, this);
       }
 
