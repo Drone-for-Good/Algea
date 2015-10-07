@@ -26,6 +26,7 @@
       //   2: { id: 1, x: -100, y: -100, color: '#ffffe0' }
       // };
       console.log(foodInfo, "~~~~foodInfo~~~~", virusInfo, "~~~~virusInfo~~~~", this.initialVirusData, "~~~~initialVirusData~~~~");
+      // console.log(this.food, "~~~~this.food~~~~", this.virus, "~~~~this.virus~~~~");
     },
 
     preload: function () {
@@ -333,10 +334,11 @@
       this.physics.arcade.collide(this.playerCells, this.walls);
       this.physics.arcade.overlap(this.playerCells,
         this.food, this.eatFood, null, this);
+        //console.log(this.food, "~~~~this.food~~~~inside arcade logic~~~~");
         //TODO check for virus collisions
-        console.log("I commented out checking for virus collisions");
-      // this.physics.arcade.overlap(this.playerCells,
-      //   this.virus, this.eatVirus, null, this);
+        //console.log("I commented out checking for virus collisions");
+      this.physics.arcade.overlap(this.playerCells,
+        this.virus, this.eatVirus, null, this);
 
       this.enemies.forEachAlive(function (enemy) {
         this.physics.arcade.overlap(this.playerCells,
@@ -409,7 +411,8 @@
 
       //TODO: if player eats a virus, they are out of the game.
       //this may need to be elaborated upon. Need to find "playerCell.destroy()"
-      playerCell.destroy();
+      console.log("YOU ATE A VIRUS OMG NOM NOM NOM NOM NOM");
+      //playerCell.destroy();
 
       //copied from below - have to reset the game if this happens
       if (this.playerCells.length === 0){
