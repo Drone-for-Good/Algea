@@ -7,6 +7,7 @@
 
   var count = 0;
   var countZoom = 0;
+  var mergeCount = 0;
 
 
   function Game() {}
@@ -136,8 +137,12 @@
       var downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
       downKey.onDown.add(function(key) {
         // Change the enemies
-        console.log("whats nodemon good for")
-        this.processGameStateDataTEST();
+        console.log(this.playerCells)
+        if(this.playerCells.children[1]){
+          console.log(this.playerCells.children[1])
+          this.eat(this.playerCells.children[0], this.playerCells.children[1])
+        }
+        //this.processGameStateDataTEST();
       }, this);
 
       // For testing:
@@ -187,6 +192,10 @@
         walls.create(rightX, topY, verticalWall);
 
         walls.setAll('body.immovable' , true);
+        walls.setAll('body.moves' , false);
+        walls.setAll('body.bounce', 0);
+        walls.setAll('collideWorldBounds', true);
+        //this.ground.physicsType = Phaser.SPRITE;
         return walls;
       }
     },
@@ -307,7 +316,6 @@
       
       // Update location of every player cell and decrease size on interval
       this.playerCells.forEach(function (cell) {
-
         if(count >= 3000){
           var massLost = Math.floor(.0000055555*cell.mass*cell.mass - 0.00055555*cell.mass);//0.0001*cell.mass*cell.mass);
           cell.mass -= massLost;
@@ -316,6 +324,7 @@
           this.zoom(-massLost);
           cell.width = this.massToWidth(cell.mass);
           cell.height = cell.width;
+
         }
 
         var dist = this.physics.arcade.distanceToPointer(cell);
@@ -348,6 +357,15 @@
       //Rectangle that bounds all player cells
       var boundingRect = this.playerCells.getLocalBounds();
       this.camera.focusOnXY(boundingRect.centerX, boundingRect.centerY);
+
+      //remerge cells after time
+      if(this.playerCells.children.length > 1){
+        mergeCount += 50
+        if(mergeCount > 100000){
+          this.eat(this.playerCells.children[0], this.playerCells.children[1]);
+          mergeCount = 0;
+        }
+      }
     },
 
     // Show debug info
@@ -415,28 +433,39 @@
 
     },
 
-    eatOrBeEaten: function (playerCell, enemyCell) {
-      if (enemyCell.mass*0.8 > playerCell.mass) {
-        var mass = playerCell.mass;
-        var enemyName = enemyCell.parent.username;
-        var cellIndex = enemyCell.parent.getChildIndex(enemyCell);
+    eatOrBeEaten: function (mainPlayerCell, cellB) {
+      if (cellB.mass * 0.8 > mainPlayerCell.mass) {
+        this.eat(mainPlayerCell, cellB)
+      }
+      // } else if (mainPlayerCell.mass * 0.8 > cellB.mass){
+      //   this.eat(cellB, mainPlayerCell)
+      // }
+    },
 
-        var data = {
-          username: enemyName,
-          cellIndex: cellIndex,
-          mass: mass
-        };
-        window.globalSocket.emit('sendToServerCellEaten', data);
-        playerCell.destroy();
+    eat: function(cellA, cellB){
+      var mass = cellA.mass;
+      var cellBName = cellB.parent.username;
+      var cellIndex = cellB.parent.getChildIndex(cellB);
 
-        if (this.playerCells.length === 0){
-          clearInterval(window.playerUpdateRoutine);
-          //TODO: Allow user to continue playing in same room
-          //Currently user will have to rejoin room after dying
-          this.game.state.start('menu');
-        }
+      var data = {
+        username: cellBName,
+        cellIndex: cellIndex,
+        mass: mass
+      };
+
+      cellB.mass += cellA.mass;
+      window.globalSocket.emit('sendToServerCellEaten', data);
+      cellA.destroy();
+
+      if (this.playerCells.length === 0){
+        clearInterval(window.playerUpdateRoutine);
+        //TODO: Allow user to continue playing in same room
+        //Currently user will have to rejoin room after dying
+        this.game.state.start('menu');
       }
     },
+
+
     zoom: function(massIncrease){
       if(countZoom < 1.25 && countZoom >= 0){
         var world = this.worldGroup;
