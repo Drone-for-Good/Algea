@@ -1,7 +1,9 @@
 var Sequelize = require("sequelize");
 
 // Connect to the agar database with user root and "root" password
+
 var sequelize = new Sequelize("agar", "root", "password"/*""*/);
+
 
 // Sequelize auto adds for each entry: id that is a primary key and auto-increments
 // createAt and updatedAt timestamps
@@ -37,6 +39,19 @@ exports.Skin = sequelize.define('Skin', {
 
 exports.Skin.sync().then(function(){
   console.log("Successfully synced Skin table");
+});
+
+// STATS
+exports.Stats = sequelize.define('Stats', {
+  score: {type: Sequelize.INTEGER, defaultValue: 0},
+  highScoreUsername: {type: Sequelize.STRING, defaultValue: ""},
+  lifetime: {type: Sequelize.FLOAT, defaultValue: 0},
+  longLifeUsername: {type: Sequelize.STRING, defaultValue: ""},
+  totalKills: {type: Sequelize.INTEGER, defaultValue: 0}
+});
+
+exports.Stats.sync().then(function(){
+  console.log("Successfully synced Stats table");
 });
 
 // Stats for one game of a user

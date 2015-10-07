@@ -16,37 +16,7 @@
 </head>
 <body>
 
-  <div id="gameDiv" ng-controller="gameDivController">
-    <div id="gameChatDiv" ng-controller="gameChatDivController">
-      <div id="minGameChatDiv"></div>
-      <div id="gameChatDivMessages">
-        <ul ng-repeat="message in messages">
-          <li>
-            <span class="gameChatDivMessagesUser"
-              ng-class='
-              {
-                "gameChatDivServerMessage":
-                  message.username === "SERVER"
-              }'>
-              {{ message.username }}:
-            </span>
-            <span ng-class='
-              {
-                "gameChatDivServerMessage":
-                  message.username === "SERVER"
-              }'>
-              {{ message.message }}
-            </span>
-          </li>
-        </ul>
-      </div>
-      <form ng-submit='sendToServerChatMessage()'>
-        <input id="gameChatDivInput" type="text" placeholder="Message..."
-          maxlength="72">
-        <!-- <input type="submit" id="gameChatDivSubmit" value="Submit" /> -->
-      </form>
-    </div>
-  </div>
+
 
     
   <div id="navDiv" ng-controller="navDivController">
@@ -139,35 +109,79 @@
       </div>
     </div>
 
-    <div id="gameRoomsDiv">
-      <div id="gameRoomsDivTitle">Rooms</div>
-      <ul id="gameRoomsList">
-        <li ng-repeat="gameRoom in gameRooms | filter:gameRoomsFilter"
-          class="gameRoomsDivList_Room"
-          ng-mouseenter="hover = true"
-          ng-mouseleave="hover = false"
-          ng-click="joinRoom(gameRoom.roomName)"
-          ng-class="
-            {
-              'gameRoomsDivList_Room_Available':
-                gameRoom.count < gameRoom.maxCount,
-              'gameRoomsDivList_Room_Full': gameRoom.count >= gameRoom.maxCount,
-              'gameRoomsDivList_Room_Hover': hover
-            }">
-          {{ gameRoom.roomName }} ({{ gameRoom.count }}/{{ gameRoom.maxCount }})
-        </li>
-      </ul>
-      <p id="gameRoomsDivListFind_Title">Find rooms</p>
-      <input ng-model="gameRoomsFilter"
-        type="text" id="gameRoomsDivListFind_Input" placeholder="Room Name"/>
+    <!-- Rooms (PinkRed) Div Along Left Side -->
+    <div id="gameRoomsDivTitle">Game Room
+        <ul id="gameRoomsList">
+        <!-- Unordered list where game/rooms are displayed -->
+          <li ng-repeat="gameRoom in gameRooms | filter:gameRoomsFilter"
+            class="gameRoomsDivList_Room"
+            ng-mouseenter="hover = true"
+            ng-mouseleave="hover = false"
+            ng-click="joinRoom(gameRoom.roomName)"
+            ng-class="
+              {
+                'gameRoomsDivList_Room_Available':
+                  gameRoom.count < gameRoom.maxCount,
+                'gameRoomsDivList_Room_Full': gameRoom.count >= gameRoom.maxCount,
+                'gameRoomsDivList_Room_Hover': hover
+              }">
+            {{ gameRoom.roomName }} ({{ gameRoom.count }}/{{ gameRoom.maxCount }})
+          </li>
+        </ul>
+
+        <!-- Chat -->
+        <div id="chatDivTitle">Chat
+          <div id="gameChatDiv" ng-controller="gameChatDivController">
+              <div id="gameChatDivMessages">
+                <ul ng-repeat="message in messages">
+                  <li>
+                    <span class="gameChatDivMessagesUser"
+                      ng-class='
+                      {
+                        "gameChatDivServerMessage":
+                          message.username === "SERVER"
+                      }'>
+                      {{ message.username }}:
+                    </span>
+                    <span ng-class='
+                      {
+                        "gameChatDivServerMessage":
+                          message.username === "SERVER"
+                      }'>
+                      {{ message.message }}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <form ng-submit='sendToServerChatMessage()'>
+                <input id="gameChatDivInput" type="text" placeholder="Message..."
+                  maxlength="72">
+              </form>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div id="friendsDiv" ng-controller="friendsDivController">
-    <div ng-model="friends" id="friendsDivTitle">
-      Friends
+
+  <!-- This is populated by the instance of the phaser game.  See main.js -->
+  <div id="gameDiv" ng-controller="gameDivController">  </div>
+
+  <div id="friendsDiv" ng-controller="gameDivController">
+    <div id="friendsDivTitle">
+      Leaderboard!
     </div>
-    <ul id="friendsDivList">
+    <ul id="fiendsDivList">
+      <li>High Score</li>
+      <li> {{ stats.highestScore }} </li>
+      <li>User</li>
+      <li> {{ stats.highestScoreUser }} </li>
+      <li>Longest Life</li>
+      <li> {{ stats.longestLife }} </li>
+      <li>User</li>
+      <li> {{ stats.longestLifeUser }} </li>
+    </ul>
+    <!-- <ul id="friendsDivList">
       <li ng-repeat
         ="friend in socialVars.friendsKeys | filter:friendFilter"
         class="friendsDivListFriend">
@@ -184,10 +198,10 @@
       </div>
         {{ friend }}
       </li>
-    </ul>
-    <p id="friendsDivListFind_Title">Find friends</p>
+    </ul> -->
+    <!-- <p id="friendsDivListFind_Title">Find friends</p>
     <input ng-model="friendFilter" type="text" id="friendsDivListFind_Input"
-      placeholder="Friend Name"/>
+      placeholder="Friend Name"/> -->
   </div>
 
   <div id="playersDiv" ng-controller="playersDivController">
