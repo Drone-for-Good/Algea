@@ -12,6 +12,7 @@
       this.username = username;
       this.roomName = roomName;
       this.initialFoodData = foodInfo;
+      this.lifetime = 0;
       // For testing
       // this.initialFoodData = {
       //   0: { id: 0, x: 100, y: 100, color: '#ffffe0' },
@@ -323,6 +324,8 @@
       //Rectangle that bounds all player cells
       var boundingRect = this.playerCells.getLocalBounds();
       this.camera.focusOnXY(boundingRect.centerX, boundingRect.centerY);
+
+      this.lifetime = this.lifetime += .01;
     },
 
     // Show debug info

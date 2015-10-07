@@ -15,7 +15,7 @@ exports.addGameStats = function (userID, stats) {
 
 //Update the leaderboard stats
 exports.updateStats = function (stats) {
-  db.Stats.findOrCreate({where: {username: stats.username}}).then(function (row) {
+  db.Stats.findOrCreate({where: {id: 1}}).then(function (row) {
     var entry = row[0];
     if (stats.score > entry.get("score")) {
       entry.set("score", stats.score);
