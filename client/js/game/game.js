@@ -137,7 +137,7 @@
       var downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
       downKey.onDown.add(function(key) {
         // Change the enemies
-        //console.log(this.player.mass)
+        console.log("whats nodemon good for")
         this.processGameStateDataTEST();
       }, this);
 
@@ -152,9 +152,10 @@
       var upKey = this.input.keyboard.addKey(Phaser.Keyboard.UP);
       upKey.onDown.add(function(key) {
         this.playerCells.forEachAlive(function (cell) {
-          cell.mass += 2;
-          this.scalePlayer(cell, cell.mass);
-          this.zoomOut(0.005);
+          var massIncrease = 100;
+          cell.mass += massIncrease;
+          this.scalePlayer(cell, cell.mass * (1-(massIncrease/1000)));
+          this.zoom(massIncrease);
         }, this);
       }, this);
 
@@ -298,12 +299,9 @@
 
     // Called by game loop to update rendering of objects
     update: function () {
-
       //counter used to determine when to decrease the size of the player
       if (count > 3000){
         count = 0;
-
-        this.zoomIn(massLost/1000);
         //console.log(this.player.mass)
       }
       count += 50;
@@ -312,8 +310,11 @@
       this.playerCells.forEach(function (cell) {
 
         if(count >= 3000){
-          var massLost = Math.floor(0.0001*cell.mass*cell.mass);
+          var massLost = Math.floor(.0000055555*cell.mass*cell.mass - 0.00055555*cell.mass);//0.0001*cell.mass*cell.mass);
           cell.mass -= massLost;
+          this.scalePlayer(cell, cell.mass * (1 + massLost/1000));
+          //negative so it zooms in
+          this.zoom(-massLost);
           cell.width = this.massToWidth(cell.mass);
           cell.height = cell.width;
         }
@@ -397,7 +398,7 @@
           num++;
       }, this);
       num = 0;
-      console.log(totalMass,"totalMass")
+      //console.log(totalMass,"totalMass")
       this.eatenFoodIDs.push(food.id);
       // this.foodIDs[food.id] = null;
       // food.destroy();
@@ -406,10 +407,11 @@
       this.score += 5;
       this.scoreText.text = 'Score: ' + this.score;
 
-      if(totalMass < 500){
-        playerCell.mass += 5;
-        this.scalePlayer(playerCell, playerCell.mass * 0.995);
-        this.zoomOut(0.005);
+      if(totalMass < 1000){
+        var massIncrease = 10;
+        playerCell.mass += massIncrease;
+        this.scalePlayer(playerCell, playerCell.mass * (1- (massIncrease/1000)));
+        this.zoom(massIncrease);
       }
 
     },
@@ -436,11 +438,31 @@
         }
       }
     },
+    zoom: function(massIncrease){
+      if(countZoom < 1.25 && countZoom >= 0){
+        var world = this.worldGroup;
+        var scaleRate = massIncrease/1000;
+        countZoom += scaleRate;
+        //console.log("scalerate: ", countZoom, " massIncrease: ", massIncrease)
+        if (countZoom < 0){
+          countZoom = 0;
+          scaleRate = scaleRate + countZoom;
+        }
 
+        world.scale.x -= world.scale.x * scaleRate;
+        world.scale.y -= world.scale.y * scaleRate;
+
+        this.playerCells.forEachAlive(function (cell) {
+          cell.x -= cell.x * scaleRate;
+          cell.y -= cell.y * scaleRate;
+        }, this);
+      }
+    },
     
     zoomOut: function (scaleRate) {
-      countZoom++;
-      if(countZoom < 240){
+      countZoom += scaleRate;
+      console.log(countZoom)
+      if(countZoom < .30){
         var world = this.worldGroup;
 
         scaleRate = scaleRate || 0.001;
@@ -458,8 +480,8 @@
     },
 
     zoomIn: function (scaleRate) {
-      countZoomIn++;
-      if(countZoomIn < 240){
+      countZoom -= scaleRate;
+      if(countZoom > 0){
         var world = this.worldGroup;
 
         scaleRate = scaleRate || 0.001;
@@ -636,22 +658,24 @@
       }
     },
     processCellEatenData: function (data) {
-      var cell = this.playerCells.getChildAt(data.cellIndex);
+      // console.log("hehehe")
+      // var cell = this.playerCells.getChildAt(data.cellIndex);
 
-      this.score += data.mass;
-      cell.mass += data.mass;
+      // this.score += data.mass;
+      // cell.mass += data.mass;
 
-      var grow = this.game.add.tween(cell);
-      var newWidth = this.massToWidth(cell.mass);
+      // var grow = this.game.add.tween(cell);
+      // var newWidth = this.massToWidth(cell.mass);
 
-      grow.to({width: newWidth, height: newWidth}, 1000, Phaser.Easing.Cubic.In);
-      grow.start();
+      // grow.to({width: newWidth, height: newWidth}, 1000, Phaser.Easing.Cubic.In);
+      // grow.start();
 
-      var scale = Math.pow(0.005, data.mass / 20);
-      this.zoomOut(scale);
+      // var scale = Math.pow(0.005, data.mass / 20);
+      // console.log("inhehehehr he")
+      // this.zoomOut(scale);
     },
     massToWidth: function (mass) {
-      return Math.sqrt((mass)*100);
+      return Math.sqrt((mass)*50);
     },
     shutdown: function () {
       clearInterval(window.playerUpdateRoutine);
