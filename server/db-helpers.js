@@ -1,18 +1,6 @@
 // Iterface between server and database
 var db = require('../DB/models.js');
 
-// Add a new record to the GameStats table
-exports.addGameStats = function (userID, stats) {
-  var newStats = stats;
-  // Add the user ID to the stats
-  newStats.userid = userID;
-
-  var newGameStats = db.GameStats.build(newStats);
-  newGameStats.save().then(function () {
-    console.log("Saved a new game record to GameStats database");
-  });
-};
-
 //Update the leaderboard stats
 exports.updateStats = function (stats) {
   db.Stats.findOrCreate({where: {id: 1}}).then(function (row) {
@@ -29,52 +17,73 @@ exports.updateStats = function (stats) {
   });
 }
 
+//Fetch stats
+exports.fetchStats = function (callback) {
+  db.Stats.findOrCreate({where: {id: 1}}).then(function (row) {
+    callback(row[0]);
+  })
+}
+
+
+// Add a new record to the GameStats table
+// exports.addGameStats = function (userID, stats) {
+//   var newStats = stats;
+//   // Add the user ID to the stats
+//   newStats.userid = userID;
+
+//   var newGameStats = db.GameStats.build(newStats);
+//   newGameStats.save().then(function () {
+//     console.log("Saved a new game record to GameStats database");
+//   });
+// };
+
+
 
 // Update the user's record in the BestStats table, or create one if not found
-exports.updateBestStats = function (userID, stats) {
-  db.BestStats.findOrCreate({where: {userid:userID}}).then(function (records) {
-    var userRecord = records[0];
-    if (stats.lifetime > userRecord.get("lifetime")) {
-      userRecord.set('lifetime', stats.lifetime);
-    }
-    if (stats.score > userRecord.get("score")) {
-      userRecord.set('score', stats.score);
-    }
-    if (stats.mass > userRecord.get("mass")) {
-      userRecord.set('mass', stats.mass);
-    }
-    if (stats.totalKills > userRecord.get("totalKills")) {
-      userRecord.set('totalKills', stats.totalKills);
-    }
-    if (stats.totalFood > userRecord.get("totalFood")) {
-      userRecord.set('totalFood', stats.totalFood);
-    }
-    if (stats.timeInFirst > userRecord.get("timeInFirst")) {
-      userRecord.set('timeInFirst', stats.timeInFirst);
-    }
+// exports.updateBestStats = function (userID, stats) {
+//   db.BestStats.findOrCreate({where: {userid:userID}}).then(function (records) {
+//     var userRecord = records[0];
+//     if (stats.lifetime > userRecord.get("lifetime")) {
+//       userRecord.set('lifetime', stats.lifetime);
+//     }
+//     if (stats.score > userRecord.get("score")) {
+//       userRecord.set('score', stats.score);
+//     }
+//     if (stats.mass > userRecord.get("mass")) {
+//       userRecord.set('mass', stats.mass);
+//     }
+//     if (stats.totalKills > userRecord.get("totalKills")) {
+//       userRecord.set('totalKills', stats.totalKills);
+//     }
+//     if (stats.totalFood > userRecord.get("totalFood")) {
+//       userRecord.set('totalFood', stats.totalFood);
+//     }
+//     if (stats.timeInFirst > userRecord.get("timeInFirst")) {
+//       userRecord.set('timeInFirst', stats.timeInFirst);
+//     }
 
-    // Update the user record in the db table
-    userRecord.save();
-  });
-};
+//     // Update the user record in the db table
+//     userRecord.save();
+//   });
+// };
 
 // Update the user's record in the TotalStats table, or create one if not found
-exports.updateTotalStats = function (userID, stats) {
-  db.TotalStats.findOrCreate({where: {userid:userID}})
-    .then(function (records) {
-      var userRecord = records[0];
-      userRecord.set('totalGames', userRecord.get("totalGames") + 1);
-      userRecord.set('lifetime', userRecord.get("lifetime") + stats.lifetime);
-      userRecord.set('score', userRecord.get("score") + stats.score);
-      userRecord.set('mass', userRecord.get("mass") + stats.mass);
-      userRecord.set('totalKills', userRecord.get("totalKills") + stats.totalKills);
-      userRecord.set('totalFood', userRecord.get("totalFood") + stats.totalFood);
-      userRecord.set('timeInFirst', userRecord.get("timeInFirst") + stats.timeInFirst);
+// exports.updateTotalStats = function (userID, stats) {
+//   db.TotalStats.findOrCreate({where: {userid:userID}})
+//     .then(function (records) {
+//       var userRecord = records[0];
+//       userRecord.set('totalGames', userRecord.get("totalGames") + 1);
+//       userRecord.set('lifetime', userRecord.get("lifetime") + stats.lifetime);
+//       userRecord.set('score', userRecord.get("score") + stats.score);
+//       userRecord.set('mass', userRecord.get("mass") + stats.mass);
+//       userRecord.set('totalKills', userRecord.get("totalKills") + stats.totalKills);
+//       userRecord.set('totalFood', userRecord.get("totalFood") + stats.totalFood);
+//       userRecord.set('timeInFirst', userRecord.get("timeInFirst") + stats.timeInFirst);
 
-      // Update the user record in the db table
-      userRecord.save();
-  });
-};
+//       // Update the user record in the db table
+//       userRecord.save();
+//   });
+// };
 
 //Make a new user
 exports.newUser = function (clientInfo) {

@@ -189,6 +189,11 @@ io.sockets.on('connection', function (socket) {
     if (userID !== undefined) {
       // Update the DB records of the user - doesn't need to be in promise
       dbHelpers.updateStats(finalStats);
+
+      dbHelpers.fetchStats(function (stats) {
+        io.emit('receiveFromServerDeath', stats);
+      });
+
       // dbHelpers.addGameStats(userID, finalStats);
       // dbHelpers.updateBestStats(userID, finalStats);
       // dbHelpers.updateTotalStats(userID, finalStats);
