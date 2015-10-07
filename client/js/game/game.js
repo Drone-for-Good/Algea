@@ -130,7 +130,6 @@
       var spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
       spacebar.onDown.add(function(key) {
         this.split();
-
       }, this);
 
       // For testing: down key console logs info
