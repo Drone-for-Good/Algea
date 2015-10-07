@@ -227,7 +227,7 @@ exports.virusData = {
 var initializeVirusData = function (roomName) {
   // Set virus eaten and new virus to be empty
   exports.virusData[roomName] = {
-    /*
+    //test virusInfo for game
       virusInfo: {
         0: {
           id: 0,
@@ -235,8 +235,8 @@ var initializeVirusData = function (roomName) {
           y: -500 (in pixels)
         }
       }
-    */
-    virusInfo: {},
+
+    //virusInfo: {},
     // Array of objects like those in virusInfo
     newVirus: [],
     // { virusID_0: virusID_0 }
@@ -416,7 +416,7 @@ exports.addRoom = function (size) {
     initializeFoodData(newRoom.roomName);
     prepopulateFood(newRoom.roomName);
     //TODO: call virus methods here:
-    initializeVirus(newRoom.roomName);
+    initializeVirusData(newRoom.roomName);
     prepopulateVirus(newRoom.roomName);
 
     // Increment room count

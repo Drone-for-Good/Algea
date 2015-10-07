@@ -14,15 +14,18 @@
       this.initialFoodData = foodInfo;
 
       //TODO: add the virus here, too:
-      this.initialVirusData = virusInfo;
-
+      //this.initialVirusData = virusInfo;
+      this.initialVirusData = {
+        0: { id: 0, x: 100, y: 100 },
+        1: { id: 1, x: -100, y: -100 }
+      }
       // For testing
       // this.initialFoodData = {
       //   0: { id: 0, x: 100, y: 100, color: '#ffffe0' },
       //   1: { id: 1, x: -100, y: -100, color: '#ffffe0' },
       //   2: { id: 1, x: -100, y: -100, color: '#ffffe0' }
       // };
-
+      console.log(foodInfo, "~~~~foodInfo~~~~", virusInfo, "~~~~virusInfo~~~~", this.initialVirusData, "~~~~initialVirusData~~~~");
     },
 
     preload: function () {
@@ -83,6 +86,11 @@
       //TODO: Create virus here
       this.virus = this.add.group(this.worldGroup);
       this.virus.enableBody = true;
+
+      //Now add all the initial viruses to the screen
+      for (var key in this.initialVirusData) {
+        this.addVirus(this.initialVirusData[key]);
+      }
 
       // All the other players
       this.enemies = this.add.group(this.worldGroup);
@@ -326,8 +334,9 @@
       this.physics.arcade.overlap(this.playerCells,
         this.food, this.eatFood, null, this);
         //TODO check for virus collisions
-      this.physics.arcade.overlap(this.playerCells,
-        this.virus, this.eatVirus, null, this);
+        console.log("I commented out checking for virus collisions");
+      // this.physics.arcade.overlap(this.playerCells,
+      //   this.virus, this.eatVirus, null, this);
 
       this.enemies.forEachAlive(function (enemy) {
         this.physics.arcade.overlap(this.playerCells,
@@ -485,7 +494,7 @@
     },
 
     //TODO: addVirus here
-    addVirus: function() {
+    addVirus: function(virusData) {
       //render new virus
       var newVirus = this.virus.create(virusData.x, virusData.y, 'virus');
       newVirus.id = virusData.id;
@@ -498,14 +507,15 @@
       this.virusIDs[virusData.id] = newVirus;
     },
 
-    removeVirus: function() {
+    removeVirus: function(id) {
       //check if virus still exists
-      if(this.virusIDs[id]) {
-        //delete the virus
-        this.virusIDs[id].destroy();
-        //update virusIDs
-        this.virusIDs[id] = null;
-      }
+      //TODO: decide if this is necessary. If virus is consumed, will it go away?
+      // if(this.virusIDs[id]) {
+      //   //delete the virus
+      //   this.virusIDs[id].destroy();
+      //   //update virusIDs
+      //   this.virusIDs[id] = null;
+      // }
     },
 
     updateEnemyGroup: function(enemyGroup, data) {
@@ -634,13 +644,13 @@
       }
 
       //TODO: process new virus data and eatenVirus data
-      for (var i = 0; i < data.newVirus.length; i++) {
-        this.addVirus(data.newVirus[i]);
-      }
-
-      for (var i = 0; i < data.eatenVirus.length; i++) {
-        this.removeVirus[data.eatenVirus[i]];
-      }
+      // for (var i = 0; i < data.newVirus.length; i++) {
+      //   this.addVirus(data.newVirus[i]);
+      // }
+      //
+      // for (var i = 0; i < data.eatenVirus.length; i++) {
+      //   this.removeVirus[data.eatenVirus[i]];
+      // }
 
     },
     processCellEatenData: function (data) {
