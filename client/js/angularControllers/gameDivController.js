@@ -13,7 +13,7 @@ app.controller("gameDivController", function ($scope, mySocket) {
       //TODO: add eatenVirusIDs (just 1, as there are way fewer viruses than food to be eaten. Maybe take out completely?):
       eatenVirusIDs:
         [
-          "some_virus_id_0_here"
+          "some_virus_id_0_here",
         ],
       positionAndMass:
         [

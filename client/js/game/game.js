@@ -16,8 +16,9 @@
       //TODO: add the virus here, too:
       //this.initialVirusData = virusInfo;
       this.initialVirusData = {
-        0: { id: 0, x: 900, y: 100 }//,
-        //1: { id: 1, x: -600, y: -100 }
+        0: { id: "0", x: 900, y: 200 },
+        1: { id: "1", x: 1000, y: 200 },
+        2: { id: "2", x: 1000, y: -200}
       }
       // For testing
       // this.initialFoodData = {
@@ -25,8 +26,14 @@
       //   1: { id: 1, x: -100, y: -100, color: '#ffffe0' },
       //   2: { id: 1, x: -100, y: -100, color: '#ffffe0' }
       // };
-      console.log(foodInfo, "~~~~foodInfo~~~~", virusInfo, "~~~~virusInfo~~~~", this.initialVirusData, "~~~~initialVirusData~~~~");
-      // console.log(this.food, "~~~~this.food~~~~", this.virus, "~~~~this.virus~~~~");
+      console.log(
+        this, "~~~this~~~",
+        foodInfo, "~~~~foodInfo~~~~",
+        virusInfo, "~~~~virusInfo~~~~",
+        this.initialVirusData, "~~~~initialVirusData~~~~",
+        this.food, "~~~~this.food~~~~",
+        this.virus, "~~~~this.virus~~~~"
+      );
     },
 
     preload: function () {
@@ -75,6 +82,7 @@
 
       // Add all the initial food
       for (var key in this.initialFoodData) {
+        console.log(this.addFood, "~~this.addFood~~", this.initialFoodData[key], "~~~initialFoodData[key]~~~~", this.initialFoodData, "~~~no key~~~~");
         this.addFood(this.initialFoodData[key]);
       }
 
@@ -90,6 +98,7 @@
 
       //Now add all the initial viruses to the screen
       for (var key in this.initialVirusData) {
+        console.log(this.addVirus, "~~this.addVirus~~", this.initialVirusData[key], "~~~initialVirusData[key]~~~~", this.initialVirusData, "~~~no key~~~~");
         this.addVirus(this.initialVirusData[key]);
       }
 
@@ -409,6 +418,7 @@
       this.removeVirus(virus.id);
 
       //TODO: if player eats a virus, they are out of the game (for now).
+      console.log(this.virus, "~~this.virus~~");
       console.log(playerCell, "YOU ATE A VIRUS OMG NOM NOM");
 
       //works for one of the two viruses; the one with the id 0

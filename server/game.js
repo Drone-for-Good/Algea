@@ -80,6 +80,8 @@ exports.foodData = {
 var initializeFoodData = function (roomName) {
   // Set food eaten and new food to be empty
   exports.foodData[roomName] = {
+  //The below console.log is not showing up at all.
+  console.log("I AM INSIDE INITIALIZE~FOOD~DATA IN SERVER GAME. WHERE DOES ALL THE FOOD COME FROM??"),
     /*
       foodInfo: {
         0: {
@@ -186,8 +188,8 @@ exports.refreshFood = function (roomName) {
       exports.foodData[roomName].foodCount++;
       // Store new food
       newFood.push(foodInfo[tmpID]);
-      console.log(exports.foodData[roomName].newFood);
-      console.log(exports.roomData.rooms[roomName].newFood);
+      console.log("~~server foodData...newFood~~", exports.foodData[roomName].newFood);
+      console.log("~~server roomData...newFood~~", exports.roomData.rooms[roomName].newFood);
       // Remove food from eaten food
       delete eatenFood[tmpID];
     } else {
@@ -228,15 +230,15 @@ var initializeVirusData = function (roomName) {
   // Set virus eaten and new virus to be empty
   exports.virusData[roomName] = {
     //test virusInfo for game
-      virusInfo: {
-        0: {
-          id: 0,
-          x: 200 (in pixels),
-          y: -500 (in pixels)
-        }
-      }
+      // virusInfo: {
+      //   0: {
+      //     id: 0,
+      //     x: 200 (in pixels),
+      //     y: -500 (in pixels)
+      //   }
+      // }
 
-    //virusInfo: {},
+    virusInfo: {},
     // Array of objects like those in virusInfo
     newVirus: [],
     // { virusID_0: virusID_0 }
@@ -298,7 +300,7 @@ exports.deleteVirus = function (roomName, virusIDs) {
   var room = exports.roomData.rooms[roomName];
 
   for (var i = 0; i < virusIDs.length; ++i) {
-    // If virus hasn't been claimed by another player
+    // If virus hasn't been claimed by/destroyed another player
     if (!(virusIDs[i] in eatenVirus)) {
       // Delete on next update
       eatenVirus[virusIDs[i]] = virusIDs[i];
@@ -326,8 +328,8 @@ exports.refreshVirus = function (roomName) {
       exports.virusData[roomName].virusCount++;
       // Store new virus
       newVirus.push(virusInfo[tmpID]);
-      console.log(exports.virusData[roomName].newVirus);
-      console.log(exports.roomData.rooms[roomName].newVirus);
+      console.log("~~server virusData...newVirus~~", exports.virusData[roomName].newVirus);
+      console.log("~~server roomData...newVirus", exports.roomData.rooms[roomName].newVirus);
       // Remove virus from eaten virus
       delete eatenVirus[tmpID];
     } else {
@@ -339,10 +341,10 @@ exports.refreshVirus = function (roomName) {
 
 // Restore virus parameters in between updates
 exports.restoreVirusParams = function (roomName) {
-  // if (exports.virusData[roomName].newVirus.length > 0) {
-  //   console.log('YOU HAVE VIRUSES OH NOOOOOOOOOOOOO');
-  //   console.log(exports.virusData[roomName].newVirus);
-  // }
+  if (exports.virusData[roomName].newVirus.length > 0) {
+    console.log('YOU HAVE VIRUSES OH NOOOOOOOOOOOOO');
+    console.log(exports.virusData[roomName].newVirus);
+  }
   // Reassign empty virus array
   exports.virusData[roomName].newVirus = [];
   exports.roomData.rooms[roomName].newVirus

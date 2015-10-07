@@ -24,7 +24,7 @@
       // load your assets here
       this.load.image('grid', 'assets/grid.jpg');
       this.load.image('food', 'assets/star.png');
-      //TODO: load the virus
+      //TODO: load the virus image
       this.load.image('virus', 'assets/largerVirus.png');
     },
 
