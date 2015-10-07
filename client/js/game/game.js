@@ -16,8 +16,8 @@
       //TODO: add the virus here, too:
       //this.initialVirusData = virusInfo;
       this.initialVirusData = {
-        0: { id: 0, x: 100, y: 100 },
-        1: { id: 1, x: -100, y: -100 }
+        0: { id: 0, x: 900, y: 100 }//,
+        //1: { id: 1, x: -600, y: -100 }
       }
       // For testing
       // this.initialFoodData = {
@@ -334,9 +334,8 @@
       this.physics.arcade.collide(this.playerCells, this.walls);
       this.physics.arcade.overlap(this.playerCells,
         this.food, this.eatFood, null, this);
-        //console.log(this.food, "~~~~this.food~~~~inside arcade logic~~~~");
+
         //TODO check for virus collisions
-        //console.log("I commented out checking for virus collisions");
       this.physics.arcade.overlap(this.playerCells,
         this.virus, this.eatVirus, null, this);
 
@@ -409,10 +408,11 @@
       this.eatenVirusIDs.push(virus.id);
       this.removeVirus(virus.id);
 
-      //TODO: if player eats a virus, they are out of the game.
-      //this may need to be elaborated upon. Need to find "playerCell.destroy()"
-      console.log("YOU ATE A VIRUS OMG NOM NOM NOM NOM NOM");
-      //playerCell.destroy();
+      //TODO: if player eats a virus, they are out of the game (for now).
+      console.log(playerCell, "YOU ATE A VIRUS OMG NOM NOM");
+
+      //works for one of the two viruses; the one with the id 0
+      playerCell.destroy();
 
       //copied from below - have to reset the game if this happens
       if (this.playerCells.length === 0){
