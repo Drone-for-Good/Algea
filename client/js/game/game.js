@@ -4,11 +4,9 @@
 
   var WORLD_WIDTH = 4096;
   var WORLD_HEIGHT = 2048;
-<<<<<<< HEAD
+
   var count = 0;
   var countZoom = 0;
-=======
->>>>>>> e917ad64f5f65f4916fdee1b251b1f8610f18f52
 
   function Game() {}
 
@@ -130,10 +128,6 @@
       var spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
       spacebar.onDown.add(function(key) {
         this.split();
-<<<<<<< HEAD
-=======
-        console.log(this.player);
->>>>>>> e917ad64f5f65f4916fdee1b251b1f8610f18f52
       }, this);
 
       // For testing: down key console logs info
@@ -233,11 +227,9 @@
         // Only split if cell is not a newly split cell
         if (count < originalCellCount && cell.width > 141) {
           // Halve the mass of the original cell
-<<<<<<< HEAD
+
           cell.mass = cell.mass/2;
-=======
-          cell.mass = cell.mass/2
->>>>>>> e917ad64f5f65f4916fdee1b251b1f8610f18f52
+
           cell.width = this.massToWidth(cell.mass);
           cell.height = cell.width;
 
@@ -303,7 +295,7 @@
 
     // Called by game loop to update rendering of objects
     update: function () {
-<<<<<<< HEAD
+
       count += 50;
       var cell = this.player;
       if(count >= 3000){
@@ -315,8 +307,7 @@
         //console.log(this.player.mass)
       }
       
-=======
->>>>>>> e917ad64f5f65f4916fdee1b251b1f8610f18f52
+
       // Update location of every player cell
       this.playerCells.forEach(function (cell) {
         var dist = this.physics.arcade.distanceToPointer(cell);
