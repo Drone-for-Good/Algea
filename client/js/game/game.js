@@ -7,7 +7,6 @@
 
   var count = 0;
   var countZoom = 0;
-  var countZoomIn = 0;
 
 
   function Game() {}
@@ -459,44 +458,6 @@
       }
     },
     
-    zoomOut: function (scaleRate) {
-      countZoom += scaleRate;
-      console.log(countZoom)
-      if(countZoom < .30){
-        var world = this.worldGroup;
-
-        scaleRate = scaleRate || 0.001;
-
-        world.scale.x -= world.scale.x * scaleRate;
-        world.scale.y -= world.scale.y * scaleRate;
-
-        this.playerCells.forEachAlive(function (cell) {
-          cell.x -= cell.x * scaleRate;
-          cell.y -= cell.y * scaleRate;
-        }, this);
-      }
-
-
-    },
-
-    zoomIn: function (scaleRate) {
-      countZoom -= scaleRate;
-      if(countZoom > 0){
-        var world = this.worldGroup;
-
-        scaleRate = scaleRate || 0.001;
-
-        world.scale.x += world.scale.x * scaleRate;
-        world.scale.y += world.scale.y * scaleRate;
-
-        this.playerCells.forEachAlive(function (cell) {
-          cell.x += cell.x * scaleRate;
-          cell.y += cell.y * scaleRate;
-        }, this);
-      }
-
-
-    },
 
     scalePlayer: function (player, mass) {
       //TODO: Figure out how to scale player based on mass
