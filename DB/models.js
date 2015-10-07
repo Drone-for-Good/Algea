@@ -41,9 +41,10 @@ exports.Skin.sync().then(function(){
 
 // STATS
 exports.Stats = sequelize.define('Stats', {
-  username: {type: Sequelize.STRING, defaultValue: ""},
-  lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
   score: {type: Sequelize.INTEGER, defaultValue: 0},
+  highScoreUsername: {type: Sequelize.STRING, defaultValue: ""},
+  lifetime: {type: Sequelize.FLOAT, defaultValue: 0},
+  longLifeUsername: {type: Sequelize.STRING, defaultValue: ""},
   totalKills: {type: Sequelize.INTEGER, defaultValue: 0}
 });
 

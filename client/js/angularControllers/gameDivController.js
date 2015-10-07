@@ -40,7 +40,7 @@ app.controller("gameDivController", function ($scope, mySocket) {
     var performanceStats = {
       username: window.agar.game.state.states.game.username,
       score: window.agar.game.state.states.game.score,
-      lifetime: 0,
+      lifetime: window.agar.game.state.states.game.lifetime,
       totalKills: 0,
     };
     mySocket.emit("sendToServerDeath", performanceStats);

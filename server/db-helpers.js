@@ -19,7 +19,11 @@ exports.updateStats = function (stats) {
     var entry = row[0];
     if (stats.score > entry.get("score")) {
       entry.set("score", stats.score);
-      entry.set("username", stats.username);
+      entry.set("highScoreUsername", stats.username);
+    }
+    if (stats.lifetime > entry.get("lifetime")) {
+      entry.set("lifetime", stats.lifetime);
+      entry.set("longLifeUsername", stats.username);
     }
     entry.save();
   });
