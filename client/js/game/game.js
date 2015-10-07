@@ -7,7 +7,6 @@
 
   var count = 0;
   var countZoom = 0;
-  var countZoomIn = 0;
 
 
   function Game() {}
@@ -137,6 +136,7 @@
       var downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
       downKey.onDown.add(function(key) {
         // Change the enemies
+        console.log("whats nodemon good for")
         this.processGameStateDataTEST();
       }, this);
 
@@ -151,9 +151,10 @@
       var upKey = this.input.keyboard.addKey(Phaser.Keyboard.UP);
       upKey.onDown.add(function(key) {
         this.playerCells.forEachAlive(function (cell) {
-          cell.mass += 2;
-          this.scalePlayer(cell, cell.mass);
-          this.zoomOut(0.005);
+          var massIncrease = 100;
+          cell.mass += massIncrease;
+          this.scalePlayer(cell, cell.mass * (1-(massIncrease/1000)));
+          this.zoom(massIncrease);
         }, this);
       }, this);
 
@@ -297,21 +298,26 @@
 
     // Called by game loop to update rendering of objects
     update: function () {
-
-      count += 50;
-      var cell = this.player;
-      if(count >= 3000){
-        var massLost = Math.floor(0.0001083*cell.mass*cell.mass - 0.00833*cell.mass);
-        cell.mass -= massLost;
-        cell.width = this.massToWidth(cell.mass);
-        cell.height = cell.width;
+      //counter used to determine when to decrease the size of the player
+      if (count > 3000){
         count = 0;
-        this.zoomIn(massLost/1000);
         //console.log(this.player.mass)
       }
+      count += 50;
       
-      // Update location of every player cell
+      // Update location of every player cell and decrease size on interval
       this.playerCells.forEach(function (cell) {
+
+        if(count >= 3000){
+          var massLost = Math.floor(.0000055555*cell.mass*cell.mass - 0.00055555*cell.mass);//0.0001*cell.mass*cell.mass);
+          cell.mass -= massLost;
+          this.scalePlayer(cell, cell.mass * (1 + massLost/1000));
+          //negative so it zooms in
+          this.zoom(-massLost);
+          cell.width = this.massToWidth(cell.mass);
+          cell.height = cell.width;
+        }
+
         var dist = this.physics.arcade.distanceToPointer(cell);
         // Weird math so you dont have to move the
         // cursor to the edge of the window to
@@ -391,8 +397,7 @@
           num++;
       }, this);
       num = 0;
-      console.log(totalMass,"totalMass")
-      //console.log(this.playerCells," :Player cells")
+      //console.log(totalMass,"totalMass")
       this.eatenFoodIDs.push(food.id);
       // this.foodIDs[food.id] = null;
       // food.destroy();
@@ -401,10 +406,11 @@
       this.score += 5;
       this.scoreText.text = 'Score: ' + this.score;
 
-      if(totalMass < 500){
-        playerCell.mass += 5;
-        this.scalePlayer(playerCell, playerCell.mass * 0.995);
-        this.zoomOut(0.005);
+      if(totalMass < 1000){
+        var massIncrease = 10;
+        playerCell.mass += massIncrease;
+        this.scalePlayer(playerCell, playerCell.mass * (1- (massIncrease/1000)));
+        this.zoom(massIncrease);
       }
 
     },
@@ -431,14 +437,16 @@
         }
       }
     },
-
-    
-    zoomOut: function (scaleRate) {
-      countZoom++;
-      if(countZoom < 240){
+    zoom: function(massIncrease){
+      if(countZoom < 1.25 && countZoom >= 0){
         var world = this.worldGroup;
-
-        scaleRate = scaleRate || 0.001;
+        var scaleRate = massIncrease/1000;
+        countZoom += scaleRate;
+        //console.log("scalerate: ", countZoom, " massIncrease: ", massIncrease)
+        if (countZoom < 0){
+          countZoom = 0;
+          scaleRate = scaleRate + countZoom;
+        }
 
         world.scale.x -= world.scale.x * scaleRate;
         world.scale.y -= world.scale.y * scaleRate;
@@ -448,35 +456,15 @@
           cell.y -= cell.y * scaleRate;
         }, this);
       }
-
-
     },
-
-    zoomIn: function (scaleRate) {
-      countZoomIn++;
-      if(countZoomIn < 240){
-        var world = this.worldGroup;
-
-        scaleRate = scaleRate || 0.001;
-
-        world.scale.x += world.scale.x * scaleRate;
-        world.scale.y += world.scale.y * scaleRate;
-
-        this.playerCells.forEachAlive(function (cell) {
-          cell.x += cell.x * scaleRate;
-          cell.y += cell.y * scaleRate;
-        }, this);
-      }
-
-
-    },
+    
 
     scalePlayer: function (player, mass) {
       //TODO: Figure out how to scale player based on mass
       //TODO: check for collisions?
       player.width = this.massToWidth(mass);
 
-      console.log("width: ", player.width, "mass: ", mass)
+      //console.log("width: ", player.width, "mass: ", mass)
       player.height = player.width;
     },
 
@@ -631,22 +619,24 @@
       }
     },
     processCellEatenData: function (data) {
-      var cell = this.playerCells.getChildAt(data.cellIndex);
+      // console.log("hehehe")
+      // var cell = this.playerCells.getChildAt(data.cellIndex);
 
-      this.score += data.mass;
-      cell.mass += data.mass;
+      // this.score += data.mass;
+      // cell.mass += data.mass;
 
-      var grow = this.game.add.tween(cell);
-      var newWidth = this.massToWidth(cell.mass);
+      // var grow = this.game.add.tween(cell);
+      // var newWidth = this.massToWidth(cell.mass);
 
-      grow.to({width: newWidth, height: newWidth}, 1000, Phaser.Easing.Cubic.In);
-      grow.start();
+      // grow.to({width: newWidth, height: newWidth}, 1000, Phaser.Easing.Cubic.In);
+      // grow.start();
 
-      var scale = Math.pow(0.005, data.mass / 20);
-      this.zoomOut(scale);
+      // var scale = Math.pow(0.005, data.mass / 20);
+      // console.log("inhehehehr he")
+      // this.zoomOut(scale);
     },
     massToWidth: function (mass) {
-      return Math.sqrt((mass)*100);
+      return Math.sqrt((mass)*50);
     },
     shutdown: function () {
       clearInterval(window.playerUpdateRoutine);
