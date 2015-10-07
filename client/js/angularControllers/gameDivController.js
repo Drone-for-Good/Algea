@@ -10,6 +10,11 @@ app.controller("gameDivController", function ($scope, mySocket) {
           "some_food_id_1_here",
           "some_food_id_2_here",
         ],
+      //TODO: add eatenVirusIDs (just 1, as there are way fewer viruses than food to be eaten. Maybe take out completely?):
+      eatenVirusIDs:
+        [
+          "some_virus_id_0_here"
+        ],
       positionAndMass:
         [
           {
@@ -43,6 +48,8 @@ app.controller("gameDivController", function ($scope, mySocket) {
       mass: "get_mass_from_game",
       totalKills: "get_totalKills_from_game",
       totalFood: "get_totalFood_from_game",
+      //TODO: add totalVirus here
+      totalVirus: "get_totalVirus_from_game",
       timeInFirst: "get_timeInFirst_from_game"
     };
     mySocket.emit("sendToServerDeath", performanceStats);
