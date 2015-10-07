@@ -164,15 +164,24 @@
   </div>
 
 
-<!-- LEAVE: Not clear what it does, break chat if commented out now that chat is part of Rooms. -->
+  <!-- This is populated by the instance of the phaser game.  See main.js -->
   <div id="gameDiv" ng-controller="gameDivController">  </div>
 
-<!--   Friends (Blue) Div In Upper Right Corner -->
-  <div id="friendsDiv" ng-controller="friendsDivController">
-    <div ng-model="friends" id="friendsDivTitle">
-      Friends
+  <div id="friendsDiv" ng-controller="gameDivController">
+    <div id="friendsDivTitle">
+      Leaderboard!
     </div>
-    <ul id="friendsDivList">
+    <ul id="fiendsDivList">
+      <li>High Score</li>
+      <li> {{ stats.highestScore }} </li>
+      <li>User</li>
+      <li> {{ stats.highestScoreUser }} </li>
+      <li>Longest Life</li>
+      <li> {{ stats.longestLife }} </li>
+      <li>User</li>
+      <li> {{ stats.longestLifeUser }} </li>
+    </ul>
+    <!-- <ul id="friendsDivList">
       <li ng-repeat
         ="friend in socialVars.friendsKeys | filter:friendFilter"
         class="friendsDivListFriend">
@@ -189,13 +198,12 @@
       </div>
         {{ friend }}
       </li>
-    </ul>
-    <p id="friendsDivListFind_Title">Find friends</p>
+    </ul> -->
+    <!-- <p id="friendsDivListFind_Title">Find friends</p>
     <input ng-model="friendFilter" type="text" id="friendsDivListFind_Input"
-      placeholder="Friend Name"/>
+      placeholder="Friend Name"/> -->
   </div>
 
-  <!-- Players (Red) DIV In Bottom Right Corner -->
   <div id="playersDiv" ng-controller="playersDivController">
     <div ng-model="players" id="playersDivTitle">
       Players
