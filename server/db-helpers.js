@@ -13,6 +13,19 @@ exports.addGameStats = function (userID, stats) {
   });
 };
 
+//Update the leaderboard stats
+exports.updateStats = function (stats) {
+  db.Stats.findOrCreate({where: {username: stats.username}}).then(function (row) {
+    var entry = row[0];
+    if (stats.score > entry.get("score")) {
+      entry.set("score", stats.score);
+      entry.set("username", stats.username);
+    }
+    entry.save();
+  });
+}
+
+
 // Update the user's record in the BestStats table, or create one if not found
 exports.updateBestStats = function (userID, stats) {
   db.BestStats.findOrCreate({where: {userid:userID}}).then(function (records) {
