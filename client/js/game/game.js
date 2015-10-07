@@ -136,6 +136,7 @@
       var downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
       downKey.onDown.add(function(key) {
         // Change the enemies
+        //console.log(this.player.mass)
         this.processGameStateDataTEST();
       }, this);
 
@@ -297,19 +298,22 @@
     // Called by game loop to update rendering of objects
     update: function () {
 
-      count += 50;
-      var cell = this.player;
-      if(count >= 3000){
-        var massLost = Math.floor(0.0001083*cell.mass*cell.mass - 0.00833*cell.mass);
-        cell.mass -= massLost;
-        cell.width = this.massToWidth(cell.mass);
-        cell.height = cell.width;
+      //counter used to determine when to decrease the size of the player
+      if (count > 3000){
         count = 0;
-        //console.log(this.player.mass)
       }
+      count += 50;
       
-      // Update location of every player cell
+      // Update location of every player cell and decrease size on interval
       this.playerCells.forEach(function (cell) {
+
+        if(count >= 3000){
+          var massLost = Math.floor(0.0001*cell.mass*cell.mass);
+          cell.mass -= massLost;
+          cell.width = this.massToWidth(cell.mass);
+          cell.height = cell.width;
+        }
+
         var dist = this.physics.arcade.distanceToPointer(cell);
         // Weird math so you dont have to move the
         // cursor to the edge of the window to
@@ -390,7 +394,6 @@
       }, this);
       num = 0;
       console.log(totalMass,"totalMass")
-      //console.log(this.playerCells," :Player cells")
       this.eatenFoodIDs.push(food.id);
       // this.foodIDs[food.id] = null;
       // food.destroy();
@@ -455,7 +458,7 @@
       //TODO: check for collisions?
       player.width = this.massToWidth(mass);
 
-      console.log("width: ", player.width, "mass: ", mass)
+      //console.log("width: ", player.width, "mass: ", mass)
       player.height = player.width;
     },
 
