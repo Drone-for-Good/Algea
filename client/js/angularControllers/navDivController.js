@@ -60,7 +60,7 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
         roomName: roomName,
         username: $rootScope.gameVars.username
       };
-      mySocket.emit('sendToServerJoinGame', roomData); 
+      mySocket.emit('sendToServerJoinGame', roomData);
     }
   };
   mySocket.on('receiveFromServerJoinGame', function (data) {
@@ -71,6 +71,7 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
       $rootScope.gameVars.roomPlayers = data.roomPlayers;
       console.log(data.roomPlayers);
       // Start game in room
+      //TODO: add virus in here ... do this last. 
       window.agar.game.state.start('game',
         true, false, $rootScope.gameVars.username,
         $rootScope.gameVars.roomName,
