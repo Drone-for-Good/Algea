@@ -34,6 +34,7 @@ app.controller("navDivController", function ($rootScope, $scope, mySocket) {
   $scope.handleSuccessfulLogin = function (data) {
     //Close modal
     $('#showLoginModal').trigger('click');
+    $('#showLoginModal').hide();
 
     // Set $rootScope game variables
     $rootScope.gameVars.username = data.username;
