@@ -5,6 +5,11 @@
   var WORLD_WIDTH = 4096;
   var WORLD_HEIGHT = 2048;
 
+  var count = 0;
+  var countZoom = 0;
+  var countZoomIn = 0;
+
+
   function Game() {}
 
   Game.prototype = {
@@ -12,6 +17,7 @@
       this.username = username;
       this.roomName = roomName;
       this.initialFoodData = foodInfo;
+      this.lifetime = 0;
       // For testing
       // this.initialFoodData = {
       //   0: { id: 0, x: 100, y: 100, color: '#ffffe0' },
@@ -125,7 +131,6 @@
       var spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
       spacebar.onDown.add(function(key) {
         this.split();
-        console.log(this.player);
       }, this);
 
       // For testing: down key console logs info
@@ -225,7 +230,8 @@
         // Only split if cell is not a newly split cell
         if (count < originalCellCount && cell.width > 141) {
           // Halve the mass of the original cell
-          cell.mass = cell.mass/2
+
+          cell.mass = cell.mass/2;
           cell.width = this.massToWidth(cell.mass);
           cell.height = cell.width;
 
@@ -291,6 +297,19 @@
 
     // Called by game loop to update rendering of objects
     update: function () {
+
+      count += 50;
+      var cell = this.player;
+      if(count >= 3000){
+        var massLost = Math.floor(0.0001083*cell.mass*cell.mass - 0.00833*cell.mass);
+        cell.mass -= massLost;
+        cell.width = this.massToWidth(cell.mass);
+        cell.height = cell.width;
+        count = 0;
+        this.zoomIn(massLost/1000);
+        //console.log(this.player.mass)
+      }
+      
       // Update location of every player cell
       this.playerCells.forEach(function (cell) {
         var dist = this.physics.arcade.distanceToPointer(cell);
@@ -323,6 +342,8 @@
       //Rectangle that bounds all player cells
       var boundingRect = this.playerCells.getLocalBounds();
       this.camera.focusOnXY(boundingRect.centerX, boundingRect.centerY);
+
+      this.lifetime = this.lifetime += .01;
     },
 
     // Show debug info
@@ -363,6 +384,17 @@
 
     eatFood: function (playerCell, food) {
       // foodPlayerAte will be send to server at interval
+
+      //TODO this line will only work in the current state in which cells don't remerge
+      var totalMass = 0;
+      var num = 0;
+      this.playerCells.forEachAlive(function (cell) {
+          totalMass += cell.mass;
+          num++;
+      }, this);
+      num = 0;
+      console.log(totalMass,"totalMass")
+      //console.log(this.playerCells," :Player cells")
       this.eatenFoodIDs.push(food.id);
       // this.foodIDs[food.id] = null;
       // food.destroy();
@@ -371,9 +403,12 @@
       this.score += 5;
       this.scoreText.text = 'Score: ' + this.score;
 
-      playerCell.mass += 5;
-      this.scalePlayer(playerCell, playerCell.mass);
-      this.zoomOut(0.005);
+      if(totalMass < 500){
+        playerCell.mass += 5;
+        this.scalePlayer(playerCell, playerCell.mass * 0.995);
+        this.zoomOut(0.005);
+      }
+
     },
 
     eatOrBeEaten: function (playerCell, enemyCell) {
@@ -399,18 +434,42 @@
       }
     },
 
+    
     zoomOut: function (scaleRate) {
-      var world = this.worldGroup;
+      countZoom++;
+      if(countZoom < 240){
+        var world = this.worldGroup;
 
-      scaleRate = scaleRate || 0.001;
+        scaleRate = scaleRate || 0.001;
 
-      world.scale.x -= world.scale.x * scaleRate;
-      world.scale.y -= world.scale.y * scaleRate;
+        world.scale.x -= world.scale.x * scaleRate;
+        world.scale.y -= world.scale.y * scaleRate;
 
-      this.playerCells.forEachAlive(function (cell) {
-        cell.x -= cell.x * scaleRate;
-        cell.y -= cell.y * scaleRate;
-      }, this);
+        this.playerCells.forEachAlive(function (cell) {
+          cell.x -= cell.x * scaleRate;
+          cell.y -= cell.y * scaleRate;
+        }, this);
+      }
+
+
+    },
+
+    zoomIn: function (scaleRate) {
+      countZoomIn++;
+      if(countZoomIn < 240){
+        var world = this.worldGroup;
+
+        scaleRate = scaleRate || 0.001;
+
+        world.scale.x += world.scale.x * scaleRate;
+        world.scale.y += world.scale.y * scaleRate;
+
+        this.playerCells.forEachAlive(function (cell) {
+          cell.x += cell.x * scaleRate;
+          cell.y += cell.y * scaleRate;
+        }, this);
+      }
+
 
     },
 
@@ -418,6 +477,8 @@
       //TODO: Figure out how to scale player based on mass
       //TODO: check for collisions?
       player.width = this.massToWidth(mass);
+
+      console.log("width: ", player.width, "mass: ", mass)
       player.height = player.width;
     },
 
