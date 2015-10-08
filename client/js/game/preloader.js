@@ -22,8 +22,9 @@
 
     loadResources: function () {
       // load your assets here
-      this.load.image('grid', 'assets/grid.jpg');
+      this.load.image('grid', 'assets/black.png');
       this.load.image('food', 'assets/star.png');
+      this.load.image('player', 'assets/epcotSpaceshuttle.png');
     },
 
     create: function () {
