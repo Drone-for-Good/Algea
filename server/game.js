@@ -54,9 +54,8 @@ var gameParams = {
     '#6600cc',//Purple
     '#ff0066'//Pink
   ],
-  foodPerUpdate: 2,
-  //TODO: virus per update
-  virusPerUpdate: 1
+  foodPerUpdate: 2
+  // virusPerUpdate: 1
 };
 
 /*
