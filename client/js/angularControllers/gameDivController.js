@@ -82,6 +82,7 @@ app.controller("gameDivController", function ($scope, mySocket) {
       lifetime: window.agar.game.state.states.game.lifetime,
       totalKills: 0,
 
+
       lifetime: "get_lifetime_from_game",
       score: "get_score_from_game",
       mass: "get_mass_from_game",

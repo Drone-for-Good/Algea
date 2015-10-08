@@ -4,7 +4,7 @@ var Sequelize = require("sequelize");
 
 //var sequelize = new Sequelize("agar", "root", "hello"/*""*/); //Matt's sql password
 
-var sequelize = new Sequelize("agar", "root", "");
+var sequelize = new Sequelize("agar", "root", "hello");
 
 
 // Sequelize auto adds for each entry: id that is a primary key and auto-increments
