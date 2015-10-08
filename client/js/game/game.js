@@ -191,9 +191,9 @@
     },
 
     initializePlayer: function (radius, x, y, username) {
-      var circle = this.game.add.bitmapData(radius * 2, radius * 2)
-        .circle(radius, radius, radius, '#0000FF');
-      var player = this.game.add.sprite(x, y, circle);
+      // var circle = this.game.add.bitmapData(radius * 2, radius * 2)
+      //   .circle(radius, radius, radius, '#0000FF');
+      var player = this.game.add.sprite(x, y, 'player');
       player.anchor.setTo(0.5, 0.5);
 
       this.game.physics.arcade.enable(player);
@@ -238,7 +238,7 @@
           // Make new cell appear 30 px from the top right corner
           // of the group
           var newRadius = cell.width / 2;
-          var newCell = this.initializePlayer(newRadius, cell.x, cell.y, 
+          var newCell = this.initializePlayer(newRadius, cell.x, cell.y,
                           this.username);
           this.playerCells.add(newCell);
 
