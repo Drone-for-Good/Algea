@@ -56,7 +56,7 @@ app.controller("gameDivController", function ($scope, mySocket) {
     $scope.stats.highestScore = data.score;
     $scope.stats.longestLifeUser = data.longLifeUsername;
     $scope.stats.longestLife = data.lifetime;
-    console.log("the data is !!!!!", data);
+    //console.log("the data is !!!!!", data);
     //TELL THE USER HOW THEY DID
     //SHOW THEM THEIR HISTORICAL STATS
     //SHOW THEM THEIR BEST STATS
