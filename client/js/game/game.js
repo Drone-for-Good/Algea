@@ -175,9 +175,9 @@
         var WALL_THICKNESS = 20;
 
         var horizontalWall = game.make.bitmapData(game.world.width,
-          WALL_THICKNESS).fill(255, 0, 0);
+          WALL_THICKNESS).fill(102, 102, 102);
         var verticalWall = game.make.bitmapData(WALL_THICKNESS,
-          game.world.height).fill(255, 0, 0);
+          game.world.height).fill(102, 102, 102);
 
         var walls = game.add.group();
         walls.enableBody = true;
@@ -318,7 +318,7 @@
       // Update location of every player cell and decrease size on interval
       this.playerCells.forEach(function (cell) {
         if(count >= 3000){
-          var massLost = Math.floor(.0000055555*cell.mass*cell.mass - 0.00055555*cell.mass);//0.0001*cell.mass*cell.mass);
+          var massLost = Math.floor(.0000055555 * cell.mass * cell.mass - 0.00055555 * cell.mass);//0.0001*cell.mass*cell.mass);
           cell.mass -= massLost;
           this.scalePlayer(cell, cell.mass * (1 + massLost/1000));
           //negative so it zooms in
