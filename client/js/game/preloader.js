@@ -22,8 +22,13 @@
 
     loadResources: function () {
       // load your assets here
-      this.load.image('grid', 'assets/grid.jpg');
+      this.load.image('grid', 'assets/black.png');
       this.load.image('food', 'assets/star.png');
+      this.load.image('player', 'assets/epcotSpaceshuttle.png');
+
+      //TODO: load the virus image
+      this.load.image('virus', 'assets/largerVirus.png');
+
     },
 
     create: function () {

@@ -1,7 +1,6 @@
 var Sequelize = require("sequelize");
 
 // Connect to the agar database with user root and "root" password
-// var sequelize = new Sequelize("agar", "root", ""/*""*/);
 
 if (process.env.CLEARDB_DATABASE_URL) {
   var sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL);

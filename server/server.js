@@ -168,6 +168,10 @@ io.sockets.on('connection', function (socket) {
     if (0 < data.eatenFoodIDs.length) {
       game.deleteFood(game.sockets[socket.id].gameRoom, data.eatenFoodIDs);
     }
+    //TODO: update eaten virus
+    if(0 < data.eatenVirusIDs.length) {
+      game.deleteVirus(game.sockets[socket.id].gameRoom, data.eatenVirusIDs);
+    }
   });
 
   // On individual cell death
@@ -228,11 +232,15 @@ setInterval(function () {
   for (var roomName in game.roomData.rooms) {
     // Add new food
     game.refreshFood(roomName);
+    //TODO: add new viruses
+    game.refreshVirus(roomName);
     io.to(roomName).emit('receiveFromServerGameState',
       game.roomData.rooms[roomName]
     );
     // Restore food params
     game.restoreFoodParams(roomName);
+    //TODO: restore virus params
+    game.restoreVirusParams(roomName);
   };
 }, 17);
 
@@ -266,7 +274,7 @@ var findFriendsOnlineAndNotify = function (baseUser, friends, status) {
   }
 };
 
-http.listen(process.env.PORT || 5000, function(){
+
+http.listen(process.env.PORT || 3000, function(){
   console.log('listening on', http.address().port);
 });
-
