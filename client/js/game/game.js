@@ -16,9 +16,11 @@
       //TODO: add the virus here, too:
       //this.initialVirusData = virusInfo;
       this.initialVirusData = {
-        0: { id: "0", x: 900, y: 200 },
-        1: { id: "1", x: 1000, y: 200 },
-        2: { id: "2", x: 1000, y: -200}
+        0: { id: 0, x: 900, y: 200 },
+        1: { id: 1, x: 1000, y: 200 },
+        2: { id: 2, x: 1000, y: -200 },
+        3: { id: 3, x: -100, y: 500 },
+        4: { id: 4, x: -300, y: -500 }
       }
       // For testing
       // this.initialFoodData = {
@@ -26,14 +28,14 @@
       //   1: { id: 1, x: -100, y: -100, color: '#ffffe0' },
       //   2: { id: 1, x: -100, y: -100, color: '#ffffe0' }
       // };
-      console.log(
-        this, "~~~this~~~",
-        foodInfo, "~~~~foodInfo~~~~",
-        virusInfo, "~~~~virusInfo~~~~",
-        this.initialVirusData, "~~~~initialVirusData~~~~",
-        this.food, "~~~~this.food~~~~",
-        this.virus, "~~~~this.virus~~~~"
-      );
+      // console.log(
+      //   this, "~~~this~~~",
+      //   foodInfo, "~~~~foodInfo~~~~",
+      //   virusInfo, "~~~~virusInfo~~~~",
+      //   this.initialVirusData, "~~~~initialVirusData~~~~",
+      //   this.food, "~~~~this.food~~~~",
+      //   this.virus, "~~~~this.virus~~~~"
+      // );
     },
 
     preload: function () {
@@ -82,7 +84,7 @@
 
       // Add all the initial food
       for (var key in this.initialFoodData) {
-        console.log(this.addFood, "~~this.addFood~~", this.initialFoodData[key], "~~~initialFoodData[key]~~~~", this.initialFoodData, "~~~no key~~~~");
+        //console.log(this.addFood, "~~this.addFood~~", this.initialFoodData[key], "~~~initialFoodData[key]~~~~", this.initialFoodData, "~~~no key~~~~");
         this.addFood(this.initialFoodData[key]);
       }
 
@@ -341,6 +343,7 @@
 
       // Check for collisions
       this.physics.arcade.collide(this.playerCells, this.walls);
+      // Food collisions
       this.physics.arcade.overlap(this.playerCells,
         this.food, this.eatFood, null, this);
 
@@ -399,6 +402,7 @@
 
     eatFood: function (playerCell, food) {
       // foodPlayerAte will be sent to server at interval
+      console.log("I'm in eatFood!!", this.food, "<--this.food", this.foodInfo, "<<--this.foodInfo");
       this.eatenFoodIDs.push(food.id);
       // this.foodIDs[food.id] = null;
       // food.destroy();
@@ -418,19 +422,30 @@
       this.removeVirus(virus.id);
 
       //TODO: if player eats a virus, they are out of the game (for now).
-      console.log(this.virus, "~~this.virus~~");
+      // console.log(this.virus, "~~this.virus~~");
       console.log(playerCell, "YOU ATE A VIRUS OMG NOM NOM");
-
+      //instead of playerCell.destroy(); I'm going to shrink the player
       //works for one of the two viruses; the one with the id 0
-      playerCell.destroy();
 
-      //copied from below - have to reset the game if this happens
-      if (this.playerCells.length === 0){
-        clearInterval(window.playerUpdateRoutine);
-        //TODO: Allow user to continue playing in same room
-        //Currently user will have to rejoin room after dying
-        this.game.state.start('menu');
+      // this.score -=100;
+      // this.scoreText.text = 'Score' + this.score;
+      if(playerCell.mass < 10) {
+        playerCell.mass = playerCell.mass/2;
+        this.scalePlayer(playerCell, playerCell.mass);
+      } else {
+        playerCell.mass -= 10;
+        this.scalePlayer(playerCell, playerCell.mass);
       }
+
+
+
+      //copied from below - have to reset the game if playerCell is destroyed
+      // if (this.playerCells.length === 0){
+      //   clearInterval(window.playerUpdateRoutine);
+      //   //TODO: Allow user to continue playing in same room
+      //   //Currently user will have to rejoin room after dying
+      //   this.game.state.start('menu');
+      // }
     },
 
     eatOrBeEaten: function (playerCell, enemyCell) {
