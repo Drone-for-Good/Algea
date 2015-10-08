@@ -21,12 +21,18 @@
 
       //TODO: add the virus here, too:
       //this.initialVirusData = virusInfo;
+      //hard coding in virus data.
       this.initialVirusData = {
-        0: { id: 0, x: 900, y: 200 },
-        1: { id: 1, x: 1000, y: 200 },
-        2: { id: 2, x: 1000, y: -200 },
-        3: { id: 3, x: -100, y: 500 },
-        4: { id: 4, x: -300, y: -500 }
+        0: { id: 0, x: -500, y: 0 },
+        //1: { id: 1, x: -1000, y: 500 },
+        //2: { id: 2, x: -700, y: -750 },
+        3: { id: 3, x: -1300, y: 800 },
+        //4: { id: 4, x: -100, y: -50 },
+        5: { id: 5, x: 0, y: -600 },
+        //6: { id: 6, x: 300, y: 200 },
+        7: { id: 7, x: 800, y: 700 },
+        //8: { id: 8, x: 1100, y: -100 },
+        9: { id: 9, x: 1400, y: 100 }
       }
 
       // For testing
@@ -35,14 +41,6 @@
       //   1: { id: 1, x: -100, y: -100, color: '#ffffe0' },
       //   2: { id: 1, x: -100, y: -100, color: '#ffffe0' }
       // };
-      // console.log(
-      //   this, "~~~this~~~",
-      //   foodInfo, "~~~~foodInfo~~~~",
-      //   virusInfo, "~~~~virusInfo~~~~",
-      //   this.initialVirusData, "~~~~initialVirusData~~~~",
-      //   this.food, "~~~~this.food~~~~",
-      //   this.virus, "~~~~this.virus~~~~"
-      // );
     },
 
     preload: function () {
@@ -91,7 +89,6 @@
 
       // Add all the initial food
       for (var key in this.initialFoodData) {
-        //console.log(this.addFood, "~~this.addFood~~", this.initialFoodData[key], "~~~initialFoodData[key]~~~~", this.initialFoodData, "~~~no key~~~~");
         this.addFood(this.initialFoodData[key]);
       }
 
@@ -107,7 +104,6 @@
 
       //Now add all the initial viruses to the screen
       for (var key in this.initialVirusData) {
-        console.log(this.addVirus, "~~this.addVirus~~", this.initialVirusData[key], "~~~initialVirusData[key]~~~~", this.initialVirusData, "~~~no key~~~~");
         this.addVirus(this.initialVirusData[key]);
       }
 
@@ -199,13 +195,14 @@
         return background;
       }
 
+      //TODO: change wall dimensions, make permeable.
       function createWalls (game) {
-        var WALL_THICKNESS = 20;
+        var WALL_THICKNESS = 5;
 
         var horizontalWall = game.make.bitmapData(game.world.width,
-          WALL_THICKNESS).fill(255, 0, 0);
+          WALL_THICKNESS).fill(128, 128, 128);
         var verticalWall = game.make.bitmapData(WALL_THICKNESS,
-          game.world.height).fill(255, 0, 0);
+          game.world.height).fill(128, 128, 128);
 
         var walls = game.add.group();
         walls.enableBody = true;
@@ -362,7 +359,8 @@
       // this.renderEnemies();
 
       // Check for collisions
-      this.physics.arcade.collide(this.playerCells, this.walls);
+      //TODO: modify wall to allow players to pass back and forth
+      //this.physics.arcade.collide(this.playerCells, this.walls);
       // Food collisions
       this.physics.arcade.overlap(this.playerCells,
         this.food, this.eatFood, null, this);
