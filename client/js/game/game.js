@@ -13,17 +13,36 @@
   function Game() {}
 
   Game.prototype = {
-    init: function (username, roomName, foodInfo) {
+    init: function (username, roomName, foodInfo, virusInfo) {
       this.username = username;
       this.roomName = roomName;
       this.initialFoodData = foodInfo;
       this.lifetime = 0;
+
+      //TODO: add the virus here, too:
+      //this.initialVirusData = virusInfo;
+      this.initialVirusData = {
+        0: { id: 0, x: 900, y: 200 },
+        1: { id: 1, x: 1000, y: 200 },
+        2: { id: 2, x: 1000, y: -200 },
+        3: { id: 3, x: -100, y: 500 },
+        4: { id: 4, x: -300, y: -500 }
+      }
+
       // For testing
       // this.initialFoodData = {
       //   0: { id: 0, x: 100, y: 100, color: '#ffffe0' },
       //   1: { id: 1, x: -100, y: -100, color: '#ffffe0' },
       //   2: { id: 1, x: -100, y: -100, color: '#ffffe0' }
       // };
+      // console.log(
+      //   this, "~~~this~~~",
+      //   foodInfo, "~~~~foodInfo~~~~",
+      //   virusInfo, "~~~~virusInfo~~~~",
+      //   this.initialVirusData, "~~~~initialVirusData~~~~",
+      //   this.food, "~~~~this.food~~~~",
+      //   this.virus, "~~~~this.virus~~~~"
+      // );
     },
 
     preload: function () {
@@ -49,6 +68,11 @@
       // update sent to server
       this.eatenFoodIDs = [];
 
+      //TODO: reference to all current virus objects
+
+      this.virusIDs = {};
+      this.eatenVirusIDs = [];
+
       // worldGroup is a group is used for zooming out.
       // Add all objects that are part of the world,
       // except the player, to this group.
@@ -67,6 +91,7 @@
 
       // Add all the initial food
       for (var key in this.initialFoodData) {
+        //console.log(this.addFood, "~~this.addFood~~", this.initialFoodData[key], "~~~initialFoodData[key]~~~~", this.initialFoodData, "~~~no key~~~~");
         this.addFood(this.initialFoodData[key]);
       }
 
@@ -75,6 +100,16 @@
       //   this.food.create(this.world.randomX,
       //      this.world.randomY, 'food');
       // }
+
+      //TODO: Create virus here
+      this.virus = this.add.group(this.worldGroup);
+      this.virus.enableBody = true;
+
+      //Now add all the initial viruses to the screen
+      for (var key in this.initialVirusData) {
+        console.log(this.addVirus, "~~this.addVirus~~", this.initialVirusData[key], "~~~initialVirusData[key]~~~~", this.initialVirusData, "~~~no key~~~~");
+        this.addVirus(this.initialVirusData[key]);
+      }
 
       // All the other players
       this.enemies = this.add.group(this.worldGroup);
@@ -309,7 +344,7 @@
         this.zoomIn(massLost/1000);
         //console.log(this.player.mass)
       }
-      
+
       // Update location of every player cell
       this.playerCells.forEach(function (cell) {
         var dist = this.physics.arcade.distanceToPointer(cell);
@@ -328,8 +363,13 @@
 
       // Check for collisions
       this.physics.arcade.collide(this.playerCells, this.walls);
+      // Food collisions
       this.physics.arcade.overlap(this.playerCells,
         this.food, this.eatFood, null, this);
+
+        //TODO check for virus collisions
+      this.physics.arcade.overlap(this.playerCells,
+        this.virus, this.eatVirus, null, this);
 
       this.enemies.forEachAlive(function (enemy) {
         this.physics.arcade.overlap(this.playerCells,
@@ -395,6 +435,7 @@
       num = 0;
       console.log(totalMass,"totalMass")
       //console.log(this.playerCells," :Player cells")
+
       this.eatenFoodIDs.push(food.id);
       // this.foodIDs[food.id] = null;
       // food.destroy();
@@ -409,6 +450,38 @@
         this.zoomOut(0.005);
       }
 
+    },
+
+    eatVirus: function(playerCell, virus) {
+      //virusPlayerAte will be sent to the server at interval
+      this.eatenVirusIDs.push(virus.id);
+      this.removeVirus(virus.id);
+
+      //TODO: if player eats a virus, they are out of the game (for now).
+      // console.log(this.virus, "~~this.virus~~");
+      console.log(playerCell, "YOU ATE A VIRUS OMG NOM NOM");
+      //instead of playerCell.destroy(); I'm going to shrink the player
+      //works for one of the two viruses; the one with the id 0
+
+      // this.score -=100;
+      // this.scoreText.text = 'Score' + this.score;
+      if(playerCell.mass < 10) {
+        playerCell.mass = playerCell.mass/2;
+        this.scalePlayer(playerCell, playerCell.mass);
+      } else {
+        playerCell.mass -= 10;
+        this.scalePlayer(playerCell, playerCell.mass);
+      }
+
+
+
+      //copied from below - have to reset the game if playerCell is destroyed
+      // if (this.playerCells.length === 0){
+      //   clearInterval(window.playerUpdateRoutine);
+      //   //TODO: Allow user to continue playing in same room
+      //   //Currently user will have to rejoin room after dying
+      //   this.game.state.start('menu');
+      // }
     },
 
     eatOrBeEaten: function (playerCell, enemyCell) {
@@ -434,7 +507,7 @@
       }
     },
 
-    
+
     zoomOut: function (scaleRate) {
       countZoom++;
       if(countZoom < 240){
@@ -510,6 +583,31 @@
       }
     },
 
+    //TODO: addVirus here
+    addVirus: function(virusData) {
+      //render new virus
+      var newVirus = this.virus.create(virusData.x, virusData.y, 'virus');
+      newVirus.id = virusData.id;
+      //if there is still a virus with the same id, destroy it
+      if(this.virusIDs[virusData.id]) {
+        console.log('virus is already there');
+        this.removeVirus(virusData.id);
+      }
+      //Add reference to newVirus object to virusIDs
+      this.virusIDs[virusData.id] = newVirus;
+    },
+
+    removeVirus: function(id) {
+      //check if virus still exists
+      //TODO: decide if this is necessary. If virus is consumed, will it go away?
+      // if(this.virusIDs[id]) {
+      //   //delete the virus
+      //   this.virusIDs[id].destroy();
+      //   //update virusIDs
+      //   this.virusIDs[id] = null;
+      // }
+    },
+
     updateEnemyGroup: function(enemyGroup, data) {
       // Destroy all existing enemy cells
       enemyGroup.removeAll(true);
@@ -538,14 +636,17 @@
       return playerState;
     },
 
+    //TODO: add virus data to sendToServerPlayerState
     sendPlayerState: function () {
       window.globalSocket.emit('sendToServerPlayerState', {
         roomName: this.roomName,
         username: this.username,
         positionAndRadius: this.getPlayerState(),
-        eatenFoodIDs: this.eatenFoodIDs
+        eatenFoodIDs: this.eatenFoodIDs,
+        eatenVirusIDs: this.eatenVirusIDs
       });
       this.eatenFoodIDs = [];
+      this.eatenVirusIDs = [];
     },
 
     // TESTING ONLY. Press DOWN key to call this function,
@@ -631,6 +732,16 @@
       for (var i = 0; i < data.eatenFood.length; i++) {
         this.removeFood[data.eatenFood[i]];
       }
+
+      //TODO: process new virus data and eatenVirus data
+      // for (var i = 0; i < data.newVirus.length; i++) {
+      //   this.addVirus(data.newVirus[i]);
+      // }
+      //
+      // for (var i = 0; i < data.eatenVirus.length; i++) {
+      //   this.removeVirus[data.eatenVirus[i]];
+      // }
+
     },
     processCellEatenData: function (data) {
       var cell = this.playerCells.getChildAt(data.cellIndex);

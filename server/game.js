@@ -1,23 +1,23 @@
 /*
 
- _______  _______  _______  ___   _  _______  _______  _______                                    
-|       ||       ||       ||   | | ||       ||       ||       |                                   
-|  _____||   _   ||       ||   |_| ||    ___||_     _||  _____|                                   
-| |_____ |  | |  ||       ||      _||   |___   |   |  | |_____                                    
-|_____  ||  |_|  ||      _||     |_ |    ___|  |   |  |_____  | ___                               
- _____| ||       ||     |_ |    _  ||   |___   |   |   _____| ||_  |                              
-|_______||_______||_______||___| |_||_______|  |___|  |_______|  |_|                              
- _______  ___      _______  __   __  _______  ______    _______                                   
-|       ||   |    |   _   ||  | |  ||       ||    _ |  |       |                                  
-|    _  ||   |    |  |_|  ||  |_|  ||    ___||   | ||  |  _____|                                  
-|   |_| ||   |    |       ||       ||   |___ |   |_||_ | |_____                                   
-|    ___||   |___ |       ||_     _||    ___||    __  ||_____  | ___                              
-|   |    |       ||   _   |  |   |  |   |___ |   |  | | _____| ||_  |                             
-|___|    |_______||__| |__|  |___|  |_______||___|  |_||_______|  |_|                             
- _______  _______  __   __  _______         _______  _______  ______    _______  __   __  _______ 
+ _______  _______  _______  ___   _  _______  _______  _______
+|       ||       ||       ||   | | ||       ||       ||       |
+|  _____||   _   ||       ||   |_| ||    ___||_     _||  _____|
+| |_____ |  | |  ||       ||      _||   |___   |   |  | |_____
+|_____  ||  |_|  ||      _||     |_ |    ___|  |   |  |_____  | ___
+ _____| ||       ||     |_ |    _  ||   |___   |   |   _____| ||_  |
+|_______||_______||_______||___| |_||_______|  |___|  |_______|  |_|
+ _______  ___      _______  __   __  _______  ______    _______
+|       ||   |    |   _   ||  | |  ||       ||    _ |  |       |
+|    _  ||   |    |  |_|  ||  |_|  ||    ___||   | ||  |  _____|
+|   |_| ||   |    |       ||       ||   |___ |   |_||_ | |_____
+|    ___||   |___ |       ||_     _||    ___||    __  ||_____  | ___
+|   |    |       ||   _   |  |   |  |   |___ |   |  | | _____| ||_  |
+|___|    |_______||__| |__|  |___|  |_______||___|  |_||_______|  |_|
+ _______  _______  __   __  _______         _______  _______  ______    _______  __   __  _______
 |       ||   _   ||  |_|  ||       |       |       ||   _   ||    _ |  |   _   ||  |_|  ||       |
 |    ___||  |_|  ||       ||    ___|       |    _  ||  |_|  ||   | ||  |  |_|  ||       ||  _____|
-|   | __ |       ||       ||   |___        |   |_| ||       ||   |_||_ |       ||       || |_____ 
+|   | __ |       ||       ||   |___        |   |_| ||       ||   |_||_ |       ||       || |_____
 |   ||  ||       ||       ||    ___|       |    ___||       ||    __  ||       ||       ||_____  |
 |   |_| ||   _   || ||_|| ||   |___        |   |    |   _   ||   |  | ||   _   || ||_|| | _____| |
 |_______||__| |__||_|   |_||_______|       |___|    |__| |__||___|  |_||__| |__||_|   |_||_______|
@@ -54,18 +54,20 @@ var gameParams = {
     '#6600cc',//Purple
     '#ff0066'//Pink
   ],
-  foodPerUpdate: 2
+  foodPerUpdate: 2,
+  //TODO: virus per update
+  virusPerUpdate: 1
 };
 
 /*
- 
- _______  _______  _______  ______  
-|       ||       ||       ||      | 
+
+ _______  _______  _______  ______
+|       ||       ||       ||      |
 |    ___||   _   ||   _   ||  _    |
 |   |___ |  | |  ||  | |  || | |   |
 |    ___||  |_|  ||  |_|  || |_|   |
 |   |    |       ||       ||       |
-|___|    |_______||_______||______| 
+|___|    |_______||_______||______|
 
 */
 
@@ -78,6 +80,8 @@ exports.foodData = {
 var initializeFoodData = function (roomName) {
   // Set food eaten and new food to be empty
   exports.foodData[roomName] = {
+  //The below console.log is not showing up at all.
+  console.log("I AM INSIDE INITIALIZE~FOOD~DATA IN SERVER GAME. WHERE DOES ALL THE FOOD COME FROM??"),
     /*
       foodInfo: {
         0: {
@@ -184,8 +188,8 @@ exports.refreshFood = function (roomName) {
       exports.foodData[roomName].foodCount++;
       // Store new food
       newFood.push(foodInfo[tmpID]);
-      console.log(exports.foodData[roomName].newFood);
-      console.log(exports.roomData.rooms[roomName].newFood);
+      console.log("~~server foodData...newFood~~", exports.foodData[roomName].newFood);
+      console.log("~~server roomData...newFood~~", exports.roomData.rooms[roomName].newFood);
       // Remove food from eaten food
       delete eatenFood[tmpID];
     } else {
@@ -208,11 +212,152 @@ exports.restoreFoodParams = function (roomName) {
 };
 
 /*
- 
- ______    _______  _______  __   __  _______ 
+TODO: generate the virus functions here, to be called in game.js in the client side
+here are the methods that are called later.
+These two do not need to be exported, as they are called in "exports.addRoom" below.
+initialVirus(newRoom.roomName);
+prepopulateVirus(newRoom.roomName);
+Below I copied the food methods, and now I am modifying them for virus info.
+NOTE: many of these functions could be refactored to include both food and virus, as the have similar funcionality a lot of the time.
+I will refactor this after I better understand the code base and the behavior of the food.
+*/
+exports.virusData = {
+  // roomName: {virusInfo, eatenVirus, newVirus}
+};
+
+// Initialize virus data for a specified room
+var initializeVirusData = function (roomName) {
+  // Set virus eaten and new virus to be empty
+  exports.virusData[roomName] = {
+    //test virusInfo for game
+      // virusInfo: {
+      //   0: {
+      //     id: 0,
+      //     x: 200 (in pixels),
+      //     y: -500 (in pixels)
+      //   }
+      // }
+
+    virusInfo: {},
+    // Array of objects like those in virusInfo
+    newVirus: [],
+    // { virusID_0: virusID_0 }
+    eatenVirus: {},
+    // Current virus count
+    virusCount: 0,
+    // Max virus count
+    maxVirusCount: 10
+  };
+
+  // Initialize 1-1 correspondence with roomData virus params
+  exports.roomData.rooms[roomName].newVirus
+    = exports.virusData[roomName].newVirus;
+  exports.roomData.rooms[roomName].eatenVirus
+    = exports.virusData[roomName].eatenVirus;
+};
+
+// Returns a random position on the player map
+var getRandomVirusPosition = function () {
+  return {
+    x: Math.round(gameParams.worldWidth * (Math.random() - .5)),
+    y: Math.round(gameParams.worldHeight * (Math.random() - .5))
+  };
+};
+
+// Remove specified virus from specified room
+var removeVirusFromRoom = function (virusID, roomName) {
+  delete exports.roomData.rooms[roomName].virus[virusID];
+}
+
+// Returns one random virus object
+var makeOneRandomVirus = function (virusID) {
+  var virusPosition = getRandomVirusPosition();
+  return {
+    id: virusID,
+    x: virusPosition.x,
+    y: virusPosition.y,
+  };
+};
+
+// Prepopulates a virus object
+var prepopulateVirus = function (roomName) {
+  var room = exports.roomData.rooms[roomName];
+  var roomVirusData = exports.virusData[roomName];
+  var roomVirusInfo = roomVirusData.virusInfo;
+  // Make a virus object associated with an integer ID
+  // maxVirusCount-many times
+  while (roomVirusData.virusCount < roomVirusData.maxVirusCount) {
+    roomVirusInfo[roomVirusData.virusCount]
+      = makeOneRandomVirus(roomVirusData.virusCount);
+    roomVirusData.virusCount++;
+  }
+};
+
+// Delete virus server side
+exports.deleteVirus = function (roomName, virusIDs) {
+  var virusInfo = exports.virusData[roomName].virusInfo;
+  var eatenVirus = exports.virusData[roomName].eatenVirus;
+  var room = exports.roomData.rooms[roomName];
+
+  for (var i = 0; i < virusIDs.length; ++i) {
+    // If virus hasn't been claimed by/destroyed another player
+    if (!(virusIDs[i] in eatenVirus)) {
+      // Delete on next update
+      eatenVirus[virusIDs[i]] = virusIDs[i];
+      virusInfo[virusIDs[i]] = null;
+      // Decrement virus count
+      --exports.virusData[roomName].virusCount;
+    }
+  }
+};
+
+// Refresh virus on the board
+exports.refreshVirus = function (roomName) {
+  var room = exports.roomData.rooms[roomName];
+  var virusInfo = exports.virusData[roomName].virusInfo;
+  var eatenVirus = exports.virusData[roomName].eatenVirus;
+  var newVirus = exports.virusData[roomName].newVirus;
+  // Only add gameParams.virusPerUpdate-many virus per update
+  for (var i = 0; i < gameParams.virusPerUpdate; ++i) {
+    var eatenVirusKeys = Object.keys(eatenVirus);
+    if (0 < eatenVirusKeys.length) {
+      // Get the first ID
+      var tmpID = eatenVirusKeys[0];
+      // Make a new virus
+      virusInfo[tmpID] = makeOneRandomVirus(tmpID);
+      exports.virusData[roomName].virusCount++;
+      // Store new virus
+      newVirus.push(virusInfo[tmpID]);
+      console.log("~~server virusData...newVirus~~", exports.virusData[roomName].newVirus);
+      console.log("~~server roomData...newVirus", exports.roomData.rooms[roomName].newVirus);
+      // Remove virus from eaten virus
+      delete eatenVirus[tmpID];
+    } else {
+      // No virus left to be repopulated
+      break;
+    }
+  }
+};
+
+// Restore virus parameters in between updates
+exports.restoreVirusParams = function (roomName) {
+  if (exports.virusData[roomName].newVirus.length > 0) {
+    console.log('YOU HAVE VIRUSES OH NOOOOOOOOOOOOO');
+    console.log(exports.virusData[roomName].newVirus);
+  }
+  // Reassign empty virus array
+  exports.virusData[roomName].newVirus = [];
+  exports.roomData.rooms[roomName].newVirus
+    = exports.virusData[roomName].newVirus;
+};
+
+
+/*
+
+ ______    _______  _______  __   __  _______
 |    _ |  |       ||       ||  |_|  ||       |
 |   | ||  |   _   ||   _   ||       ||  _____|
-|   |_||_ |  | |  ||  | |  ||       || |_____ 
+|   |_||_ |  | |  ||  | |  ||       || |_____
 |    __  ||  |_|  ||  |_|  ||       ||_____  |
 |   |  | ||       ||       || ||_|| | _____| |
 |___|  |_||_______||_______||_|   |_||_______|
@@ -235,6 +380,8 @@ exports.roomNames = [
 exports.roomData = {
   defaultMaxPlayerCount: 10,
   defaultMaxFoodCount: 100,
+  //TODO: set defaultMaxVirusCount
+  defaultMaxVirusCount: 10,
   maxRooms: 10,
   roomCount: 0,
   rooms: {}
@@ -270,6 +417,10 @@ exports.addRoom = function (size) {
     // Initialize and populate food with room
     initializeFoodData(newRoom.roomName);
     prepopulateFood(newRoom.roomName);
+    //TODO: call virus methods here:
+    initializeVirusData(newRoom.roomName);
+    prepopulateVirus(newRoom.roomName);
+
     // Increment room count
     exports.roomData.roomCount++;
     console.log('\nA NEW ROOM has been CREATED.\n');
@@ -309,6 +460,8 @@ exports.removeRoom = function (roomName) {
     delete exports.roomData.rooms[roomName];
     // Delete room's food
     delete exports.foodData[roomName];
+    //TODO: delete room's virus
+    delete exports.virusData[roomName];
     roomRemoved = true;
     console.log('\nROOM', roomName, 'REMOVED.\n');
   } else {
@@ -365,8 +518,10 @@ exports.addPlayerToRoom = function (roomName, data) {
     roomJoined: roomJoined,
   };
   // If room was joined, add foodInfo and player names
+  //TODO: add virusInfo
   if (result.roomJoined) {
     result.foodInfo = exports.foodData[roomName].foodInfo;
+    result.virusInfo = exports.virusData[roomName].virusInfo;
     result.roomPlayers
       = getRoomPlayersForClient(roomName);
   }
