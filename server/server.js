@@ -266,7 +266,7 @@ var findFriendsOnlineAndNotify = function (baseUser, friends, status) {
   }
 };
 
-http.listen(process.env.PORT || 3000, function(){
+http.listen(process.env.PORT || 5000, function(){
   console.log('listening on', http.address().port);
 });
 
