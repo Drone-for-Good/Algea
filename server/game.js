@@ -81,7 +81,6 @@ var initializeFoodData = function (roomName) {
   // Set food eaten and new food to be empty
   exports.foodData[roomName] = {
   //The below console.log is not showing up at all.
-  console.log("I AM INSIDE INITIALIZE~FOOD~DATA IN SERVER GAME. WHERE DOES ALL THE FOOD COME FROM??"),
     /*
       foodInfo: {
         0: {
