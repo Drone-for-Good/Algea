@@ -207,10 +207,12 @@
     },
 
     initializePlayer: function (radius, x, y, username) {
-      //FIXIT
+      
       var playerPic = this.game.add.image(0, 0, 'player');
+
       playerPic.width = radius * 2 + 25;
       playerPic.height = radius * 2 + 25;
+
       var circle = this.game.add.bitmapData(radius * 2, radius * 2)
          .circle(radius, radius, radius, '#0000FF');
       var player = this.game.add.sprite(x, y, circle); //this.game.add.sprite(x, y, 'player');
@@ -445,8 +447,8 @@
       this.eatenVirusIDs.push(virus.id);
       this.removeVirus(virus.id);
 
-      this.score -=100;
-      this.scoreText.text = 'Score' + this.score;
+      this.score -=10;
+      this.scoreText.text = 'Score: ' + this.score;
       if(playerCell.mass < 10) {
         playerCell.mass = playerCell.mass * 0.75;
         this.scalePlayer(playerCell, playerCell.mass);
@@ -529,14 +531,24 @@
         //return Math.random() * (max - min) + min;
         var rando = Math.floor(Math.random()*foodShapes.length);
         var foodShape = foodShapes[rando];
-        console.log("~~~random number~~~", rando);
         return foodShape;
     },
 
     addFood: function (foodData) {
       // Render the new food object
       //console.log('~~~~~rando food planets~~~~~', this.generateRandomFood());
-      var newFood = this.food.create(foodData.x, foodData.y, this.generateRandomFood()); //this.generateRandomFood()
+      var randomImage = this.generateRandomFood();
+      var newFood = this.food.create(foodData.x, foodData.y, randomImage); //randomImage
+      var foodPic = this.game.add.image(0, 0, randomImage);
+      var radius = this.game.cache.getImage(randomImage).width/2;
+      
+      foodPic.width = radius * 2 + 40;
+      foodPic.height = radius * 2 + 40;
+
+      newFood.anchor.setTo(.5, .5);
+      foodPic.anchor.setTo(.5, .5);
+      newFood.addChild(foodPic);
+
       newFood.id = foodData.id;
       // If there is still food currently with the same id, destroy it
       if (this.foodIDs[foodData.id]) {
@@ -560,8 +572,15 @@
     //TODO: addVirus here
     addVirus: function(virusData) {
       //render new virus
-      var newVirus = this.virus.create(virusData.x, virusData.y, 'virus');
+      
+      var newVirus = this.virus.create(virusData.x, virusData.y, 'food0');
       newVirus.id = virusData.id;
+      newVirus.anchor.setTo(0.5, 0.5);
+
+      var virusPic = this.game.add.image(0, 0, 'virus');
+      virusPic.anchor.setTo(0.5, 0.5);
+      newVirus.addChild(virusPic);
+
       //if there is still a virus with the same id, destroy it
       if(this.virusIDs[virusData.id]) {
         console.log('virus is already there');
@@ -569,6 +588,7 @@
       }
       //Add reference to newVirus object to virusIDs
       this.virusIDs[virusData.id] = newVirus;
+
     },
 
     removeVirus: function(id) {
