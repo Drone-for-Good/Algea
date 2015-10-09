@@ -66,9 +66,15 @@ app.controller("gameDivController", function ($scope, mySocket) {
           }
         ]
     };
+    // ***************************************
+    // Socket that EMITS and sends PlayerState data to the server. How often?*********************
+    // ***************************************
     mySocket.emit("sendToServerPlayerState", playerData);
   };
 
+  // ***************************************
+  // Socket the listens for....................
+  // *****************************************
   mySocket.on("receiveFromServerPlayerData", function (data) {
     //FOR ANY NEW PLAYER ON MAP, CREATE PLAYER
     //UPDATE PLAYER POSITIONS AND MASSES ON MAP
@@ -81,15 +87,6 @@ app.controller("gameDivController", function ($scope, mySocket) {
       score: window.agar.game.state.states.game.score,
       lifetime: window.agar.game.state.states.game.lifetime,
       totalKills: 0,
-
-
-      lifetime: "get_lifetime_from_game",
-      score: "get_score_from_game",
-      mass: "get_mass_from_game",
-      totalKills: "get_totalKills_from_game",
-      totalFood: "get_totalFood_from_game",
-      totalVirus: "get_totalVirus_from_game",
-      timeInFirst: "get_timeInFirst_from_game"
 
     };
     mySocket.emit("sendToServerDeath", performanceStats);
