@@ -606,7 +606,7 @@
     updateEnemyGroup: function(enemyGroup, data) {
       // Destroy all existing enemy cells
       countEnemyUpdate++
-      if(countEnemyUpdate > 5 ){
+      if(countEnemyUpdate > 3 ){
         enemyGroup.removeAll(true);
         // Re-draw all enemy cells with current data
         for (var i = 0; i < data.length; i++) {
