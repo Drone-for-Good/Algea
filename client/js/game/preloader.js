@@ -22,7 +22,8 @@
 
     loadResources: function () {
       // load your assets here
-      this.load.image('grid', 'assets/black.png');
+      //this.load.image('grid', 'assets/black.png');
+      this.load.image('grid', 'assets/starBackground.jpg');
       this.load.image('player', 'assets/epcotSpaceshuttle.png');
       this.load.image('virus', 'assets/smaller_blackHole.png');
 
