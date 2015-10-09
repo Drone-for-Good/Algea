@@ -178,9 +178,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   // On individual player death
-  socket.on('sendToServerDeath', function (finalStats) {
-    //I made this into a promise so I can string together writing to
-    //the database and returning data to the user asynchronously
+  socket.on('sendToServerLeaderboardStats', function (finalStats) {
 
     // Get user id associated with the socket id
     var userID = game.sockets[socket.id].userID;
@@ -193,23 +191,6 @@ io.sockets.on('connection', function (socket) {
       dbHelpers.fetchStats(function (stats) {
         io.emit('receiveFromServerDeath', stats);
       });
-
-      // dbHelpers.addGameStats(userID, finalStats);
-      // dbHelpers.updateBestStats(userID, finalStats);
-      // dbHelpers.updateTotalStats(userID, finalStats);
-
-      // var promise = new Promise(function (resolve, reject) {
-      //     resolve(dbHelpers.sendDeath(finalStats));
-      // });
-      // promise().then(function (data) {
-      //     io.emit('receiveFromServerDeath', {
-      //       message: 'Your data has been received!!!'
-      //     });
-      // })
-      // .catch(function (err) {
-      //     console.err('Error in sendToServerDeath promise.');
-      //     throw new Error(err);
-      // });
     }
   });
 

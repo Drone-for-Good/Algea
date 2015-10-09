@@ -80,19 +80,18 @@ app.controller("gameDivController", function ($scope, mySocket) {
     //UPDATE PLAYER POSITIONS AND MASSES ON MAP
   });
 
-  $scope.sendToServerDeath = function () {
+  $scope.sendToServerLeaderboardStats = function () {
     var performanceStats = {
 
       username: window.agar.game.state.states.game.username,
       score: window.agar.game.state.states.game.score,
       lifetime: window.agar.game.state.states.game.lifetime,
-      totalKills: 0,
-
+      totalKills: 0
     };
-    mySocket.emit("sendToServerDeath", performanceStats);
+    mySocket.emit("sendToServerLeaderboardStats", performanceStats);
   };
 
-  setInterval($scope.sendToServerDeath.bind($scope), 5000);
+  setInterval($scope.sendToServerLeaderboardStats.bind($scope), 5000);
 
 
   mySocket.on("receiveFromServerDeath", function (data) {
