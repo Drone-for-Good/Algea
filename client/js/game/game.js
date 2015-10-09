@@ -163,7 +163,7 @@
           var massIncrease = 100;
           cell.mass += massIncrease;
           this.scalePlayer(cell, cell.mass) //* (1-(massIncrease/1000)));
-        
+
         }, this);
       }, this);
 
@@ -423,7 +423,7 @@
         playerCell.mass += massIncrease;
 
         this.scalePlayer(playerCell, playerCell.mass);// * (1 - (massIncrease/1000)));
-    
+
       }
 
     },
@@ -462,7 +462,7 @@
     },
 
     eat: function(cellA, cellB){
-      
+
       var mass = cellA.mass;
       var cellBName = cellB.parent.username;
       var cellIndex = cellB.parent.getChildIndex(cellB);
@@ -519,9 +519,19 @@
       this.game.state.start('win');
     },
 
+    generateRandomFood: function() {
+        var foodShapes = ['food0', 'food1', 'food2', 'food3', 'food4', 'food5'];
+        //return Math.random() * (max - min) + min;
+        var rando = Math.floor(Math.random()*foodShapes.length);
+        var foodShape = foodShapes[rando];
+        console.log("~~~random number~~~", rando);
+        return foodShape;
+    },
+
     addFood: function (foodData) {
       // Render the new food object
-      var newFood = this.food.create(foodData.x, foodData.y, 'food');
+      //console.log('~~~~~rando food planets~~~~~', this.generateRandomFood());
+      var newFood = this.food.create(foodData.x, foodData.y, this.generateRandomFood()); //this.generateRandomFood()
       newFood.id = foodData.id;
       // If there is still food currently with the same id, destroy it
       if (this.foodIDs[foodData.id]) {
