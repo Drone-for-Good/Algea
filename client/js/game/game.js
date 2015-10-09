@@ -122,7 +122,7 @@
       this.playerCells.add(this.player);
 
       this.scoreText = this.add.text(20, this.game.height - 52,
-        'score: 0', { fontSize: '32px', fill: '#000' });
+        'score: 0', { fontSize: '32px', fill: '#555' });
       this.scoreText.fixedToCamera = true;
 
       window.playerUpdateRoutine
