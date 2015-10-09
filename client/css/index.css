@@ -2,25 +2,28 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
+  height: 100vh;
   background-color: black;
 }
 
 #navDiv {
   position: absolute;
   /*background-color: #eb9999;*/
-  background-color: #721330;
-  border-right: 5px solid #2e000e;
+  background-color: #123652;
+  border-right: 3px solid #2e000e;
   color: #f2dfe5;
   width: 15%;
+  height: 100%;
 }
 
 #showLoginModal {
   margin-left: 5%;
   margin-top: 5%;
   width: 90%;
-  background-color: #983251;
-  border: 5px solid #4f0118;
+  background-color: #123652;
+  border: px solid #4f0118;
   color: #f2dfe5;
+  box-shadow: 1px 2px 1px #888888;
 }
 
 #showLoginModal:hover {
@@ -37,35 +40,37 @@ body {
 }
 
 #gameRoomsDiv {
-  margin-top: 50px;
+  height: 50%;
+  margin-top: 5px;
   position: absolute;
   left: 0%;
   width: 100%;
-  background-color: #983251;
-  border-top: 5px solid #2e000e;
-  border-bottom: 5px solid #2e000e;
+  background-color: #123652;
+  border-top: 3px solid #2e000e;
+  /*border-bottom: 3px solid #2e000e;*/
 }
 
-#gameRoomsDivTitle, #chatDivTitle {
+#gameRoomsDiv h3, #gameChatDiv h3 {
+  margin: 10px auto;
   width: 100%;
-  height: 40px;
+  height: 30px;
   /*color: white;*/
   text-align: center;
-  font-size: 24px;
-  border-bottom: 5px solid #2e000e;
+  font-size: 18px;
+  border-bottom: 3px solid #2e000e;
 }
 
 #gameRoomsList {
-  background-color: #4f0118;
+  background-color: #123652;
   list-style: none;
   padding-left: 0;
   text-align: center;
 /*  border-left: 6px solid green;
   border-right: 6px solid green;*/
-  height: 300px;
+  height: 80%;
   overflow: scroll;
   font-size: 12px;
-  border-bottom: 5px solid #2e000e;
+  /*border-bottom: 5px solid #2e000e;*/
 }
 
 #gameRoomsList li {
@@ -204,7 +209,7 @@ body {
   position: absolute;
   left: 85%;
   width: 15%;
-  background-color: #802d15;
+  background-color: rgba(50, 50, 50, 1);;
   color: #f7e6e2;
   border-left: 5px solid #330c00;
 }
@@ -271,7 +276,6 @@ body {
 
 #playersDivList {
   border-top: 5px solid #330c00;
-  background-color: #581401;
   list-style: none;
   padding-left: 0;
   text-align: center;
@@ -319,16 +323,17 @@ body {
 
 #gameChatDiv {
   padding: 0;
-  margin: 0;
+  margin: 5px 0px;
   position: absolute;
-  width: 180px;
-  height: 250px;
-  background-color: rgba(50, 50, 50, .75);
+  width: 100%;
+  height: 48%;
+  background-color: rgba(50, 50, 50, 1);
   border-radius: 5px;
-  left: 5px;
+  top: 50%;
+  /*left: 5px;*/
 }
 
-#minGameChatDiv {
+/*#minGameChatDiv {
   position: absolute;
   height: 13px;
   width: 13px;
@@ -336,27 +341,27 @@ body {
   left: 96%;
   top: 1%;
   border-radius: 3px;
-}
+}*/
 
 #gameChatDivMessages {
   top: 15px;
   position: relative;
   background-color: rgba(25, 25, 25, .75);
   width: 90%;
-  height: 150px;
+  height: 80%;
   border-radius: 3px;
   left: 4%;
   overflow: scroll;
 }
 
-#gameChatDivMessages ul {
+#gameChatDivMessages  {
   list-style: none;
   padding: 0;
   margin-top: 5px;
   margin-left: 5px;
 }
 
-#gameChatDivMessages ul li {
+#gameChatDivMessages li {
   padding-left: 10px;
   margin: 0;
   padding: 0;
@@ -384,6 +389,7 @@ body {
   border-radius: 3px;
   background-color: rgba(25, 25, 25, .75);
   color: white;
+  top: 95%;
 }
 
 #leaderboard {
