@@ -208,11 +208,14 @@
 
     initializePlayer: function (radius, x, y, username) {
       //FIXIT
-      // var circle = this.game.add.bitmapData(radius * 2, radius * 2)
-      //   .circle(radius, radius, radius, '#0000FF');
-      var player = this.game.add.sprite(x, y, 'player');
+      var playerPic = this.game.add.image(0, 0, 'player');
+      playerPic.width = radius * 2 + 25;
+      playerPic.height = radius * 2 + 25;
+      var circle = this.game.add.bitmapData(radius * 2, radius * 2)
+         .circle(radius, radius, radius, '#0000FF');
+      var player = this.game.add.sprite(x, y, circle); //this.game.add.sprite(x, y, 'player');
       player.mass = Math.pow(radius*2, 2)/100;
-      //FIXIT it think count zoom = mass/1000 will actually help here...
+
       this.scalePlayer(player, player.mass);// * (1 + countZoom)); //cell.mass * (1 + massLost/1000)
       player.anchor.setTo(0.5, 0.5);
 
@@ -221,8 +224,10 @@
 
       var style = { font: "30px Arial", fill: "#ffffff" };
       var text = this.game.add.text(0, 0, username, style);
+      playerPic.anchor.setTo(0.5, 0.5);
       text.anchor.setTo(0.5, 0.5);
       player.addChild(text);
+      player.addChild(playerPic);
 
 
 
