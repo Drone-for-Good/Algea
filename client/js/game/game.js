@@ -71,6 +71,10 @@
       // except the player, to this group.
       // E.g. Enemies, food, not score or leaderboard.
       this.worldGroup = this.add.group();
+      this.worldGroup.setAll("scale.x", (this.worldGroup.scale.x - this.worldGroup.scale.x * .5));
+      this.worldGroup.setAll("scale.y", (this.worldGroup.scale.y - this.worldGroup.scale.y * .5));
+      //this.worldGroup.scale.x -= this.worldGroup.scale.x * .5;
+      //this.worldGroup.scale.y -= this.worldGroup.scale.y * .5;
 
       var background = createBackground(this.game);
       this.worldGroup.add(background);
@@ -158,11 +162,8 @@
         this.playerCells.forEachAlive(function (cell) {
           var massIncrease = 100;
           cell.mass += massIncrease;
-          this.scalePlayer(cell, cell.mass * (1-(massIncrease/1000)));
-          // this.enemies.forEachAlive(function (enemy) {
-          //   this.scalePlayer(enemy, enemy.mass * (1-(massIncrease/1000)));
-          // })
-          this.zoom(massIncrease);
+          this.scalePlayer(cell, cell.mass) //* (1-(massIncrease/1000)));
+        
         }, this);
       }, this);
 
@@ -212,8 +213,7 @@
       var player = this.game.add.sprite(x, y, 'player');
       player.mass = Math.pow(radius*2, 2)/100;
       //FIXIT it think count zoom = mass/1000 will actually help here...
-      console.log("counting", countZoom)
-      this.scalePlayer(player, player.mass * (1 + countZoom)); //cell.mass * (1 + massLost/1000)
+      this.scalePlayer(player, player.mass);// * (1 + countZoom)); //cell.mass * (1 + massLost/1000)
       player.anchor.setTo(0.5, 0.5);
 
       this.game.physics.arcade.enable(player);
@@ -336,17 +336,7 @@
           var context = this;
           var massLost = .0000055555 * cell.mass * cell.mass - 0.00055555 * cell.mass;//Math.floor(.0000055555 * cell.mass * cell.mass - 0.00055555 * cell.mass);//0.0001*cell.mass*cell.mass);
           cell.mass -= massLost;
-          this.scalePlayer(cell, cell.mass * (1 + massLost/1000));
-          //negative so it zooms in
-          // this.enemies.forEachAlive(function (enemies) {
-          //   //console.log("enemy", enemies.children)
-          //   enemies.children.forEach(function(enemy){
-          //     context.scalePlayer(enemy, enemy.mass * (1+(massLost/1000)));
-          //   })
-          // })
-          this.zoom(-1 * massLost);
-          //cell.width = this.massToWidth(cell.mass);
-          //cell.height = cell.width;
+          this.scalePlayer(cell, cell.mass)// * (1 + massLost/1000));
 
         }
 
@@ -432,15 +422,8 @@
 
         playerCell.mass += massIncrease;
 
-        this.scalePlayer(playerCell, playerCell.mass * (1 - (massIncrease/1000)));
-        // this.enemies.forEachAlive(function (enemies) {
-        //   //console.log("enemy", enemies.children)
-        //   enemies.children.forEach(function(enemy){
-        //     //console.log("mass", enemy.mass)
-        //     context.scalePlayer(enemy, enemy.mass * (1 - (massIncrease/1000)));
-        //   })
-        // })
-        this.zoom(massIncrease);
+        this.scalePlayer(playerCell, playerCell.mass);// * (1 - (massIncrease/1000)));
+    
       }
 
     },
@@ -479,7 +462,7 @@
     },
 
     eat: function(cellA, cellB){
-      //TODO zoomout on eating
+      
       var mass = cellA.mass;
       var cellBName = cellB.parent.username;
       var cellIndex = cellB.parent.getChildIndex(cellB);
@@ -525,7 +508,7 @@
     },
 
 
-    scalePlayer: function (player, mass) {
+    scalePlayer: function (player, mass, modifier) {
       //TODO: check for collisions?
       player.width = this.massToWidth(mass);
       player.height = player.width;
