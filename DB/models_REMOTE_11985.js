@@ -2,9 +2,9 @@ var Sequelize = require("sequelize");
 
 // Connect to the agar database with user root and "root" password
 
+//var sequelize = new Sequelize("agar", "root", "hello"/*""*/); //Matt's sql password
 
-var sequelize = new Sequelize("agar", "root", "password"/*""*/);
-
+var sequelize = new Sequelize("agar", "root", "hello");
 
 
 // Sequelize auto adds for each entry: id that is a primary key and auto-increments

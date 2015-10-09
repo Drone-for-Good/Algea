@@ -7,7 +7,7 @@
 
   var count = 0;
   var countZoom = 0;
-  var countZoomIn = 0;
+  var mergeCount = 0;
 
 
   function Game() {}
@@ -18,6 +18,7 @@
       this.roomName = roomName;
       this.initialFoodData = foodInfo;
       this.lifetime = 0;
+
 
       //TODO: add the virus here, too:
       //this.initialVirusData = virusInfo;
@@ -70,6 +71,10 @@
       // except the player, to this group.
       // E.g. Enemies, food, not score or leaderboard.
       this.worldGroup = this.add.group();
+      this.worldGroup.setAll("scale.x", (this.worldGroup.scale.x - this.worldGroup.scale.x * .5));
+      this.worldGroup.setAll("scale.y", (this.worldGroup.scale.y - this.worldGroup.scale.y * .5));
+      //this.worldGroup.scale.x -= this.worldGroup.scale.x * .5;
+      //this.worldGroup.scale.y -= this.worldGroup.scale.y * .5;
 
       var background = createBackground(this.game);
       this.worldGroup.add(background);
@@ -85,6 +90,7 @@
       for (var key in this.initialFoodData) {
         this.addFood(this.initialFoodData[key]);
       }
+
 
       // For testing
       // for (var i = 0; i < 60; i++) {
@@ -107,38 +113,12 @@
       // Hold reference to each enemy group. Key is the username of the player
       this.enemyNames = {};
 
-      // // SEED ENEMY DATA FOR TESTING
-      // // Add a new enemy group with username
-      // var newEnemyGroup = this.add.group(this.enemies);
-      // newEnemyGroup.username = 'jiggly';
-
-      // // Map username of enemey group for easy access
-      // this.enemyNames[newEnemyGroup.username] = newEnemyGroup;
-
-      // // Add some cells to the new enemy group
-      // var newEnemyCell = this.initializePlayer(40, 0, 0);
-      // newEnemyGroup.add(newEnemyCell);
-
-      // // Add some cells to the new enemy group
-      // var newEnemyCell = this.initializePlayer(40, 50, 50);
-      // newEnemyGroup.add(newEnemyCell);
-
-      // // Add a new enemy group with username
-      // var newEnemyGroup = this.add.group(this.enemies);
-      // newEnemyGroup.username = 'evil';
-
-      // // Map username of enemey group for easy access
-      // this.enemyNames[newEnemyGroup.username] = newEnemyGroup;
-
-      // // Add some cells to the new enemy group
-      // var newEnemyCell = this.initializePlayer(30, -100, -100);
-      // newEnemyGroup.add(newEnemyCell);
 
       // Create the player group, which is an array
       this.playerCells = this.add.group();
 
       // Create the primary player cell
-      this.player = this.initializePlayer(50, 0, 0, this.username);
+      this.player = this.initializePlayer(30, 0, 0, this.username);
       this.playerCells.add(this.player);
 
       this.scoreText = this.add.text(20, this.game.height - 52,
@@ -149,20 +129,24 @@
         = setInterval(this.sendPlayerState.bind(this), 17);
       window.globalSocket.on('receiveFromServerGameState',
         this.processGameStateData.bind(this));
-      window.globalSocket.on('receiveFromServerCellEaten',
-        this.processCellEatenData.bind(this));
 
       // Spacebar splits the player
       var spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
       spacebar.onDown.add(function(key) {
         this.split();
+
       }, this);
 
       // For testing: down key console logs info
       var downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
       downKey.onDown.add(function(key) {
         // Change the enemies
-        this.processGameStateDataTEST();
+        //console.log(this.enemies, "Enemies")
+        if(this.playerCells.children[1]){
+          //console.log(this.playerCells.children[1])
+          this.eat(this.playerCells.children[0], this.playerCells.children[1])
+        }
+        //this.processGameStateDataTEST();
       }, this);
 
       // For testing:
@@ -176,9 +160,10 @@
       var upKey = this.input.keyboard.addKey(Phaser.Keyboard.UP);
       upKey.onDown.add(function(key) {
         this.playerCells.forEachAlive(function (cell) {
-          cell.mass += 2;
-          this.scalePlayer(cell, cell.mass);
-          this.zoomOut(0.005);
+          var massIncrease = 100;
+          cell.mass += massIncrease;
+          this.scalePlayer(cell, cell.mass) //* (1-(massIncrease/1000)));
+        
         }, this);
       }, this);
 
@@ -194,6 +179,7 @@
         var WALL_THICKNESS = 5;
 
         var horizontalWall = game.make.bitmapData(game.world.width,
+
           WALL_THICKNESS).fill(128, 128, 128);
         var verticalWall = game.make.bitmapData(WALL_THICKNESS,
           game.world.height).fill(128, 128, 128);
@@ -212,14 +198,22 @@
         walls.create(rightX, topY, verticalWall);
 
         walls.setAll('body.immovable' , true);
+        walls.setAll('body.moves' , false);
+        walls.setAll('body.bounce', 0);
+        walls.setAll('collideWorldBounds', true);
+        //this.ground.physicsType = Phaser.SPRITE;
         return walls;
       }
     },
 
     initializePlayer: function (radius, x, y, username) {
+      //FIXIT
       // var circle = this.game.add.bitmapData(radius * 2, radius * 2)
       //   .circle(radius, radius, radius, '#0000FF');
       var player = this.game.add.sprite(x, y, 'player');
+      player.mass = Math.pow(radius*2, 2)/100;
+      //FIXIT it think count zoom = mass/1000 will actually help here...
+      this.scalePlayer(player, player.mass);// * (1 + countZoom)); //cell.mass * (1 + massLost/1000)
       player.anchor.setTo(0.5, 0.5);
 
       this.game.physics.arcade.enable(player);
@@ -229,7 +223,8 @@
       var text = this.game.add.text(0, 0, username, style);
       text.anchor.setTo(0.5, 0.5);
       player.addChild(text);
-      player.mass = Math.pow(radius*2, 2)/100;
+
+
 
       // All physics bodies are rectangles when using Arcade Physics.
       // By default, the rectangle will enclose the player circle
@@ -241,10 +236,14 @@
       return player;
     },
 
+    massToRadius: function(mass, radius){
+      if(radius){
+        return Math.pow(radius*2, 2)/100;
+      }
+      return Math.pow(mass*100, .5)/2;
+    },
+
     // Split all existing player cells
-    // TODO:  merge cells back into 1 after
-    //        a specified time. Do this by setting
-    //        the lifespan property to the cell
     // TODO:  Bug: sometimes new cells
     //        get stuck outside of the world
     split: function () {
@@ -323,21 +322,24 @@
 
     // Called by game loop to update rendering of objects
     update: function () {
-
-      count += 50;
-      var cell = this.player;
-      if(count >= 3000){
-        var massLost = Math.floor(0.0001083*cell.mass*cell.mass - 0.00833*cell.mass);
-        cell.mass -= massLost;
-        cell.width = this.massToWidth(cell.mass);
-        cell.height = cell.width;
+      //counter used to determine when to decrease the size of the player
+      if (count > 3000){
         count = 0;
-        this.zoomIn(massLost/1000);
-        //console.log(this.player.mass)
       }
 
-      // Update location of every player cell
+      count += 50;
+
+      // Update location of every player cell and decrease size on interval
+
       this.playerCells.forEach(function (cell) {
+        if(count >= 3000){
+          var context = this;
+          var massLost = .0000055555 * cell.mass * cell.mass - 0.00055555 * cell.mass;//Math.floor(.0000055555 * cell.mass * cell.mass - 0.00055555 * cell.mass);//0.0001*cell.mass*cell.mass);
+          cell.mass -= massLost;
+          this.scalePlayer(cell, cell.mass)// * (1 + massLost/1000));
+
+        }
+
         var dist = this.physics.arcade.distanceToPointer(cell);
         // Weird math so you dont have to move the
         // cursor to the edge of the window to
@@ -349,10 +351,9 @@
         this.physics.arcade.moveToPointer(cell, velocity);
       }, this);
 
-      // // Render all enemies
-      // this.renderEnemies();
 
       // Check for collisions
+
       //TODO: modify wall to allow players to pass back and forth
       //this.physics.arcade.collide(this.playerCells, this.walls);
       // Food collisions
@@ -374,8 +375,16 @@
       //Rectangle that bounds all player cells
       var boundingRect = this.playerCells.getLocalBounds();
       this.camera.focusOnXY(boundingRect.centerX, boundingRect.centerY);
+      this.lifetime = this.lifetime + .01;
 
-      this.lifetime = this.lifetime += .01;
+      //remerge cells after time
+      if(this.playerCells.children.length > 1){
+        mergeCount += 50
+        if(mergeCount > 100000){
+          this.eat(this.playerCells.children[0], this.playerCells.children[1]);
+          mergeCount = 0;
+        }
+      }
     },
 
     // Show debug info
@@ -387,37 +396,9 @@
      }, this);
     },
 
-    // // Render enemies
-    // renderEnemies: function () {
-    //   for (var username in this.enemiesData) {
-    //     var enemyData = this.enemiesData[username];
-    //     // Create a new enemy object
-    //     if (enemyData && !enemyData.created) {
-    //       var newEnemy = this.initializePlayer(enemyData.radius,
-    //         enemyData.x, enemyData.y, username);
-    //       newEnemy.username = username;
-    //       enemyData.created = true;
-    //       this.enemies.add(newEnemy);
-
-    //     // Othewise, update enemy size and position
-    //     } else {
-    //       // Get the enemy object
-    //       var enemyMatches = this.enemies.filter(function (enemy) {
-    //         return enemy.username === username ? true : false;
-    //       }, true);
-    //       var enemy = enemyMatches.list[0];
-    //       enemy.width = enemyData.radius * 2;
-    //       enemy.height = enemyData.radius * 2;
-    //       enemy.x = enemyData.x;
-    //       enemy.y = enemyData.y;
-    //     }
-    //   }
-    // },
-
     eatFood: function (playerCell, food) {
       // foodPlayerAte will be send to server at interval
 
-      //TODO this line will only work in the current state in which cells don't remerge
       var totalMass = 0;
       var num = 0;
       this.playerCells.forEachAlive(function (cell) {
@@ -425,8 +406,7 @@
           num++;
       }, this);
       num = 0;
-      console.log(totalMass,"totalMass")
-      //console.log(this.playerCells," :Player cells")
+      //console.log(totalMass,"totalMass")
 
       this.eatenFoodIDs.push(food.id);
       // this.foodIDs[food.id] = null;
@@ -436,12 +416,23 @@
       this.score += 5;
       this.scoreText.text = 'Score: ' + this.score;
 
-      if(totalMass < 500){
-        playerCell.mass += 5;
-        this.scalePlayer(playerCell, playerCell.mass * 0.995);
-        this.zoomOut(0.005);
+      if(totalMass < 1000){
+        var massIncrease = 10;
+        var context = this;
+
+        playerCell.mass += massIncrease;
+
+        this.scalePlayer(playerCell, playerCell.mass);// * (1 - (massIncrease/1000)));
+    
       }
 
+    },
+
+
+    eatOrBeEaten: function (mainPlayerCell, cellB) {
+      if (cellB.mass * 0.8 > mainPlayerCell.mass) {
+        this.eat(mainPlayerCell, cellB)
+      }
     },
 
     eatVirus: function(playerCell, virus) {
@@ -449,19 +440,13 @@
       this.eatenVirusIDs.push(virus.id);
       this.removeVirus(virus.id);
 
-      //TODO: if player eats a virus, they are out of the game (for now).
-      // console.log(this.virus, "~~this.virus~~");
-      console.log(playerCell, "YOU ATE A VIRUS OMG NOM NOM");
-      //instead of playerCell.destroy(); I'm going to shrink the player
-      //works for one of the two viruses; the one with the id 0
-
-      // this.score -=100;
-      // this.scoreText.text = 'Score' + this.score;
+      this.score -=100;
+      this.scoreText.text = 'Score' + this.score;
       if(playerCell.mass < 10) {
-        playerCell.mass = playerCell.mass/2;
+        playerCell.mass = playerCell.mass * 0.75;
         this.scalePlayer(playerCell, playerCell.mass);
       } else {
-        playerCell.mass -= 10;
+        playerCell.mass = playerCell.mass * 0.5;
         this.scalePlayer(playerCell, playerCell.mass);
       }
 
@@ -476,36 +461,41 @@
       // }
     },
 
-    eatOrBeEaten: function (playerCell, enemyCell) {
-      if (enemyCell.mass*0.8 > playerCell.mass) {
-        var mass = playerCell.mass;
-        var enemyName = enemyCell.parent.username;
-        var cellIndex = enemyCell.parent.getChildIndex(enemyCell);
+    eat: function(cellA, cellB){
+      
+      var mass = cellA.mass;
+      var cellBName = cellB.parent.username;
+      var cellIndex = cellB.parent.getChildIndex(cellB);
 
-        var data = {
-          username: enemyName,
-          cellIndex: cellIndex,
-          mass: mass
-        };
-        window.globalSocket.emit('sendToServerCellEaten', data);
-        playerCell.destroy();
+      var data = {
+        username: cellBName,
+        cellIndex: cellIndex,
+        mass: mass
+      };
 
-        if (this.playerCells.length === 0){
-          clearInterval(window.playerUpdateRoutine);
-          //TODO: Allow user to continue playing in same room
-          //Currently user will have to rejoin room after dying
-          this.game.state.start('menu');
-        }
+      cellB.mass += cellA.mass;
+      window.globalSocket.emit('sendToServerCellEaten', data);
+      cellA.destroy();
+
+      if (this.playerCells.length === 0){
+        clearInterval(window.playerUpdateRoutine);
+        //TODO: Allow user to continue playing in same room
+        //Currently user will have to rejoin room after dying
+        this.game.state.start('menu');
       }
     },
 
 
-    zoomOut: function (scaleRate) {
-      countZoom++;
-      if(countZoom < 240){
+    zoom: function(massIncrease){
+      if(countZoom < 1.25 && countZoom >= 0){
         var world = this.worldGroup;
+        var scaleRate = massIncrease/1000;
+        countZoom += scaleRate;
 
-        scaleRate = scaleRate || 0.001;
+        if (countZoom < 0){
+          countZoom = 0;
+          scaleRate = scaleRate + countZoom;
+        }
 
         world.scale.x -= world.scale.x * scaleRate;
         world.scale.y -= world.scale.y * scaleRate;
@@ -515,35 +505,12 @@
           cell.y -= cell.y * scaleRate;
         }, this);
       }
-
-
     },
 
-    zoomIn: function (scaleRate) {
-      countZoomIn++;
-      if(countZoomIn < 240){
-        var world = this.worldGroup;
 
-        scaleRate = scaleRate || 0.001;
-
-        world.scale.x += world.scale.x * scaleRate;
-        world.scale.y += world.scale.y * scaleRate;
-
-        this.playerCells.forEachAlive(function (cell) {
-          cell.x += cell.x * scaleRate;
-          cell.y += cell.y * scaleRate;
-        }, this);
-      }
-
-
-    },
-
-    scalePlayer: function (player, mass) {
-      //TODO: Figure out how to scale player based on mass
+    scalePlayer: function (player, mass, modifier) {
       //TODO: check for collisions?
       player.width = this.massToWidth(mass);
-
-      console.log("width: ", player.width, "mass: ", mass)
       player.height = player.width;
     },
 
@@ -558,7 +525,7 @@
       newFood.id = foodData.id;
       // If there is still food currently with the same id, destroy it
       if (this.foodIDs[foodData.id]) {
-        console.log('food is already there');
+        //console.log('food is already there');
         this.removeFood(foodData.id);
       }
       // Add reference to newFood object to foodIDs
@@ -651,8 +618,8 @@
       {
         jiggly: {
           positionAndRadius: [
-            { x: 0, y: 0, radius: 40 },
-            { x: 50, y: 50, radius: 40 }],
+            { x: 0, y: 0, radius: 4 },
+            { x: 50, y: 50, radius: 4 }],
           skin : '' }
       };
 
@@ -735,24 +702,11 @@
       // }
 
     },
-    processCellEatenData: function (data) {
-      var cell = this.playerCells.getChildAt(data.cellIndex);
 
-      this.score += data.mass;
-      cell.mass += data.mass;
-
-      var grow = this.game.add.tween(cell);
-      var newWidth = this.massToWidth(cell.mass);
-
-      grow.to({width: newWidth, height: newWidth}, 1000, Phaser.Easing.Cubic.In);
-      grow.start();
-
-      var scale = Math.pow(0.005, data.mass / 20);
-      this.zoomOut(scale);
-    },
     massToWidth: function (mass) {
       return Math.sqrt((mass)*100);
     },
+
     shutdown: function () {
       clearInterval(window.playerUpdateRoutine);
       window.globalSocket.removeListener('receiveFromServerGameState',
