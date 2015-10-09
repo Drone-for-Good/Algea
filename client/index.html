@@ -110,7 +110,7 @@
     </div>
 
     <!-- Rooms (PinkRed) Div Along Left Side -->
-    <div id="gameRoomsDivTitle">Game Room
+    <div id="gameRoomsDiv"><h3>Game Rooms</h3>
         <ul id="gameRoomsList">
         <!-- Unordered list where game/rooms are displayed -->
           <li ng-repeat="gameRoom in gameRooms | filter:gameRoomsFilter"
@@ -132,8 +132,32 @@
 
 
         <!-- Chat -->
-    <div id="chatDivTitle">Chat
-      <div id="gameChatDiv" ng-controller="gameChatDivController">
+    <div id="gameChatDiv" ng-controller="gameChatDivController">
+    <h3>Talk Some Shit</h3>
+      <ul id="gameChatDivMessages" ng-repeat="message in messages">
+        <li>
+          <span class="gameChatDivMessagesUser"
+            ng-class='
+            {
+              "gameChatDivServerMessage":
+                message.username === "SERVER"
+            }'>
+            {{ message.username }}:
+          </span>
+          <span ng-class='
+            {
+              "gameChatDivServerMessage":
+                message.username === "SERVER"
+            }'>
+            {{ message.message }}
+          </span>
+        </li>
+      </ul>
+      <form ng-submit='sendToServerChatMessage()'>
+        <input id="gameChatDivInput" type="text" placeholder="Message..."
+          maxlength="72">
+      </form>
+      <!-- <div id="gameChatDiv" ng-controller="gameChatDivController">
           <div id="gameChatDivMessages">
             <ul ng-repeat="message in messages">
               <li>
@@ -158,7 +182,7 @@
           <form ng-submit='sendToServerChatMessage()'>
             <input id="gameChatDivInput" type="text" placeholder="Message..."
               maxlength="72">
-          </form>
+          </form> -->
       </div>
     </div>
   </div>
