@@ -25,8 +25,6 @@
       this.load.image('grid', 'assets/black.png');
       this.load.image('food', 'assets/small_mercury.png');
       this.load.image('player', 'assets/epcotSpaceshuttle.png');
-
-      //TODO: load the virus image
       this.load.image('virus', 'assets/smaller_blackHole.png');
 
     },

@@ -328,7 +328,7 @@
       }
 
       count += 50;
-      
+
       // Update location of every player cell and decrease size on interval
 
       this.playerCells.forEach(function (cell) {
@@ -440,19 +440,13 @@
       this.eatenVirusIDs.push(virus.id);
       this.removeVirus(virus.id);
 
-      //TODO: if player eats a virus, they are out of the game (for now).
-      // console.log(this.virus, "~~this.virus~~");
-      console.log(playerCell, "YOU ATE A VIRUS OMG NOM NOM");
-      //instead of playerCell.destroy(); I'm going to shrink the player
-      //works for one of the two viruses; the one with the id 0
-
-      // this.score -=100;
-      // this.scoreText.text = 'Score' + this.score;
+      this.score -=100;
+      this.scoreText.text = 'Score' + this.score;
       if(playerCell.mass < 10) {
-        playerCell.mass = playerCell.mass/2;
+        playerCell.mass = playerCell.mass * 0.75;
         this.scalePlayer(playerCell, playerCell.mass);
       } else {
-        playerCell.mass -= 10;
+        playerCell.mass = playerCell.mass * 0.5;
         this.scalePlayer(playerCell, playerCell.mass);
       }
 
@@ -512,7 +506,7 @@
         }, this);
       }
     },
-    
+
 
     scalePlayer: function (player, mass, modifier) {
       //TODO: check for collisions?
@@ -708,7 +702,7 @@
       // }
 
     },
-  
+
     massToWidth: function (mass) {
       return Math.sqrt((mass)*100);
     },

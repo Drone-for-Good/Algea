@@ -15,11 +15,11 @@
       var subheaderText = 'Login and join a room to begin playing';
 
       var title = this.add.text(centerX, centerY - 50, titleText,
-        {font: '42px Arial', fill: '#000', align: 'center'} );
+        {font: '42px Arial', fill: 'white', align: 'center'} );
       title.anchor.set(0.5);
 
       var subheader = this.add.text(centerX, centerY, subheaderText,
-        {font: '30px Arial', fill: '#000', align: 'center'} );
+        {font: '30px Arial', fill: 'white', align: 'center'} );
       subheader.anchor.set(0.5);
     },
 
