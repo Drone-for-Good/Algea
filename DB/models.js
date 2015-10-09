@@ -59,50 +59,50 @@ exports.Stats.sync().then(function(){
   console.log("Successfully synced Stats table");
 });
 
-// Stats for one game of a user
-exports.GameStats = sequelize.define('GameStats', {
-  userid: {type: Sequelize.INTEGER, references: {model: exports.User, key:"id"} },
-  lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
-  score: {type: Sequelize.INTEGER, defaultValue: 0},
-  mass: {type: Sequelize.INTEGER, defaultValue: 0},
-  totalKills: {type: Sequelize.INTEGER, defaultValue: 0},
-  totalFood: {type: Sequelize.INTEGER, defaultValue: 0},
-  timeInFirst: {type: Sequelize.INTEGER, defaultValue: 0}
-});
+// // Stats for one game of a user
+// exports.GameStats = sequelize.define('GameStats', {
+//   userid: {type: Sequelize.INTEGER, references: {model: exports.User, key:"id"} },
+//   lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
+//   score: {type: Sequelize.INTEGER, defaultValue: 0},
+//   mass: {type: Sequelize.INTEGER, defaultValue: 0},
+//   totalKills: {type: Sequelize.INTEGER, defaultValue: 0},
+//   totalFood: {type: Sequelize.INTEGER, defaultValue: 0},
+//   timeInFirst: {type: Sequelize.INTEGER, defaultValue: 0}
+// });
 
-exports.GameStats.sync().then(function(){
-  console.log("Successfully synced GameStats table");
-});
+// exports.GameStats.sync().then(function(){
+//   console.log("Successfully synced GameStats table");
+// });
 
-// Best of each stat for a user
-exports.BestStats = sequelize.define('BestStats', {
-  userid: {type: Sequelize.INTEGER, primaryKey: true,
-    references: {model: exports.User, key:"id"} },
-  lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
-  score: {type: Sequelize.INTEGER, defaultValue: 0},
-  mass: {type: Sequelize.INTEGER, defaultValue: 0},
-  totalKills: {type: Sequelize.INTEGER, defaultValue: 0},
-  totalFood: {type: Sequelize.INTEGER, defaultValue: 0},
-  timeInFirst: {type: Sequelize.INTEGER, defaultValue: 0}
-});
+// // Best of each stat for a user
+// exports.BestStats = sequelize.define('BestStats', {
+//   userid: {type: Sequelize.INTEGER, primaryKey: true,
+//     references: {model: exports.User, key:"id"} },
+//   lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
+//   score: {type: Sequelize.INTEGER, defaultValue: 0},
+//   mass: {type: Sequelize.INTEGER, defaultValue: 0},
+//   totalKills: {type: Sequelize.INTEGER, defaultValue: 0},
+//   totalFood: {type: Sequelize.INTEGER, defaultValue: 0},
+//   timeInFirst: {type: Sequelize.INTEGER, defaultValue: 0}
+// });
 
-exports.BestStats.sync().then(function(){
-  console.log("Successfully synced BestStats table");
-});
+// exports.BestStats.sync().then(function(){
+//   console.log("Successfully synced BestStats table");
+// });
 
-// Sum of each stat for a user
-exports.TotalStats = sequelize.define('TotalStats', {
-  userid: {type: Sequelize.INTEGER, primaryKey: true,
-    references: {model: exports.User, key:"id"} },
-  totalGames: {type: Sequelize.INTEGER, defaultValue: 0},
-  lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
-  score: {type: Sequelize.INTEGER, defaultValue: 0},
-  mass: {type: Sequelize.INTEGER, defaultValue: 0},
-  totalKills: {type: Sequelize.INTEGER, defaultValue: 0},
-  totalFood: {type: Sequelize.INTEGER, defaultValue: 0},
-  timeInFirst: {type: Sequelize.INTEGER, defaultValue: 0}
-});
+// // Sum of each stat for a user
+// exports.TotalStats = sequelize.define('TotalStats', {
+//   userid: {type: Sequelize.INTEGER, primaryKey: true,
+//     references: {model: exports.User, key:"id"} },
+//   totalGames: {type: Sequelize.INTEGER, defaultValue: 0},
+//   lifetime: {type: Sequelize.INTEGER, defaultValue: 0},
+//   score: {type: Sequelize.INTEGER, defaultValue: 0},
+//   mass: {type: Sequelize.INTEGER, defaultValue: 0},
+//   totalKills: {type: Sequelize.INTEGER, defaultValue: 0},
+//   totalFood: {type: Sequelize.INTEGER, defaultValue: 0},
+//   timeInFirst: {type: Sequelize.INTEGER, defaultValue: 0}
+// });
 
-exports.TotalStats.sync().then(function(){
-  console.log("Successfully synced TotalStats table");
-})
+// exports.TotalStats.sync().then(function(){
+//   console.log("Successfully synced TotalStats table");
+// })

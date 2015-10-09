@@ -23,12 +23,12 @@ $(document).ready(function () {
     $("#playersDivList").css("height",
       "" + (60 - $("#playersDivTitle").height()/window.innerHeight) + "%");
     $("#gameDiv").css("height", window.innerHeight * .9);
-    $("#gameChatDiv").css("top", $("#gameDiv").height() - 205);
-    $("#gameChatDivInput").css({
-      "top": $("#gameChatDiv").height()
-            - $("#gameChatDivInput").height()
-            - 10
-      });
+    // $("#gameChatDiv").css("top", $("#gameDiv").height() - 230);
+    // $("#gameChatDivInput").css({
+    //   "top": $("#gameChatDiv").height()
+    //         - $("#gameChatDivInput").height()
+    //         - 10
+    //   });
   };
   initializeGUI();
 
