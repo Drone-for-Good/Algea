@@ -536,9 +536,16 @@
       this.game.state.start('win');
     },
 
+    generateRandomFood: function() {
+        var foodShapes = ['food0', 'food1', 'food2', 'food3', 'food4', 'food5'];
+        //return Math.random() * (max - min) + min;
+        var foodShape = foodShapes[(Math.random()*foodShapes.length)];
+        return foodShape;
+    },
+
     addFood: function (foodData) {
       // Render the new food object
-      var newFood = this.food.create(foodData.x, foodData.y, 'food');
+      var newFood = this.food.create(foodData.x, foodData.y, 'food1'); //this.generateRandomFood()
       newFood.id = foodData.id;
       // If there is still food currently with the same id, destroy it
       if (this.foodIDs[foodData.id]) {
