@@ -17,6 +17,52 @@ app.controller("playersDivController",
 
   $scope.playerFilter = "";
   
+
+  $scope.getFromServerAllPlayers = function () {
+    mySocket.emit("getFromServerAllFriends", null);
+  };
+  mySocket.on("getFromServerAllPlayers_Response", function (data) {
+    $scope.players = data;
+  });
+
+  $(".playersDivListPlayer").mouseover(function () {
+    $(this).css({
+      "background-color": GUIvars[".playersDivListPlayer"].hoverBGcolor 
+    });
+  });
+  $(".friendsDivListFriend").mouseleave(function () {
+    $(this).css({
+      "background-color": GUIvars[".playersDivListPlayer"].baseBGcolor
+    });
+  });
+
+  // Set selected player
+  $scope.selectPlayerFromNav = function (username) {
+    $rootScope.socialVars.selectedPlayer = username;
+    console.log($rootScope.socialVars.selectedPlayer);
+  };
+
+  // Clear selected player
+  $scope.clearSelectedPlayerFromNav = function () {
+    $rootScope.socialVars.selectedPlayer = "";
+  };
+
+  // Add a friend
+  $scope.addFriend = function (username) {
+    mySocket.emit('getFromServerAddFriend', {
+      username: username
+    });
+  };
+  mySocket.on('getFromServerAddFriend_Response', function (data) {
+    // Set $rootScope social variables
+    // $rootScope.socialVars.friends = data.friends;
+    // $rootScope.socialVars.friendsKeys = Object.keys(data.friends);
+    console.log(data);
+  });
+
+
+});
+
   /*$scope.players = [
     {
       username: "AngelOfDeath",
@@ -79,48 +125,3 @@ app.controller("playersDivController",
         "150Mewtwo_AG_anime_2.png/revision/20150101075100"
     }
   ];*/
-
-  $scope.getFromServerAllPlayers = function () {
-    mySocket.emit("getFromServerAllFriends", null);
-  };
-  mySocket.on("getFromServerAllPlayers_Response", function (data) {
-    $scope.players = data;
-  });
-
-  $(".playersDivListPlayer").mouseover(function () {
-    $(this).css({
-      "background-color": GUIvars[".playersDivListPlayer"].hoverBGcolor 
-    });
-  });
-  $(".friendsDivListFriend").mouseleave(function () {
-    $(this).css({
-      "background-color": GUIvars[".playersDivListPlayer"].baseBGcolor
-    });
-  });
-
-  // Set selected player
-  $scope.selectPlayerFromNav = function (username) {
-    $rootScope.socialVars.selectedPlayer = username;
-    console.log($rootScope.socialVars.selectedPlayer);
-  };
-
-  // Clear selected player
-  $scope.clearSelectedPlayerFromNav = function () {
-    $rootScope.socialVars.selectedPlayer = "";
-  };
-
-  // Add a friend
-  $scope.addFriend = function (username) {
-    mySocket.emit('getFromServerAddFriend', {
-      username: username
-    });
-  };
-  mySocket.on('getFromServerAddFriend_Response', function (data) {
-    // Set $rootScope social variables
-    // $rootScope.socialVars.friends = data.friends;
-    // $rootScope.socialVars.friendsKeys = Object.keys(data.friends);
-    console.log(data);
-  });
-
-
-});
