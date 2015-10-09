@@ -152,6 +152,8 @@ body {
   cursor: pointer;
   background-color: #042239;
   font-size: 16px;
+  border-bottom: 2px solid white;
+  color: green;
 }
 
 #friendsDivList li:hover {
@@ -159,7 +161,7 @@ body {
   background-color: #dbe2e8;
 }
 
-.friendsDivListStatus {
+/*.friendsDivListStatus {
   float: left;
   background-color: black;
   position: relative;
@@ -169,7 +171,7 @@ body {
   top: 5px;
   border-radius: 50%;
   opacity: 1;
-}
+}*/
 
 .friendsDivListStatus_Online {
   background-color: #3399ff;
@@ -382,4 +384,23 @@ body {
   border-radius: 3px;
   background-color: rgba(25, 25, 25, .75);
   color: white;
+}
+
+#leaderboard {
+  /*padding-left: 8px;*/
+  margin-left: 15px;
+  margin-right: 10px;
+  list-style-type: none;
+  width: 100%;
+  padding-left: 0px;
+}
+
+#leaderboard li {
+  width: 85%;
+  border-bottom: 2px solid white;
+  margin: 10px 0px;
+  padding: 10px 0px;
+  text-align: center;
+  background-color: black;
+  font-size: 18px;
 }

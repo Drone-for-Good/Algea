@@ -171,15 +171,15 @@
     <div id="friendsDivTitle">
       Leaderboard!
     </div>
-    <ul id="fiendsDivList">
+    <ul id="leaderboard">
       <li>High Score</li>
-      <li> {{ stats.highestScore }} </li>
-      <li>User</li>
-      <li> {{ stats.highestScoreUser }} </li>
+      <li> {{ stats.highestScore }} |  {{ stats.highestScoreUser }}</li>
+      <!-- <li>User</li>
+      <li> {{ stats.highestScoreUser }} </li> -->
       <li>Longest Life</li>
-      <li> {{ stats.longestLife }} </li>
-      <li>User</li>
-      <li> {{ stats.longestLifeUser }} </li>
+      <li> {{ stats.longestLife }} sec | {{ stats.longestLifeUser }}</li>
+      <!-- <li>User</li>
+      <li> {{ stats.longestLifeUser }} </li> -->
     </ul>
     <!-- <ul id="friendsDivList">
       <li ng-repeat
