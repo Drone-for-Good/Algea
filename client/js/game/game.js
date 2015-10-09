@@ -211,11 +211,11 @@
       
       var playerPic = this.game.add.image(0, 0, 'player');
 
-      playerPic.width = radius * 2 + 25;
-      playerPic.height = radius * 2 + 25;
+      playerPic.width = radius * 2 - 1;
+      playerPic.height = radius * 2 - 1;
 
       var circle = this.game.add.bitmapData(radius * 2, radius * 2)
-         .circle(radius, radius, radius, '#0000FF');
+         .circle(radius, radius, radius, '#000000');
       var player = this.game.add.sprite(x, y, circle); //this.game.add.sprite(x, y, 'player');
       player.mass = Math.pow(radius*2, 2)/100;
 
@@ -606,7 +606,7 @@
     updateEnemyGroup: function(enemyGroup, data) {
       // Destroy all existing enemy cells
       countEnemyUpdate++
-      if(countEnemyUpdate > 10 ){
+      if(countEnemyUpdate > 3 ){
         enemyGroup.removeAll(true);
         // Re-draw all enemy cells with current data
         for (var i = 0; i < data.length; i++) {
