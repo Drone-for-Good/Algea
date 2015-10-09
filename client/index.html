@@ -229,6 +229,7 @@
   </div>
 
   <div id="playersDiv" ng-controller="playersDivController">
+
     <div ng-model="players" id="playersDivTitle">
       Players
     </div>
@@ -244,6 +245,7 @@
         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
       </button>
     </div>
+
     <ul id="playersDivList">
       <li ng-repeat="player in gameVars.roomPlayers | filter:playerFilter:strict" class="playersDivListPlayer"
         ng-class="
