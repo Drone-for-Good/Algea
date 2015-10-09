@@ -23,9 +23,17 @@
     loadResources: function () {
       // load your assets here
       this.load.image('grid', 'assets/black.png');
-      this.load.image('food', 'assets/small_mercury.png');
       this.load.image('player', 'assets/epcotSpaceshuttle.png');
       this.load.image('virus', 'assets/smaller_blackHole.png');
+
+      //All the planet food images
+      this.load.image('food0', 'assets/small_mercury.png');
+      this.load.image('food1', 'assets/earth.png');
+      this.load.image('food2', 'assets/venus.png');
+      this.load.image('food3', 'assets/mars.png');
+      this.load.image('food4', 'assets/neptune.png');
+      this.load.image('food5', 'assets/jupiter.png');
+      //this.load.image('food6', 'assets/sun.pdf');
 
     },
 
