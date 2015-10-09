@@ -16,6 +16,7 @@ app.run(function ($rootScope) {
 
 // Create angular socket io
 app.factory("mySocket", function(socketFactory){
+  // Global socket attached to the window.
   window.globalSocket = socketFactory();
 
   return window.globalSocket;

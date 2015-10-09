@@ -4,36 +4,7 @@ app.controller("gameDivController", function ($scope, mySocket) {
 
   $scope.stats = {}
 
-  // $scope.sendToServerPlayerState = function () {
-  //   var playerData = {
-  //     eatenFoodIDs:
-  //       [
-  //         "some_food_id_0_here",
-  //         "some_food_id_1_here",
-  //         "some_food_id_2_here",
-  //       ],
-  //     positionAndMass:
-  //       [
-  //         {
-  //           x: "blob_0_x_value_here",
-  //           y: "blob_0_y_value_here",
-  //           mass: "blob_0_mass_value_here"
-  //         },
-  //         {
-  //           x: "blob_1_x_value_here",
-  //           y: "blob_1_y_value_here",
-  //           mass: "blob_1_mass_value_here"
-  //         },
-  //         {
-  //           x: "blob_2_x_value_here",
-  //           y: "blob_2_y_value_here",
-  //           mass: "blob_2_mass_value_here"
-  //         }
-  //       ]
-  //   };
-  //   mySocket.emit("sendToServerPlayerState", playerData);
-  // };
-
+// Player state that keeps track of food eaten, virus hit, and position/mass.
   $scope.sendToServerPlayerState = function () {
     var playerData = {
       eatenFoodIDs:
@@ -66,9 +37,15 @@ app.controller("gameDivController", function ($scope, mySocket) {
           }
         ]
     };
+    // ***************************************
+    // Socket that EMITS and sends PlayerState data to the server.
+    // ***************************************
     mySocket.emit("sendToServerPlayerState", playerData);
   };
 
+  // ***************************************
+  // Socket that listens for....................
+  // *****************************************
   mySocket.on("receiveFromServerPlayerData", function (data) {
     //FOR ANY NEW PLAYER ON MAP, CREATE PLAYER
     //UPDATE PLAYER POSITIONS AND MASSES ON MAP
@@ -81,7 +58,6 @@ app.controller("gameDivController", function ($scope, mySocket) {
       score: window.agar.game.state.states.game.score,
       lifetime: window.agar.game.state.states.game.lifetime,
       totalKills: 0
-
     };
     mySocket.emit("sendToServerLeaderboardStats", performanceStats);
   };
@@ -101,3 +77,34 @@ app.controller("gameDivController", function ($scope, mySocket) {
   });
 
 });
+
+  // $scope.sendToServerPlayerState = function () {
+  //   var playerData = {
+  //     eatenFoodIDs:
+  //       [
+  //         "some_food_id_0_here",
+  //         "some_food_id_1_here",
+  //         "some_food_id_2_here",
+  //       ],
+  //     positionAndMass:
+  //       [
+  //         {
+  //           x: "blob_0_x_value_here",
+  //           y: "blob_0_y_value_here",
+  //           mass: "blob_0_mass_value_here"
+  //         },
+  //         {
+  //           x: "blob_1_x_value_here",
+  //           y: "blob_1_y_value_here",
+  //           mass: "blob_1_mass_value_here"
+  //         },
+  //         {
+  //           x: "blob_2_x_value_here",
+  //           y: "blob_2_y_value_here",
+  //           mass: "blob_2_mass_value_here"
+  //         }
+  //       ]
+  //   };
+  //   mySocket.emit("sendToServerPlayerState", playerData);
+  // };
+
