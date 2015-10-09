@@ -8,6 +8,7 @@
   var count = 0;
   var countZoom = 0;
   var mergeCount = 0;
+  var countEnemyUpdate = 0;
 
 
   function Game() {}
@@ -604,13 +605,17 @@
 
     updateEnemyGroup: function(enemyGroup, data) {
       // Destroy all existing enemy cells
-      enemyGroup.removeAll(true);
-      // Re-draw all enemy cells with current data
-      for (var i = 0; i < data.length; i++) {
-        var newEnemyCell =
-          this.initializePlayer(data[i].radius, data[i].x, data[i].y, enemyGroup.username);
-        enemyGroup.add(newEnemyCell);
-      // TODO: should we do collision detection here?
+      countEnemyUpdate++
+      if(countEnemyUpdate > 10 ){
+        enemyGroup.removeAll(true);
+        // Re-draw all enemy cells with current data
+        for (var i = 0; i < data.length; i++) {
+          var newEnemyCell =
+            this.initializePlayer(data[i].radius, data[i].x, data[i].y, enemyGroup.username);
+          enemyGroup.add(newEnemyCell);
+        // TODO: should we do collision detection here?
+        }
+        countEnemyUpdate = 0;
       }
     },
 
