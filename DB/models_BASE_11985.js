@@ -1,14 +1,7 @@
 var Sequelize = require("sequelize");
 
 // Connect to the agar database with user root and "root" password
-
-
-if (process.env.CLEARDB_DATABASE_URL) {
-  var sequelize = new Sequelize(process.env.CLEARDB_DATABASE_URL);
-} else {
-  var sequelize = new Sequelize("agar", "root", "");
-}
-
+var sequelize = new Sequelize("agar", "root", "hello"/*""*/);
 
 // Sequelize auto adds for each entry: id that is a primary key and auto-increments
 // createAt and updatedAt timestamps
