@@ -15,6 +15,9 @@
 
   Game.prototype = {
     init: function (username, roomName, foodInfo, virusInfo) {
+  
+  
+
       this.username = username;
       this.roomName = roomName;
       this.initialFoodData = foodInfo;
@@ -122,8 +125,7 @@
       this.player = this.initializePlayer(30, 0, 0, this.username);
       this.playerCells.add(this.player);
 
-      this.scoreText = this.add.text(20, this.game.height - 52,
-        'score: 0', { fontSize: '32px', fill: '#555' });
+      this.scoreText = this.add.text(20, this.game.height - 150,        'score: 0', { fontSize: '32px', fill: '#555' });
       this.scoreText.fixedToCamera = true;
 
       window.playerUpdateRoutine

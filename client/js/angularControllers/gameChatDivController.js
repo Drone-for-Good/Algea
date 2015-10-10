@@ -11,10 +11,7 @@ app.controller("gameChatDivController", function ($rootScope, $scope, mySocket) 
   };
 
   $scope.messages = [
-    {
-      username: 'SERVER',
-      message: 'CLOSE CHAT TO SPLIT ("C")'
-    }
+
   ];
 
   // Send a chat message to the game room
@@ -80,5 +77,6 @@ app.controller("gameChatDivController", function ($rootScope, $scope, mySocket) 
       toggleChatWindow();
     }
   };
+
 
 });
