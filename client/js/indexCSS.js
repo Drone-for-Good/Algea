@@ -38,4 +38,7 @@ $(document).ready(function () {
     $("#playersDiv").css("height", window.innerHeight/2);
   });
 
+  $("#gameRoomsList").on("click", "li", function () {
+    $("#gameChatDivInput").trigger("focus");
+  })
 });

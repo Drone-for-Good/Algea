@@ -21,7 +21,7 @@ body {
   margin-top: 5%;
   width: 90%;
   background-color: #123652;
-  border: px solid #4f0118;
+  border: 1px solid #4f0118;
   color: #f2dfe5;
   box-shadow: 1px 2px 1px #888888;
 }
@@ -412,7 +412,7 @@ body {
   width: 85%;
   border-bottom: 2px solid white;
   margin: 10px 0px;
-  padding: 10px 0px;
+  padding: 10px 5px;
   text-align: center;
   background-color: black;
   font-size: 18px;

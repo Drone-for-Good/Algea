@@ -1,6 +1,8 @@
 window.addEventListener('load', function () {
   'use strict';
 
+  
+
   var ns = window['agar'];
 
   // 'agar-game' is id of DOM element that the canvas element is inserted into
