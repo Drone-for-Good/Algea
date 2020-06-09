@@ -5,7 +5,7 @@
   "dependencies": {
     "bcrypt": "^0.8.5",
     "bcrypt-nodejs": "0.0.3",
-    "bower": "1.5.2",
+    "bower": "1.8.8",
     "bluebird": "^2.10.1",
     "chai": "^3.3.0",
     "express": "^4.10.2",
