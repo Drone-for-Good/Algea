@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "my first socket.io app",
   "dependencies": {
-    "bcrypt": "^0.8.5",
+    "bcrypt": "^5.0.0",
     "bcrypt-nodejs": "0.0.3",
     "bower": "1.5.2",
     "bluebird": "^2.10.1",
