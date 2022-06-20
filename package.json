@@ -20,7 +20,7 @@
     "grunt-simple-mocha": "^0.4.0",
     "mocha": "^2.3.3",
     "mysql": "^2.9.0",
-    "sequelize": "^3.9.0",
+    "sequelize": "^6.19.1",
     "socket.io": "^3.0.0"
   },
   "scripts": {
